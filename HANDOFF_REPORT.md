@@ -1,77 +1,48 @@
-# Workspace app — compact handoff report
+# Workspace app — current conversation checkpoint
 
-Historical snapshot: later work on **2026-10-05** implemented M1.2–M1.5 and saved local Git checkpoints. Read STATUS.md for the authoritative current state; the report below describes the earlier archive.
+Saved: **2026-10-06**, before browser-policy diagnostics. This is a durable project checkpoint, not a claim that internal conversation compaction occurred. Read STATUS.md for detailed test evidence. October 5 ZIPs remain historical snapshots.
 
-Prepared: **2026-10-05**. Last recorded implementation checks: **2026-09-25**.
+## Current state
 
-This is the portable summary of the project conversation and current files. It does not replace the detailed requirements or indicate that Codex's internal chat context has been compacted.
+- Working folder: `/Users/peterkontellis/.codex/.chatgpt-projects/g-p-6a0f76716e988191962260a53dc7ed97/workspace-app`.
+- GitHub: https://github.com/peterkontellis-spec/WorkspaceApp.git. Latest implementation checkpoint **397af19** was pushed to main.
+- M1.2–M1.5 implemented as session-only sample data. M1.6 refinements and review underway; Stage 1 remains open. M2 backend work has not started.
+- Shell/Home, editable boards, task notes/checklists/subtasks and linked Markdown Docs work in the prototype. Refresh/tab closure clears demo edits.
+- Fixed embedded native-calendar crash with an in-page calendar; verified date selection, Save/Cancel, month/year keyboard navigation, Clear and Escape.
+- Verified mobile Preview, nested bold/italic links, inert unsafe markup, empty document state and Assistant · Later on desktop/mobile. Assistant is a placeholder, not a connected AI service.
+- Reset demo now uses an in-page confirmation. Cancel/Escape preserve edits; explicit Reset sample data restores sample records. The earlier native popup appeared to the user while browsing settings; it affected temporary prototype data only. Warn before tests that may present browser/system prompts.
+- Last full validation: TypeScript, **20 tests**, production build and **16 HTTP checks** passed. Supported browser evidence is recorded in STATUS.md. A Next.js development profiler error on a not-found route did not reproduce in the production preview.
+- Preview: `http://127.0.0.1:3100/home`. Last started using the standalone production server; verify current lifetime rather than assuming it is running.
 
-## Goal and constraints
+## User constraints and cadence
 
-Build a Monday-style collaborative workspace for up to **four people**, hosted on a **UGREEN DXP2800 NAS**, with about **4 GB RAM** dedicated to the project and **6 TB storage** available. Use a subdomain of the user's existing domain. Keep application data, attachments, and collaborative documents on the NAS; Google Drive must not be required.
+- Work only in the project workspace; preserve unrelated changes and read-only synced sources. No NAS/public deployment without specific approval.
+- Preserve dark/subtle design, larger controls, equal phone/desktop emphasis, four collaborators, NAS-owned data and customer/admin privacy boundaries.
+- Save meaningful Git checkpoints and push to the existing repository; never rewrite published history.
+- Self-check after each meaningful task/session: inspect, test, run UI/design review, fix verified failures, reassess next step, record gaps. No daily automation.
+- User can work **two hours per day**. Their question about resource intensity meant **weekly Codex usage**, not NAS RAM.
+- No purchases, credits or usage-reset redemption. Snapshot: **24% used / 76% remaining**, reset **11 October 2026 at 09:59 Europe/Athens**. Limits are account-wide, not attributable to this task alone.
+- Suggested planning budget: about 8–10 percentage points per session, measured before/after bounded batches; this is not a usage forecast or guaranteed hard cap. Keep reserve and pause before allowance exhaustion. Avoid redundant rereads, duplicate agents and repeated already-passed tests without cause.
+- Earlier 2–3 weeks for a core / 2–3 months for full scope were rough calendar estimates assuming sufficient allowance and working tools. Re-estimate after measured backend sessions; do not promise completion against the subscription budget.
 
-The memory allowance is a design target, not a measured capacity guarantee. NAS deployment, domain configuration, and production resource testing have not happened.
+## New ideas — proposals, not implementation approval
 
-## Decisions to preserve
+- Private email briefing for each admin: rank Urgent / Action needed / Informational / Low priority / Suspected junk, explain ranking, show source links and summarize when asked. Proposed first version is read-only; each admin's mailbox remains separate unless shared explicitly. Email provider is unknown.
+- Mobile meeting/task alerts through Web Push, with quiet hours and configurable reminders. iPhone Home Screen web apps can receive push with user permission; no App Store submission or paid developer membership is required. Delivery uses platform push infrastructure. SMS is an optional paid alternative, not enabled.
+- Local NAS helper with optional heavier-task handoff remains a future proposal. No model, external AI integration, credentials or spend configured. Benchmark local inference separately from the four-GB app design budget.
 
-- **Design:** dark workspace, subtle accents, equal desktop and phone emphasis, larger controls. Exact branding, typography, and palette remain provisional.
-- **Accounts:** individual password access, invitations, owner/editor/viewer roles, personal dashboards, multiple task assignees.
-- **Work management:** boards, groups, tasks/subtasks, custom columns, Table/Kanban/Calendar views, My Day, search/filter, task notes/checklists/attachments/activity.
-- **Collaboration and workflow:** live updates, notifications, timers/manual time entries, templates, team dashboards, dependencies, recurrence, constrained automations.
-- **Documents:** lightweight collaborative Docs inside the workspace, with durable saving and recovery. The broader office-suite idea was sidelined.
+## Immediate next action
 
-**Optional, not approved:** comments/@mentions, private boards, quick-capture inbox.
+User explicitly requested: answer weekly-usage question, save this checkpoint, then troubleshoot the intermittent browser-policy issue now. Diagnose supported browser access and local app reachability separately. Do not change security policies, switch origins/control paths to evade denial, or claim the app can fix a host policy-verification failure.
 
-**Outside the current plan:** private personal workspaces, full Word/PDF editing, a full Drive replacement, desktop folder synchronization.
+Supported browser sometimes works, then reports: “The admin-enforced policy could not be verified.” An earlier suggested Settings → Browser permission UI was not visible to this user; do not repeat that path as verified for their app. The cause is not established.
 
-**Still open:** product name, exact visual identity, subdomain/access gateway, external email/push, offline editing, export formats, dashboard customization, backup destination/retention, deadline and monetary budget. Resolve these when relevant to implementation.
+After access is restored, remaining acceptance includes refresh/close warning, physical phone/software keyboard, full screen/viewport coverage, and exact task→Doc→task filter/collapse/scroll preservation. Reuse existing evidence for calendar, mobile preview and reset checks unless code changes justify repetition.
 
-## Architecture and implementation
+## Working-tree caution
 
-The current prototype uses Next.js, React, TypeScript, and plain CSS. Exact versions and startup scripts are in `package.json`; the dependency lockfile is included.
+Pre-existing security-planning edits in BRIEF.md, DECISIONS.md and STATUS.md, plus untracked SECURITY_CHECKLIST.md, came from a parallel discussion. Preserve them. They were not included in checkpoint 397af19; do not call the entire working tree remotely backed up.
 
-The planned persistent architecture is a modular app with PostgreSQL, NAS-backed attachment storage, and Tiptap/Yjs with self-hosted Hocuspocus for collaborative Docs. Docker Compose is the planned deployment approach. These backend services are **not implemented**. Keep service count small and validate backup restoration and four-user memory usage before release.
+## Continue after compaction
 
-## Progress checkpoint
-
-| Work | State |
-| --- | --- |
-| Planning and session workflow | Complete; five milestones broken into 35 increments |
-| M1.1 — design brief | Complete; screen map, desktop/phone layouts, flows and sample-state boundaries recorded |
-| M1.2 — application shell | Implemented; browser verification pending, so not complete |
-| M1.3 onward | Not complete; next increment is Personal Home and My Day |
-| M2–M5 | Persistence, team workflow, advanced Docs and NAS rollout not started |
-
-M1.2 includes desktop sidebar, phone menu/bottom navigation, Home/Boards/Docs routes, search dialog, sample-account switching, reusable controls, and fictional sample content. Fixtures contain four members, two boards, three documents, and twelve tasks. Account selection is in memory and resets on refresh. Board content is read-only; Docs are placeholders. There is no real authentication, permission enforcement, database, durable app data, or document editor.
-
-## Verification and remaining risk
-
-Recorded on September 25: dependency installation, TypeScript check, production build, fixture ID/reference/date checks, and an initial HTTP `/home` response passed. The development server reported ready at `http://127.0.0.1:3100`. Its current running state has not been checked for this handoff.
-
-Browser access was refused because the tool could not verify an admin-enforced security policy. No screenshots or rendered interaction checks succeeded. This was the recorded blocker; whether it persists must be checked in the next session. Do not bypass that restriction.
-
-A dialog-switch race was fixed in source using overlay-specific close handling. The runtime regression check remains pending. Desktop/phone appearance, overflow, navigation/history/direct refresh, search, account switching, focus/Tab/Escape behavior, unknown routes, and the phone software keyboard remain unverified. A successful build does not establish those behaviors.
-
-## Next session checklist
-
-1. Read [AGENTS.md](AGENTS.md), [BRIEF.md](BRIEF.md), and [STATUS.md). Use [SESSION_CHECKLIST.md](SESSION_CHECKLIST.md) before each session.
-2. Follow [RUNNING.md](RUNNING.md) to install/start locally if needed. Dependencies and running processes do not transfer with this archive.
-3. Retry supported browser access and complete the pending M1.2 desktop, phone, navigation, search, account and keyboard checks. Fix any observed failures.
-4. Update status and checklist with actual results. Mark M1.2 complete only after its acceptance checks pass.
-5. Then continue M1.3 — Personal Home and My Day. Do not assume permission for NAS deployment or public exposure.
-
-## Files and handoff
-
-Original working folder:
-
-```text
-/Users/peterkontellis/.codex/.chatgpt-projects/g-p-6a0f76716e988191962260a53dc7ed97/workspace-app
-```
-
-Use [DESIGN_SPEC.md](DESIGN_SPEC.md) for design, [PLANNING.md](PLANNING.md) for requirements/architecture, [DECISIONS.md](DECISIONS.md) for decisions, and [MILESTONES.md](MILESTONES.md) for stage acceptance criteria. [HANDOFF.md](HANDOFF.md) explains continuation and ownership.
-
-The dated Markdown bundle contains all project Markdown documents. The full handoff ZIP also contains the current source, public assets, configuration and dependency lockfile. Dependencies, generated builds, environment files, and production data are excluded. Preserve a durable copy outside the ChatGPT project mirror and keep one authoritative working copy.
-
-### Paste into the next task
-
-> Continue this self-hosted workspace app using the attached full project ZIP or accessible workspace-app folder. Read HANDOFF_REPORT.md, AGENTS.md, BRIEF.md and STATUS.md first. M1.1 is complete; M1.2 is implemented but its browser checks are pending. Use RUNNING.md and SESSION_CHECKLIST.md to finish those checks, fix observed problems, and update the records before advancing to M1.3. Preserve the dark/subtle design, equal phone/desktop emphasis, four-user NAS constraints, and optional-feature boundaries. Report tool limitations accurately and do not bypass browser security restrictions. Do not deploy to the NAS yet. If you cannot edit the authoritative copy, return clearly identified updated files for me to carry back.
+Read this file, AGENTS.md and STATUS.md; then diagnose browser access within the user's project scope and no-spend constraints. Do not restart planning or repeat completed implementation. Consult RUNNING.md for preview commands and SESSION_CHECKLIST.md/MILESTONES.md for remaining acceptance.
