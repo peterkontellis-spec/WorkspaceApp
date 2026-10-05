@@ -25,3 +25,7 @@ Record later material changes with their rationale and authority. Preserve wheth
 ## 2026-10-05 — required checks before task completion
 
 The user requested a self-check loop that actually runs/tests the app, reviews it against design/UI skills, fixes failures, and reassesses the next action before closing. They selected **after each task/session only**, with no automatic daily review. AGENTS.md defines the standing loop; SESSION_CHECKLIST.md includes its closure gates. `pnpm check` and `pnpm check:smoke` provide repeatable build and HTTP checks. Browser checks and skill reviews remain explicit assistant actions, and blocked checks leave the affected feature incomplete. Preserve the current design and confirmed scope; this instruction does not authorize deployment or a redesign.
+
+## 2026-10-05 — prototype execution and checkpoint policy
+
+The user handed off M1.2–M1.5 and authorised commit/push checkpoints to WorkspaceApp, with work restricted to the existing project workspace and no credits/resets. Preserve the shell and existing design. A minimal task panel moves into M1.3 to support its task-opening requirement; M1.5 expands it. Shared in-memory state stays above routes so edits survive navigation but not refresh. Browser denial does not authorise bypasses or a completion claim; implementation continues under the latest handoff with acceptance explicitly pending. GitHub pushes are waiting for authentication; local commits remain available.

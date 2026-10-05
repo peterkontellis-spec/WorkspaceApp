@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react';
 import { X } from 'lucide-react';
+import Link from 'next/link';
 import { DEMO_DATE, boardFor, formatDue, members, type Member, type Status, type Task } from '@/lib/demo';
 
 export function Button({ variant = 'secondary', className = '', ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'ghost' }) {
@@ -32,11 +33,11 @@ export function AvatarStack({ ids }: { ids: readonly string[] }) {
   })}</div>;
 }
 
-export function TaskRow({ task }: { task: Task }) {
+export function TaskRow({ task, href }: { task: Task; href?: string }) {
   const overdue = task.dueDate && task.dueDate < DEMO_DATE && task.status !== 'Done';
   return <li className="task-row">
     <span className={`task-marker ${task.status === 'Done' ? 'task-marker--done' : ''}`} aria-hidden="true" />
-    <div className="task-row__name"><span>{task.title}</span><span className="task-row__project">{boardFor(task.boardId)?.name}</span></div>
+    <div className="task-row__name">{href ? <Link href={href} scroll={false} data-task-id={task.id} className="task-title-link">{task.title}</Link> : <span>{task.title}</span>}<span className="task-row__project">{boardFor(task.boardId)?.name}</span></div>
     <StatusLabel status={task.status} />
     <span className={`task-row__date ${overdue ? 'task-row__date--overdue' : ''}`}>{overdue ? 'Overdue · ' : ''}{formatDue(task.dueDate)}</span>
   </li>;

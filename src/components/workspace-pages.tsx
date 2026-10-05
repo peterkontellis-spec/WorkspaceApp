@@ -2,17 +2,22 @@
 
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ArrowUpRight, FileText, Layers3, LayoutGrid, LayoutTemplate, CalendarDays } from 'lucide-react';
-import { boards, documents, tasks, boardFor, DEMO_DATE } from '@/lib/demo';
+import { boards, documents, boardFor, DEMO_DATE } from '@/lib/demo';
 import { AvatarStack, Panel, TaskRow } from '@/components/ui';
 import { useDemo } from '@/components/workspace-shell';
+import { useWorkspace } from './demo-provider';
+import { useTaskNavigation } from './task-navigation';
+import { TaskPanel } from './task-panel';
+import { getPersonalBuckets } from '@/lib/demo-state';
 
 function ProjectCard({ board }: { board: (typeof boards)[number] }) {
+  const { tasks } = useWorkspace();
   const projectTasks = tasks.filter((task) => task.boardId === board.id);
   const completed = projectTasks.filter((task) => task.status === 'Done').length;
   return <Link href={`/boards/${board.id}`} className={`project-card project-card--${board.color}`}>
     <div className="project-card__top"><span className={`project-icon project-icon--${board.color}`}>{board.icon === 'layout' ? <LayoutTemplate size={23} aria-hidden="true" /> : <Layers3 size={23} aria-hidden="true" />}</span><ArrowUpRight size={20} aria-hidden="true" /></div>
     <h3>{board.name}</h3><p>{board.description}</p>
-    <div className="project-card__progress" aria-label={`${completed} of ${projectTasks.length} sample tasks completed`}><span style={{ width: `${completed / projectTasks.length * 100}%` }} /></div>
+    <div className="project-card__progress" aria-label={`${completed} of ${projectTasks.length} sample tasks completed`}><span style={{ width: `${projectTasks.length ? completed / projectTasks.length * 100 : 0}%` }} /></div>
     <div className="project-card__bottom"><span>{completed} of {projectTasks.length} completed</span><AvatarStack ids={board.memberIds} /></div>
   </Link>;
 }
@@ -27,22 +32,32 @@ function StageNote({ children }: { children: React.ReactNode }) {
 
 function HomePage() {
   const { member } = useDemo();
-  const today = tasks.filter((task) => task.assigneeIds.includes(member.id) && task.dueDate === DEMO_DATE && task.status !== 'Done');
+  const { tasks, documents: sessionDocuments, emptyDemo, setEmptyDemo } = useWorkspace();
+  const { taskHref } = useTaskNavigation();
+  const visibleTasks = emptyDemo ? [] : tasks;
+  const buckets = getPersonalBuckets(visibleTasks, member.id, DEMO_DATE);
+  const assigned = visibleTasks.filter((task) => task.assigneeIds.includes(member.id));
+  const sections = [
+    { title: 'Overdue', items: buckets.overdue, empty: 'Nothing overdue. You’re up to date.' },
+    { title: 'Today', items: buckets.today, empty: 'No tasks due today. Check upcoming work below.' },
+    { title: 'Upcoming', items: buckets.upcoming, empty: 'No upcoming deadlines.' },
+    { title: 'Without a date', items: buckets.undated, empty: 'All your open tasks have dates.' },
+  ];
   return <>
-    <PageHeading eyebrow="FRIDAY, 25 SEPTEMBER · DEMO" title={`Welcome back, ${member.name.split(' ')[0]}.`} description="Pick up a project. Make a little progress."><Link className="button button--secondary" href="/boards">Browse boards<ArrowUpRight size={18} aria-hidden="true" /></Link></PageHeading>
-    <div className="section-heading"><h2>Your projects</h2><span className="section-count">{boards.length} shared boards</span></div>
+    <PageHeading eyebrow="FRIDAY, 25 SEPTEMBER · DEMO" title={`Welcome back, ${member.name.split(' ')[0]}.`} description="Your work, one day at a time."><Link className="button button--secondary" href="/boards">Browse boards<ArrowUpRight size={18} aria-hidden="true" /></Link></PageHeading>
+    <div className="section-heading"><h2>My Day</h2><label className="demo-toggle"><input type="checkbox" checked={emptyDemo} onChange={(event) => setEmptyDemo(event.target.checked)} />Preview new collaborator</label></div>
+    <p className="session-note">Sample assignments · 25 September 2026. Edits last until refresh.</p>
+    {assigned.length === 0 ? <Panel className="inline-empty"><h3>No tasks assigned yet.</h3><p>{emptyDemo ? 'This previews a new collaborator’s Home without changing your demo tasks.' : 'Your shared boards are ready when you are.'}</p><Link href="/boards" className="text-link">Explore the shared boards<ArrowRight size={16} aria-hidden="true" /></Link></Panel> : <div className="my-day-sections">{sections.map(({title, items, empty}) => <Panel key={title}><div className="panel-heading"><h3>{title}</h3><span className="count-badge">{items.length}</span></div>{items.length ? <ul className="task-list">{items.map((task) => <TaskRow key={task.id} task={task} href={taskHref(task.id)} />)}</ul> : <p className="bucket-empty">{empty}</p>}</Panel>)}</div>}
+    <div className="section-heading docs-section-heading"><h2>Recent documents</h2><Link className="text-link" href="/docs">All docs<ArrowRight size={16} aria-hidden="true" /></Link></div>
+    <div className="document-shortcuts">{sessionDocuments.slice(0, 2).map((doc) => <Link href={`/docs/${doc.id}`} key={doc.id} className="document-shortcut"><span className="document-icon"><FileText size={21} aria-hidden="true" /></span><span><strong>{doc.title}</strong><span>{boardFor(doc.boardId)?.name}</span></span><ArrowUpRight size={18} aria-hidden="true" /></Link>)}</div>
+    <div className="section-heading docs-section-heading"><h2>Shared boards</h2><span className="section-count">{boards.length} projects</span></div>
     <div className="project-grid">{boards.map((board) => <ProjectCard key={board.id} board={board} />)}</div>
-    <Panel className="today-panel">
-      <div className="panel-heading"><div className="panel-title"><span className="quiet-icon"><CalendarDays size={19} aria-hidden="true" /></span><h2>A look at today</h2><span className="count-badge">{today.length}</span></div><span className="subtle-label">Sample tasks</span></div>
-      {today.length ? <ul className="task-list">{today.map((task) => <TaskRow key={task.id} task={task} />)}</ul> : <div className="inline-empty"><h3>A little breathing room.</h3><p>No sample tasks are due today for {member.name.split(' ')[0]}.</p><Link href="/boards" className="text-link">Explore the shared boards<ArrowRight size={16} aria-hidden="true" /></Link></div>}
-      <div className="panel-footnote">A read-only glimpse. My Day and task interactions are next.</div>
-    </Panel>
-    <div className="section-heading docs-section-heading"><h2>Shared thinking</h2><Link className="text-link" href="/docs">All docs<ArrowRight size={16} aria-hidden="true" /></Link></div>
-    <div className="document-shortcuts">{documents.slice(0,2).map((doc) => <Link href={`/docs/${doc.id}`} key={doc.id} className="document-shortcut"><span className="document-icon"><FileText size={21} aria-hidden="true" /></span><span><strong>{doc.title}</strong><span>{boardFor(doc.boardId)?.name}</span></span><ArrowUpRight size={18} aria-hidden="true" /></Link>)}</div>
   </>;
 }
 
 function BoardsPage({ id }: { id?: string }) {
+  const { tasks } = useWorkspace();
+  const { taskHref } = useTaskNavigation();
   if (!id) return <>
     <PageHeading eyebrow="TOGETHER, IN ONE PLACE" title="Boards" description="A clear home for each project." />
     <div className="section-heading"><h2>All projects</h2><span className="section-count">{boards.length} boards</span></div>
@@ -55,7 +70,7 @@ function BoardsPage({ id }: { id?: string }) {
     <Link className="back-link" href="/boards"><ArrowLeft size={18} aria-hidden="true" />All boards</Link>
     <PageHeading eyebrow="SHARED BOARD" title={board.name} description={board.description}><AvatarStack ids={board.memberIds} /></PageHeading>
     <div className="board-view-label"><span><LayoutGrid size={18} aria-hidden="true" />Task preview</span><span className="subtle-label">Read only</span></div>
-    <Panel><div className="panel-heading"><h2>Sample tasks</h2><span className="count-badge">{boardTasks.length}</span></div><ul className="task-list">{boardTasks.map((task) => <TaskRow key={task.id} task={task} />)}</ul></Panel>
+    <Panel><div className="panel-heading"><h2>Sample tasks</h2><span className="count-badge">{boardTasks.length}</span></div><ul className="task-list">{boardTasks.map((task) => <TaskRow key={task.id} task={task} href={taskHref(task.id)} />)}</ul></Panel>
     <StageNote>The grouped table, custom columns, and task editing will be built in the board increment.</StageNote>
   </>;
 }
@@ -75,7 +90,9 @@ function DocsPage({ id }: { id?: string }) {
 }
 
 export function WorkspacePage({ section, id }: { section: 'home' | 'boards' | 'docs'; id?: string }) {
-  if (section === 'boards') return <BoardsPage id={id} />;
-  if (section === 'docs') return <DocsPage id={id} />;
-  return <HomePage />;
+  const { taskId } = useTaskNavigation();
+  return <div className={taskId && section !== 'docs' ? 'page-with-task' : undefined}>
+    {section === 'boards' ? <BoardsPage id={id} /> : section === 'docs' ? <DocsPage id={id} /> : <HomePage />}
+    {section !== 'docs' && <TaskPanel key={taskId} />}
+  </div>;
 }

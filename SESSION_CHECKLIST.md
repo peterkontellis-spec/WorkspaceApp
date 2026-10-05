@@ -90,6 +90,8 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Done when:** you can see what needs attention and open it without searching through boards. Data is clearly illustrative.
 
+**Implementation 2026-10-05:** M1.3 code and minimal task panel delivered; model/build/HTTP checks pass. Browser acceptance remains pending; see STATUS.md.
+
 ### M1.4 — Grouped task board
 
 **Deliverable:** a usable sample board with editable task rows.

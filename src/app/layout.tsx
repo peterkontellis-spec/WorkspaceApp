@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { WorkspaceShell } from '@/components/workspace-shell';
 import './globals.css';
+import { WorkspaceProvider } from '@/components/demo-provider';
+import { NavigationMemoryProvider } from '@/components/task-navigation';
 
 export const metadata: Metadata = {
   title: 'Workspace — your shared workspace',
@@ -12,5 +14,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: '#111419', colorScheme: 'dark' };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body><WorkspaceShell>{children}</WorkspaceShell></body></html>;
+  return <html lang="en"><body><WorkspaceProvider><NavigationMemoryProvider><WorkspaceShell>{children}</WorkspaceShell></NavigationMemoryProvider></WorkspaceProvider></body></html>;
 }

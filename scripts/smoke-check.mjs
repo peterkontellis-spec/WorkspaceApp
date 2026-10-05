@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 const origin = 'http://127.0.0.1:3100';
 const pages = [
   ['/home', 'Welcome back, Alex.'],
+  ['/home?task=t1', 'Welcome back, Alex.'],
   ['/boards', 'Boards'],
   ['/boards/website-refresh', 'Website refresh'],
   ['/boards/team-operations', 'Team operations'],
