@@ -10,6 +10,20 @@ No database, real accounts, permissions, upload/download, durable saving or NAS 
 
 M1.6 performed part of the direct browser review, then policy verification blocked access again. Native calendar popup crashes were reproduced twice; the implementation now uses an in-page calendar. Its final browser confirmation and the remaining acceptance checks are pending. Build/model/HTTP tests are not substitutes. See STATUS.md for current results and Git checkpoints.
 
+## October 6 verification update
+
+Calendar selection/Save/Cancel, keyboard month/year movement, task Clear/Escape, mobile preview/nested links/empty state, Assistant placeholder, account switching, filter/collapse history and in-page reset Cancel/Escape/confirm have direct browser evidence. See STATUS.md for exact widths and gaps; broad checklist boxes remain open where only part passed.
+
+The current local preview uses the production standalone build. After `pnpm build`, prepare and start it from this project folder:
+
+```sh
+cp -R public .next/standalone/
+cp -R .next/static .next/standalone/.next/
+HOSTNAME=127.0.0.1 PORT=3100 node .next/standalone/server.js
+```
+
+Stop this project's existing preview before starting another server on port 3100. This is a local preview, not NAS deployment. Development mode exposed a Next.js profiler timing error on a not-found route; the same route and recovery worked in production. The intermittent browser-policy block later returned and remains outside application code.
+
 ## Open the current preview
 
 While the local development server is running, open:

@@ -126,6 +126,8 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Progress 2026-10-05:** direct desktop/narrow browser checks completed part of the acceptance matrix. Calendar crash reproduced twice and replacement implemented; mobile preview access refined, nested Markdown links fixed, Assistant · Later added. Final browser confirmation is blocked again by policy verification. STATUS.md contains the failure register and remaining checks; this increment and Stage 1 stay open.
 
+**Update 2026-10-06:** calendar, mobile preview, nested links and Assistant checks now have browser evidence. Reset confirmation was moved in-page and Cancel/Escape/reset verified. Build, 20 tests and 16 HTTP checks pass. Policy failure returned before all remaining checks; broad review boxes remain open. See STATUS.md.
+
 **Done when:** the next session can start backend work from a coherent, reviewable screen structure.
 
 - [ ] **Stage 1 complete:** all M1 acceptance checks in MILESTONES.md have evidence.

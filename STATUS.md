@@ -1,6 +1,6 @@
 # Current status
 
-Updated: 2026-10-05 — M1.6 review in progress; browser crash diagnosed and refinements implemented; final browser verification blocked.
+Updated: 2026-10-06 — key browser checks passed; reset confirmation moved in-page; intermittent policy block returned.
 
 ## Delivery state
 
@@ -88,6 +88,23 @@ Using the supported Codex in-app browser, desktop viewport override 1440 × 900 
 - Usage check: **82% of the weekly allowance remained**, ordinary usage allowed; no purchases, credits or resets used.
 - Saved as an M1.6 progress checkpoint; acceptance remains open. See Git history for the commit.
 
+## Browser retry and reset confirmation — 2026-10-06
+
+Supported browser access recovered temporarily. The preview server had stopped and was restarted. Actual browser checks confirmed:
+
+- 360px Docs: switching from a scrolled editor to Preview displayed the text at the editor start; no horizontal overflow (360px viewport and scroll width). Bold/italic links rendered as real HTTPS links; raw HTML and unsafe URLs remained text. At 390px, Select All/Backspace produced the empty preview.
+- Assistant · Later was visible and unavailable in desktop navigation and the 390px mobile menu.
+- 390px board calendar: mouse selection and Save changed 25 to 26 September. Keyboard Page Down changed the month; choosing another date then Cancel preserved 26 September. Desktop task calendar crossed into January 2027, selected by Enter, closed with Escape while retaining task details, and cleared the date successfully. No calendar crash occurred.
+- Checklist completion and subtask status changed successfully. Sample account changed to Sam, persisted through navigation, and Home reflected the cleared date in Without a date. Browser Back/Forward restored filters and the collapsed Next group.
+- Reset demo's native confirmation caused browser-tool timeouts twice. The user confirmed seeing the popup outside the preview while browsing settings; this was not proof of an app reset failure. Replaced it with the existing in-page Dialog pattern to keep confirmation visible and testable. Desktop (1024px) and phone (360px) screenshots inspected. Cancel and Escape preserved edited text/account; explicit Reset sample data restored the original document and Alex account, with focus returning to the account trigger.
+- Unknown board/document pages rendered the recovery link in the production build; Back to Home worked. Development mode exposed a framework profiler error: `flushComponentPerformance` called `performance.measure` with a negative end timestamp on an errored route. Production did not reproduce it. No dependency patch or upgrade was made; development-mode issue remains recorded.
+
+Validation: `pnpm check` passed TypeScript, 20 tests and production build; `pnpm check:smoke` passed 16/16 against development and was rerun against the final standalone preview. Impeccable detector returned `[]` for the changed shell/CSS. Scoped Impeccable, Web Interface Guidelines and React review covered existing dialog semantics, keyboard focus, wrapping actions, labels and responsive layout. No full accessibility/performance score claimed.
+
+Preview now uses the built standalone server on the same loopback address, with public/static assets copied into generated output. An initial `pnpm start` emitted a standalone-launcher warning; it was replaced with the supported standalone command. On the final browser reload, policy verification failed again. No bypass was attempted; viewport override was reset. The final standalone launch has HTTP evidence only; production browser evidence above came from the same build under `next start` immediately before the launcher switch.
+
+Remaining: refresh/close warning interaction, physical phone/software keyboard, full viewport coverage of every screen, and exact task→Doc→task scroll/collapsed/filter preservation matrix. Development profiler issue remains open; M1.6/Stage 1 are not closed. Usage: 77% of weekly allowance remained; no credits/resets/purchases used.
+
 ## Next action
 
-Restore supported browser access, then confirm the new calendar (mouse + keyboard, Save/Cancel/clear), mobile Write/Preview from a scrolled editor, nested link rendering, and Assistant · Later on desktop/mobile. Finish the remaining RUNNING.md checks: account changes, Back/Forward and collapsed/filter/scroll retention, subtask completion, reset confirmation/cancellation, refresh warning, 404 recovery, 390px and medium-width coverage. M1.6 and Stage 1 stay open until that evidence exists; M2 has not started.
+When supported browser access recovers, finish the remaining checks listed in the October 6 review, beginning with refresh/close warning behavior and the full task/Docs return-context matrix. Do not repeat the already-confirmed calendar and preview checks without a relevant change. M1.6 and Stage 1 remain open; M2 has not started.

@@ -41,12 +41,12 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
   const { resetDemo } = useWorkspace();
   const pathname = usePathname();
   const [member, setMember] = useState(members[0]);
-  const [overlay, setOverlay] = useState<'navigation' | 'search' | 'account' | null>(null);
+  const [overlay, setOverlay] = useState<'navigation' | 'search' | 'account' | 'reset' | null>(null);
   const [query, setQuery] = useState('');
   const section = pathname.split('/')[1];
   const currentLabel = navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ?? 'Workspace';
   const close = () => setOverlay(null);
-  const closeOverlay = (name: 'navigation' | 'search' | 'account') => {
+  const closeOverlay = (name: 'navigation' | 'search' | 'account' | 'reset') => {
     setOverlay((current) => current === name ? null : current);
   };
 
@@ -127,7 +127,11 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
     <Dialog open={overlay === 'account'} onClose={() => closeOverlay('account')} title="Sample accounts">
       <p className="dialog-intro">Explore the shell as someone else on the sample team.</p>
       <div className="account-options">{members.map((person) => <button key={person.id} type="button" className={`account-option ${person.id === member.id ? 'account-option--selected' : ''}`} aria-pressed={person.id === member.id} onClick={() => { setMember(person); close(); }}><Avatar member={person} /><span><strong>{person.name}</strong><span>{person.role} · sample account</span></span>{person.id === member.id ? <Check size={19} aria-hidden="true" /> : <ChevronsUpDown size={17} aria-hidden="true" />}</button>)}</div>
-      <p className="dialog-note">No sign-in or permissions yet. Accounts and edits reset on refresh.</p><Button onClick={() => { if (window.confirm("Reset all sample tasks, documents and unfinished input? This clears this session’s edits.")) { resetDemo(); setMember(members[0]); close(); } }}>Reset demo</Button>
+      <p className="dialog-note">No sign-in or permissions yet. Accounts and edits reset on refresh.</p><Button onClick={() => setOverlay('reset')}>Reset demo</Button>
+    </Dialog>
+    <Dialog open={overlay === 'reset'} onClose={() => closeOverlay('reset')} title="Reset demo?">
+      <p className="dialog-intro">Reset all sample tasks, documents and unfinished input? This clears this session’s edits and restores the original sample data.</p>
+      <div className="reset-actions"><Button onClick={() => setOverlay('account')}>Cancel</Button><Button variant="primary" onClick={() => { resetDemo(); setMember(members[0]); close(); }}>Reset sample data</Button></div>
     </Dialog>
   </DemoContext.Provider>;
 }

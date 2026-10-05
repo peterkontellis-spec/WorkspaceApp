@@ -172,6 +172,7 @@ kbd { font: inherit; font-size: .6875rem; border: 1px solid #333b47; border-radi
 .dialog__heading .icon-button { margin-right: -10px; }
 .dialog-note { color: var(--muted); font-size: .8125rem; line-height: 1.7; border-top: 1px solid var(--line); margin-top: 20px; padding-top: 17px; }
 .dialog-intro { color: var(--muted); font-size: .9375rem; margin-bottom: 20px; }
+.reset-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .field { display: block; min-width: 0; flex: 1; }
 .field input { width: 100%; min-height: 48px; padding: 10px 8px; border: 0; border-radius: 4px; background: transparent; color: var(--text); font-size: 1rem; }
 .field input::placeholder { color: #a0aab7; }

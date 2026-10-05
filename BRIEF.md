@@ -27,7 +27,7 @@ The full requirements and architecture proposals are in [PLANNING.md](PLANNING.m
 
 ## Current delivery target
 
-M1.2–M1.5 are implemented as a connected sample-data prototype. M1.6 is authorised and underway: direct browser checks exercised the main journey and identified a native calendar crash and a nested Markdown preview bug. Refinements replace the native popup, improve mobile preview access and add the requested Assistant · Later placeholder. TypeScript, 20 tests and build pass; final browser confirmation is blocked by policy verification. See STATUS.md for actual evidence, failures and next checks. Keep M1.6/Stage 1 open; M2 has not started.
+M1.2–M1.5 are implemented as a connected sample-data prototype. M1.6 is authorised and underway: direct browser checks exercised the main journey and identified a native calendar crash and a nested Markdown preview bug. Refinements replace the native popup, improve mobile preview access and add the requested Assistant · Later placeholder. TypeScript, 20 tests and build pass. October 6 browser checks confirmed the calendar, mobile preview, nested links and Assistant placeholder; Reset demo now uses a verified in-page confirmation. Policy verification blocked later checks again. See STATUS.md for actual evidence, failures and next checks. Keep M1.6/Stage 1 open; M2 has not started.
 
 ## Scope boundaries and open decisions
 
