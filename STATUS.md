@@ -1,6 +1,6 @@
 # Current status
 
-Updated: 2026-10-06 — key browser checks passed; reset confirmation moved in-page; preview recovered; intermittent policy cause unresolved.
+Updated: 2026-10-06 — key browser checks passed; reset confirmation moved in-page; explicit local-site approval verified; browser access restored.
 
 ## Delivery state
 
@@ -111,6 +111,10 @@ The supported browser could inspect the app, but navigation produced connection 
 
 Saved the conversation/usage constraints in HANDOFF_REPORT.md. Documentation-only update: reviewed content and local links, and ran `git diff --check`; no application code changed or redundant build was run. Next: verify refresh/close warning and task/Docs return-context preservation while browser access works, warning the user before tests that may show browser prompts.
 
+### Explicit site approval verified — 2026-10-06
+
+A subsequent read of the existing diagnostic tab was rejected by automatic approval review: it interpreted site access as potentially changing origin permissions without explicit authorization. This was a distinct rejection from the earlier inability to verify admin policy. After the risk explanation, the user explicitly approved browser access to `http://127.0.0.1:3100`. Retrying the same tab through the same supported tool succeeded. Home → Launch brief → Preview and a clean page refresh all passed; captured browser warnings/errors were empty. The user's separate preview tab was not manipulated. No browser protections were disabled, no configuration files were changed, and no alternate control path was used. Current access denial is resolved; the earlier intermittent verification error was not reproduced and is not proven permanently fixed. No further user settings change is needed now. The clean refresh did not test the unsaved-changes warning.
+
 ## Next action
 
-When supported browser access recovers, finish the remaining checks listed in the October 6 review, beginning with refresh/close warning behavior and the full task/Docs return-context matrix. Do not repeat the already-confirmed calendar and preview checks without a relevant change. M1.6 and Stage 1 remain open; M2 has not started.
+With supported browser access restored, finish the remaining checks listed in the October 6 review, beginning with refresh/close warning behavior and the full task/Docs return-context matrix. Do not repeat the already-confirmed calendar and preview checks without a relevant change. M1.6 and Stage 1 remain open; M2 has not started.
