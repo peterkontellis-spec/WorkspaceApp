@@ -14,5 +14,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: '#111419', colorScheme: 'dark' };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body><WorkspaceProvider><NavigationMemoryProvider><WorkspaceShell>{children}</WorkspaceShell></NavigationMemoryProvider></WorkspaceProvider></body></html>;
+  return <html lang="en" data-scroll-behavior="smooth"><body><WorkspaceProvider><NavigationMemoryProvider><WorkspaceShell>{children}</WorkspaceShell></NavigationMemoryProvider></WorkspaceProvider></body></html>;
 }

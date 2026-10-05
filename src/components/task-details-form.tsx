@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from './ui';
+import { DatePicker } from './date-picker';
 import { useWorkspace } from './demo-provider';
 import { members } from '@/lib/demo';
 import { taskGroups, taskPriorities, taskStatuses, type DemoTask } from '@/lib/demo-state';
@@ -17,7 +18,7 @@ export function TaskDetailsForm({ task, draft, setDraft }: { task: DemoTask; dra
     <div className="task-field-grid">
       <label>Status<select value={task.status} onChange={(event) => patch({ status: event.target.value as DemoTask['status'] })}>{taskStatuses.map((status) => <option key={status}>{status}</option>)}</select></label>
       <label>Priority<select value={task.priority} onChange={(event) => patch({ priority: event.target.value as DemoTask['priority'] })}>{taskPriorities.map((priority) => <option key={priority}>{priority}</option>)}</select></label>
-      <label>Due date<input type="date" value={task.dueDate ?? ''} onChange={(event) => patch({ dueDate: event.target.value || null })} /></label>
+      <DatePicker label="Due date" value={task.dueDate ?? ''} onChange={(value) => patch({ dueDate: value || null })} />
       <label>Group<select value={task.group} onChange={(event) => patch({ group: event.target.value as DemoTask['group'] })}>{taskGroups.map((group) => <option key={group}>{group}</option>)}</select></label>
     </div>
     <fieldset className="task-assignees"><legend>Assignees</legend>{members.map((member) => <label key={member.id}><input type="checkbox" checked={task.assigneeIds.includes(member.id)} onChange={(event) => patch({ assigneeIds: event.target.checked ? [...task.assigneeIds, member.id] : task.assigneeIds.filter((id) => id !== member.id) })} />{member.name}</label>)}</fieldset>

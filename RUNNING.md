@@ -8,7 +8,7 @@ Docs use a small Markdown subset with formatting controls and a safe preview. Th
 
 No database, real accounts, permissions, upload/download, durable saving or NAS deployment exists. Sample roles are illustrative. The demo date remains 25 September 2026.
 
-Browser visual/interaction acceptance remains pending because the supported browser tool cannot verify its admin-enforced security policy. Build/model/HTTP tests are not substitutes. See STATUS.md for current results and Git checkpoints.
+M1.6 performed part of the direct browser review, then policy verification blocked access again. Native calendar popup crashes were reproduced twice; the implementation now uses an in-page calendar. Its final browser confirmation and the remaining acceptance checks are pending. Build/model/HTTP tests are not substitutes. See STATUS.md for current results and Git checkpoints.
 
 ## Open the current preview
 
@@ -49,7 +49,7 @@ pnpm typecheck
 pnpm build
 ```
 
-Both commands passed during M1.2. A native framework standalone build is configured to prepare for eventual self-hosting. NAS packaging, static-asset copying, service configuration, backups, and deployment are still M5 work; `.next/standalone` by itself is not a complete deployed product.
+Both commands passed during M1.6 refinement checks. A native framework standalone build is configured to prepare for eventual self-hosting. NAS packaging, static-asset copying, service configuration, backups, and deployment are still M5 work; `.next/standalone` by itself is not a complete deployed product.
 
 ### Repeatable self-check commands
 
@@ -87,7 +87,14 @@ Run these once browser inspection is available, recording actual results in STAT
 - [ ] Test formatting by mouse and keyboard, focus/selection restoration, refresh/close warning and Reset demo confirmation/cancellation.
 - [ ] Inspect task panel, board controls and editor at 360/390 px, medium and wide desktop. Desktop must keep board context visible; phone controls/keyboard must not hide active input.
 
-No phone hardware or phone software-keyboard behavior has been tested. All these boxes remain pending until supported browser/device testing succeeds.
+No phone hardware or phone software-keyboard behavior has been tested. STATUS.md records partial direct browser evidence; combined checklist boxes remain open until every part passes.
+
+### M1.6 confirmation priorities
+
+- [ ] Open the in-page calendar in a board date edit and task panel. Select a date by mouse and arrow keys; check month/year boundaries, Clear date, Escape, focus return and board Save/Cancel. No native calendar popup should appear.
+- [ ] At 360/390px, scroll down while writing, switch to Preview, confirm text is visible and controls stay reachable, then return to Write. Test with a real phone keyboard separately.
+- [ ] Insert a link into bold/italic text and confirm it is clickable in Preview; confirm unsafe links/raw HTML stay inert.
+- [ ] Check Assistant · Later in desktop navigation and the mobile menu; it must remain visibly unavailable.
 
 ## Source guide
 

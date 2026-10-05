@@ -10,6 +10,7 @@ import { useWorkspace } from './demo-provider';
 import { useTaskNavigation } from './task-navigation';
 import { AvatarStack, Button } from './ui';
 import './board-view.css';
+import { DatePicker } from './date-picker';
 
 function InlineEdit({ draftKey, value, label, type = 'text', onSave }: { draftKey: string; value: string; label: string; type?: 'text' | 'date'; onSave: (value: string) => string | null }) {
   const { drafts, setDraft: saveDraft } = useWorkspace();
@@ -19,12 +20,14 @@ function InlineEdit({ draftKey, value, label, type = 'text', onSave }: { draftKe
   const [error, setError] = useState<string | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const input = useRef<HTMLInputElement>(null);
+  const dateTrigger = useRef<HTMLButtonElement>(null);
+  const focusEditor = () => (type === 'date' ? dateTrigger.current : input.current)?.focus();
   const errorId = useId();
   function close() { saveDraft(draftKey, null); setError(null); requestAnimationFrame(() => trigger.current?.focus()); }
   return <div className="board-inline-edit">
-    <button ref={trigger} type="button" className="button button--ghost board-edit-trigger" aria-label={label} aria-expanded={editing} disabled={editing} onClick={() => { setDraft(value); setError(null); requestAnimationFrame(() => input.current?.focus()); }}><Pencil size={15} aria-hidden="true" />{type === 'date' ? formatDue(value || null) : 'Rename'}</button>
-    {editing ? <form className="board-edit-form" onSubmit={(event) => { event.preventDefault(); const issue = onSave(draft); setError(issue); if (!issue) close(); else input.current?.focus(); }} onKeyDown={(event) => { if (event.key === 'Escape') { event.stopPropagation(); event.preventDefault(); close(); } }}>
-      <label>{label}<input ref={input} type={type} name={type === 'date' ? 'dueDate' : 'title'} value={draft} onChange={(event) => setDraft(event.target.value)} autoComplete="off" aria-invalid={!!error} aria-describedby={error ? errorId : undefined} /></label>
+    <button ref={trigger} type="button" className="button button--ghost board-edit-trigger" aria-label={label} aria-expanded={editing} disabled={editing} onClick={() => { setDraft(value); setError(null); requestAnimationFrame(focusEditor); }}><Pencil size={15} aria-hidden="true" />{type === 'date' ? formatDue(value || null) : 'Rename'}</button>
+    {editing ? <form className="board-edit-form" onSubmit={(event) => { event.preventDefault(); const issue = onSave(draft); setError(issue); if (!issue) close(); else focusEditor(); }} onKeyDown={(event) => { if (event.key === 'Escape') { event.stopPropagation(); event.preventDefault(); close(); } }}>
+      {type === 'date' ? <DatePicker label={label} value={draft} onChange={setDraft} triggerRef={dateTrigger} /> : <label>{label}<input ref={input} type="text" name="title" value={draft} onChange={(event) => setDraft(event.target.value)} autoComplete="off" aria-invalid={!!error} aria-describedby={error ? errorId : undefined} /></label>}
       {error ? <p role="alert" id={errorId} className="board-error">{error}</p> : null}
       <div className="board-form-actions"><Button type="submit" variant="primary">Save</Button><Button onClick={close}>Cancel</Button></div>
     </form> : null}

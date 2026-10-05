@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { ArrowUpRight, ChartNoAxesCombined, Check, ChevronDown, ChevronsUpDown, Clock3, FileText, Folder, House, LayoutGrid, Menu, Search, Settings2, X } from 'lucide-react';
+import { ArrowUpRight, ChartNoAxesCombined, Check, ChevronDown, ChevronsUpDown, Clock3, Bot, FileText, Folder, House, LayoutGrid, Menu, Search, Settings2, X } from 'lucide-react';
 import { boards, documents, members, type Member } from '@/lib/demo';
 import { Avatar, AvatarStack, Button, Dialog, Field } from '@/components/ui';
 import { useWorkspace } from './demo-provider';
@@ -18,6 +18,7 @@ const navigation = [
   { label: 'Docs', href: '/docs', icon: FileText },
   { label: 'Files', icon: Folder, later: 'Attachment storage comes later.' },
   { label: 'Time', icon: Clock3, later: 'Time tracking comes later.' },
+  { label: 'Assistant', icon: Bot, later: 'Local chat and file help, with optional Astra handoff, are planned.' },
 ] as const;
 
 function Navigation({ close, mobile = false }: { close?: () => void; mobile?: boolean }) {
@@ -26,6 +27,7 @@ function Navigation({ close, mobile = false }: { close?: () => void; mobile?: bo
     {navigation.map((item) => {
       const Icon = item.icon;
       if ('href' in item) return <Link key={item.label} href={item.href} onClick={close} className={`nav-item ${pathname.startsWith(item.href) ? 'nav-item--active' : ''}`} aria-current={pathname.startsWith(item.href) ? 'page' : undefined}><Icon size={20} aria-hidden="true" /><span>{item.label}</span></Link>;
+      if (item.label === 'Assistant') return <button key={item.label} type="button" className="nav-item nav-item--later nav-assistant" aria-disabled="true" aria-label="Assistant — Later" title={item.later}><Icon size={20} aria-hidden="true" /><span>Assistant</span><span className="later-label">Later</span></button>;
       return <div key={item.label} className="nav-item nav-item--later" aria-label={`${item.label}. ${item.later}`}><Icon size={20} aria-hidden="true" /><span>{item.label}</span><span className="later-label">Later</span></div>;
     })}
   </nav>;

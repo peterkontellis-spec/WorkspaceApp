@@ -37,3 +37,10 @@ Prototype Docs use a small Markdown text/preview editor with formatting controls
 ## 2026-10-05 — GitHub authentication and upload complete
 
 The user completed GitHub CLI browser sign-in. The assistant configured an HTTPS credential helper in this repository only and pushed `main` plus baseline/M1.2/M1.3/M1.4/M1.5 tags atomically to the supplied WorkspaceApp remote. Future authorised checkpoints can be pushed from this project. The CLI binary and authentication configuration live under untracked `.git` metadata, with the credential reported in the OS keyring. Earlier authentication-block notes are historical; STATUS.md is current. No source changes, credits, resets or deployment were involved in this upload step.
+
+## 2026-10-05 — M1.6 review refinements
+
+- User authorised assistant-run browser testing and fixes, plus an Assistant · Later navigation placeholder. Local AI with optional Astra handoff remains proposed future work; no service, spend or deployment is authorised by this placeholder.
+- Replaced native date inputs with an in-page calendar after two embedded-browser crashes on opening the native popup. App HTTP responses remained healthy and keyboard date edits worked; browser internals were not diagnosed. Preserve ISO date-only values and existing board Save/Cancel vs task immediate-update semantics.
+- Keep Docs mode controls reachable while scrolling and bring the editor start into view on mode changes. A 360px pre-fix inspection showed Preview content, so the user's complete mobile visibility concern remains to be confirmed after the refinement.
+- Never close M1.6 solely on automated results: final browser access was denied by admin-policy verification after partial direct testing. STATUS.md records each failure and remaining check.

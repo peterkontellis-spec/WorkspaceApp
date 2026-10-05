@@ -51,6 +51,11 @@ for (const [path, heading] of pages) {
     assert.equal(h1, heading, 'Expected page heading in server-rendered HTML');
     assert.ok(html.includes('Prototype · sample data'), 'Missing prototype disclosure');
     assert.ok(html.includes('id="main-content"'), 'Missing main landmark target');
+    assert.ok(html.includes('Assistant — Later'), 'Missing planned assistant navigation');
+    if (path.includes('task=t1')) {
+      assert.ok(html.includes('date-picker-trigger'), 'Missing in-page date control');
+      assert.doesNotMatch(html, /<input[^>]*type="date"/, 'Native date popup must not be used');
+    }
     if (path.startsWith('/boards/website-refresh')) {
       const rows = html.match(/<li class="board-task(?: |")/g) ?? [];
       assert.equal(rows.length, path.includes('q=launch') ? 1 : 6, 'Board filters must affect rendered task rows');

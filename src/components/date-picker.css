@@ -1,0 +1,22 @@
+.date-picker { min-width: 0; display: grid; gap: 7px; }
+.date-picker-label { color: var(--muted); font-size: .875rem; }
+.date-picker-trigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 48px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--text); background: var(--background); text-align: left; }
+.date-picker-trigger span { overflow-wrap: anywhere; }
+.date-picker-trigger svg { flex-shrink: 0; }
+.date-picker-trigger:hover, .date-calendar button:hover { background: var(--hover); }
+.date-calendar { padding-block: 12px; border-block: 1px solid var(--line); min-width: 0; }
+.date-calendar-heading { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.date-calendar-heading > span { text-align: center; font-weight: 600; }
+.date-calendar button { min-height: 44px; border: 0; border-radius: 6px; color: var(--text); background: transparent; }
+.date-calendar-heading button { min-width: 44px; display: grid; place-items: center; }
+.date-calendar table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-block: 8px; font-variant-numeric: tabular-nums; }
+.date-calendar th { font-size: .75rem; color: var(--muted); font-weight: 400; padding-block: 8px; }
+.date-calendar td { padding: 0; text-align: center; }
+.date-calendar td button { width: 100%; padding: 0; }
+.date-calendar button[aria-pressed="true"] { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+.date-calendar-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+.date-calendar-actions button { padding-inline: 8px; }
+.task-field-grid > .date-picker:has(.date-calendar) { grid-column: 1 / -1; }
+.board-task:has(.date-calendar) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.board-task:has(.date-calendar) .board-task-title, .board-task:has(.date-calendar) .board-date { grid-column: 1 / -1; }
+.board-date .date-picker { max-width: 400px; }

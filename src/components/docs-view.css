@@ -1,5 +1,5 @@
-.docs-editor { max-width: 960px; }
-.docs-editor__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.docs-editor { max-width: 960px; overflow: visible; }
+.docs-editor__top { position: sticky; top: 0; z-index: 2; background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; scroll-margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
 .docs-mode { display: flex; gap: 8px; }
 .docs-mode .button[aria-pressed="true"] { background: var(--accent-bg); border-color: #54717a; color: var(--accent); }
 .docs-editor__status { color: var(--muted); font-size: .8125rem; }
@@ -39,3 +39,6 @@
   .docs-preview { padding: 24px 18px; }
   .docs-link-form { grid-template-columns: 1fr; padding: 18px 16px; }
 }
+
+.docs-mode-start { scroll-margin-top: 8px; }
+.docs-toolbar button, .docs-link-form input, .docs-writing textarea { scroll-margin-top: 150px; }

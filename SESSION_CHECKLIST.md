@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1 is complete; M1.2–M1.5 are implemented with browser acceptance pending.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1 is complete; M1.2–M1.5 are implemented; M1.6 review/refinements are in progress with final browser confirmation pending.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -122,7 +122,9 @@ You do not need to finish one increment per session. Some will take several sess
 
 - [ ] Inspect desktop and narrow layouts; check keyboard operation, focus, readable labels, and panel behavior.
 - [ ] Walk through the main journey, capture user feedback, and fix issues chosen for this stage.
-- [ ] Record the preview location, checks, design decisions, and remaining prototype limitations.
+- [x] Record the preview location, checks, design decisions, and remaining prototype limitations.
+
+**Progress 2026-10-05:** direct desktop/narrow browser checks completed part of the acceptance matrix. Calendar crash reproduced twice and replacement implemented; mobile preview access refined, nested Markdown links fixed, Assistant · Later added. Final browser confirmation is blocked again by policy verification. STATUS.md contains the failure register and remaining checks; this increment and Stage 1 stay open.
 
 **Done when:** the next session can start backend work from a coherent, reviewable screen structure.
 

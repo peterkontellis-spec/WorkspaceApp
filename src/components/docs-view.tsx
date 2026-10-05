@@ -5,25 +5,12 @@ import { useSearchParams } from 'next/navigation';
 import { useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowUpRight, Bold, FileText, Heading2, Italic, Link2, List } from 'lucide-react';
 import { boardFor } from '@/lib/demo';
-import { formatSelection, insertLink, parseInline, parseMarkdown, safeLinkUrl, type TextEdit } from '@/lib/markdown';
+import { formatSelection, insertLink, safeLinkUrl, type TextEdit } from '@/lib/markdown';
 import { useWorkspace } from './demo-provider';
 import { safeReturnPath } from './task-navigation';
 import { Button, Panel } from './ui';
 import './docs-view.css';
-
-function InlineText({ text }: { text: string }) {
-  return parseInline(text).map((token, index) => token.kind === 'bold' ? <strong key={index}>{token.text}</strong> : token.kind === 'italic' ? <em key={index}>{token.text}</em> : token.kind === 'link' ? <a key={index} href={token.href} target="_blank" rel="noopener noreferrer">{token.text}<span className="sr-only"> (opens in a new tab)</span></a> : token.text);
-}
-
-function MarkdownPreview({ body }: { body: string }) {
-  if (!body.trim()) return <div className="docs-empty"><h2>Your document is empty.</h2><p>Choose Write to start a note, brief, or outline.</p></div>;
-  return <div className="docs-prose">{parseMarkdown(body).map((block, index) => {
-    if (block.kind === 'list') return <ul key={index}>{block.items.map((item, itemIndex) => <li key={itemIndex}><InlineText text={item} /></li>)}</ul>;
-    if (block.kind === 'paragraph') return <p key={index}><InlineText text={block.text} /></p>;
-    const Heading = `h${Math.min(6, block.level + 1)}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-    return <Heading key={index}><InlineText text={block.text} /></Heading>;
-  })}</div>;
-}
+import { MarkdownPreview } from './markdown-preview';
 
 function DocumentEditor({ id }: { id: string }) {
   const { documents, updateDocument } = useWorkspace();
@@ -37,6 +24,7 @@ function DocumentEditor({ id }: { id: string }) {
   const [linkError, setLinkError] = useState('');
   const [pendingSelection, setPendingSelection] = useState<{ start: number; end: number } | null>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
+  const modeStartRef = useRef<HTMLDivElement>(null);
   const urlRef = useRef<HTMLInputElement>(null);
   const labelRef = useRef<HTMLInputElement>(null);
   const selectionRef = useRef({ start: 0, end: 0 });
@@ -54,6 +42,12 @@ function DocumentEditor({ id }: { id: string }) {
   function applyEdit(edit: TextEdit) {
     updateDocument(id, { body: edit.text });
     setPendingSelection({ start: edit.start, end: edit.end });
+  }
+  function changeMode(next: 'write' | 'preview') {
+    setMode(next);
+    setLinkOpen(false);
+    // Keep the selected view visible after the tall editor leaves the layout.
+    requestAnimationFrame(() => modeStartRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' }));
   }
   function format(kind: 'heading' | 'bold' | 'italic' | 'list') {
     if (doc) applyEdit(formatSelection(doc.body, selectionRef.current.start, selectionRef.current.end, kind));
@@ -85,7 +79,8 @@ function DocumentEditor({ id }: { id: string }) {
     <div className="page-heading"><div><h1>{doc.title}</h1><p className="page-description">{boardFor(doc.boardId)?.name} · {doc.description}</p></div></div>
     <p className="session-note" id="docs-session-note">Session-only writing. Your changes stay while you navigate and reset when you refresh or close this page.</p>
     <Panel className="docs-editor" aria-label={`${doc.title} editor`}>
-      <div className="docs-editor__top"><div className="docs-mode" role="group" aria-label="Document view"><Button aria-pressed={mode === 'write'} onClick={() => setMode('write')}>Write</Button><Button aria-pressed={mode === 'preview'} onClick={() => { setMode('preview'); setLinkOpen(false); }}>Preview</Button></div><span className="docs-editor__status">{doc.updated === 'This session' ? 'Edited in this session' : 'Sample document'}</span></div>
+      <div ref={modeStartRef} className="docs-mode-start" aria-hidden="true" />
+      <div className="docs-editor__top"><div className="docs-mode" role="group" aria-label="Document view"><Button aria-pressed={mode === 'write'} onClick={() => changeMode('write')}>Write</Button><Button aria-pressed={mode === 'preview'} onClick={() => changeMode('preview')}>Preview</Button></div><span className="docs-editor__status">{doc.updated === 'This session' ? 'Edited in this session' : 'Sample document'}</span></div>
       {mode === 'write' ? <>
         <div className="docs-toolbar" role="group" aria-label="Insert formatting">
           <Button variant="ghost" onMouseDown={(event) => event.preventDefault()} onClick={() => format('heading')}><Heading2 size={18} aria-hidden="true" />Heading</Button>
