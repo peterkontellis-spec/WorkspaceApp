@@ -1,6 +1,6 @@
 # Workspace app — how to work on this project
 
-The AI workflow is integrated into this folder. No agent server or API setup is required to use it in this chat. The M1.2 application shell is implemented locally, with browser verification still pending. See [RUNNING.md](RUNNING.md) to open or restart it.
+The AI workflow is integrated into this folder. No agent server or API setup is required to use it in this chat. M1.2–M1.5 are implemented locally, with browser acceptance still pending. See [RUNNING.md](RUNNING.md) to open or restart it.
 
 Every implementation task/session now follows the required self-check loop in [AGENTS.md](AGENTS.md): run and test the app, review relevant design/UI skills, fix verified issues, confirm results, and reassess the next action. `pnpm check` and `pnpm check:smoke` cover build and HTTP checks; browser acceptance remains a separate required step. No daily automation is configured.
 
@@ -16,7 +16,7 @@ Before each session, open [SESSION_CHECKLIST.md](SESSION_CHECKLIST.md). It break
 
 ## Start the first prototype
 
-M1.1 is recorded in [DESIGN_SPEC.md](DESIGN_SPEC.md). The chosen direction is dark with subtle accents, equal desktop/phone focus, and larger controls. M1.2 is implemented; complete its pending browser checks before calling the increment complete. Use STATUS.md for one increment at a time, or use this broader prompt when you want the whole M1 prototype:
+M1.1 is recorded in [DESIGN_SPEC.md](DESIGN_SPEC.md). The chosen direction is dark with subtle accents, equal desktop/phone focus, and larger controls. M1.2–M1.5 are implemented; complete their pending browser checks before calling these increments complete. Use STATUS.md for one increment at a time, or use this broader prompt when you want the whole M1 prototype:
 
 > Use the workspace-app workflow and DESIGN_SPEC.md. Continue M1 using the selected dark design with subtle accents, equal desktop/phone focus, and larger controls. Build a local, reviewable prototype of the shell, Home, grouped task board, task detail panel, and Docs screen using sample data. Make the main navigation and demonstrated interactions work. Use subagents where independent work helps, verify desktop and narrow layouts, and update STATUS.md with the preview, checks, and next action. Keep sample behavior clearly distinguished from server persistence. Do not deploy to my NAS yet.
 

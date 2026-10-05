@@ -1,5 +1,7 @@
 # Workspace app — compact handoff report
 
+Historical snapshot: later work on **2026-10-05** implemented M1.2–M1.5 and saved local Git checkpoints. Read STATUS.md for the authoritative current state; the report below describes the earlier archive.
+
 Prepared: **2026-10-05**. Last recorded implementation checks: **2026-09-25**.
 
 This is the portable summary of the project conversation and current files. It does not replace the detailed requirements or indicate that Codex's internal chat context has been compacted.

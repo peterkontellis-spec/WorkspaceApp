@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, type ReactNode } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { updateTaskQuery } from '@/lib/navigation';
 
 const NavigationMemory = createContext<Map<string, number> | null>(null);
 export function NavigationMemoryProvider({ children }: { children: ReactNode }) {
@@ -9,40 +10,36 @@ export function NavigationMemoryProvider({ children }: { children: ReactNode }) 
   return <NavigationMemory.Provider value={positions.current}>{children}</NavigationMemory.Provider>;
 }
 
-export function safeReturnPath(value: string | null): string | null {
-  if (!value) return null;
-  const [path] = value.split('?');
-  return /^\/(home|boards(?:\/[a-z0-9-]+)?)$/.test(path) ? value : null;
-}
+export { safeReturnPath } from '@/lib/navigation';
 
-export function useTaskNavigation() {
+export function useTaskNavigation(restoreScroll = false) {
   const pathname = usePathname();
   const params = useSearchParams();
   const router = useRouter();
   const positions = useContext(NavigationMemory);
   const currentHref = pathname + (params.size ? `?${params.toString()}` : '');
   const taskId = params.get('task');
+  const previousTask = useRef<string | null>(null);
   useEffect(() => {
+    if (!restoreScroll) return;
+    const closedTask = previousTask.current;
+    previousTask.current = taskId;
+    if (taskId || !closedTask) return;
+    const frame = requestAnimationFrame(() => {
+      const trigger = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-task-id]')).find((el) => el.dataset.taskId === closedTask && el.getClientRects().length > 0);
+      (trigger ?? document.getElementById('main-content'))?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [taskId, restoreScroll]);
+  useEffect(() => {
+    if (!restoreScroll) return;
     const top = positions?.get(currentHref);
     if (top === undefined) return;
-    const frame = requestAnimationFrame(() => window.scrollTo({ top, behavior: 'instant' }));
-    positions?.delete(currentHref);
+    const frame = requestAnimationFrame(() => { window.scrollTo({ top, behavior: 'instant' }); positions?.delete(currentHref); });
     return () => cancelAnimationFrame(frame);
-  }, [currentHref, positions]);
-  function taskHref(id: string) {
-    const next = new URLSearchParams(params.toString());
-    next.set('task', id);
-    return `${pathname}?${next}`;
-  }
-  function closeTask() {
-    const next = new URLSearchParams(params.toString());
-    next.delete('task');
-    router.replace(pathname + (next.size ? `?${next}` : ''), { scroll: false });
-    requestAnimationFrame(() => {
-      const trigger = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-task-id]')).find((el) => el.dataset.taskId === taskId);
-      trigger?.focus({ preventScroll: true });
-    });
-  }
+  }, [currentHref, positions, restoreScroll]);
+  function taskHref(id: string) { return updateTaskQuery(pathname, params.toString(), id); }
+  function closeTask() { router.replace(updateTaskQuery(pathname, params.toString(), null), { scroll: false }); }
   function rememberOrigin() { positions?.set(currentHref, window.scrollY); }
   return { taskId, taskHref, closeTask, currentHref, rememberOrigin };
 }

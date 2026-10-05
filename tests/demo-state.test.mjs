@@ -126,3 +126,13 @@ test('document edits preserve identity, links, and other content; reset returns 
   assert.equal(model.patchDemoDocument(updated, 'launch-brief', { title: ' ' }).documents[0].title, 'Revised brief');
   assert.notEqual(model.createDemoState().documents[0].body, updated.documents[0].body);
 });
+
+test('editing a document moves it to recent documents without changing IDs or task links', () => {
+  const initial = freeze(model.createDemoState());
+  const weekly = model.patchDemoDocument(initial, 'weekly-notes', { body: 'New weekly notes' });
+  assert.deepEqual(weekly.documents.map((doc) => doc.id), ['weekly-notes', 'launch-brief', 'content-outline']);
+  const launch = model.patchDemoDocument(weekly, 'launch-brief', { body: 'Latest launch changes' });
+  assert.deepEqual(launch.documents.map((doc) => doc.id), ['launch-brief', 'weekly-notes', 'content-outline']);
+  assert.equal(launch.tasks, initial.tasks);
+  assert.equal(model.patchDemoDocument(launch, 'missing', { body: 'Ignored' }), launch);
+});

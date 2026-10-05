@@ -7,7 +7,7 @@ The October 5, 2026 handoff is saved in `../output/workspace-app-handoff-2026-10
 - `workspace-app-documents-2026-10-05.zip`: all project Markdown documents.
 - `workspace-app-handoff-2026-10-05.zip`: documents plus current source, public assets, configuration, and dependency lockfile.
 
-Both archives exclude installed dependencies, generated build output, environment files, and production data. M1.2 is implemented but awaiting browser verification; use the continuation prompt in the report for that exact next step.
+Both archives exclude installed dependencies, generated build output, environment files, and production data. These ZIPs are historical. M1.2–M1.5 are now implemented in the working directory and local Git checkpoints; read STATUS.md for current checks, authentication needs and browser acceptance.
 
 Paste:
 

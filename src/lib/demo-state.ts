@@ -110,20 +110,17 @@ export function addDemoTask(state: DemoState, boardId: string, group: Task['grou
 }
 
 export function patchDemoDocument(state: DemoState, id: string, patch: Partial<DemoDocument>): DemoState {
-  // Identity and board stay fixed so existing links cannot silently become invalid.
-  return {
-    ...state,
-    documents: state.documents.map((document) => {
-      if (document.id !== id) return document;
-      return {
-        ...document,
-        title: typeof patch.title === 'string' && patch.title.trim() ? patch.title.trim() : document.title,
-        description: typeof patch.description === 'string' ? patch.description : document.description,
-        body: typeof patch.body === 'string' ? patch.body : document.body,
-        updated: 'This session',
-      };
-    }),
+  const document = state.documents.find((item) => item.id === id);
+  if (!document) return state;
+  const updated = {
+    ...document,
+    title: typeof patch.title === 'string' && patch.title.trim() ? patch.title.trim() : document.title,
+    description: typeof patch.description === 'string' ? patch.description : document.description,
+    body: typeof patch.body === 'string' ? patch.body : document.body,
+    updated: 'This session',
   };
+  // Identity stays fixed; putting the edited record first gives Home real session recency.
+  return { ...state, documents: [updated, ...state.documents.filter((item) => item.id !== id)] };
 }
 
 export function getPersonalBuckets(tasks: DemoTask[], memberId: string, today = DEMO_DATE) {

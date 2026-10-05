@@ -12,6 +12,7 @@ const pages = [
   ['/boards/team-operations', 'Team operations'],
   ['/docs', 'Docs'],
   ['/docs/launch-brief', 'Launch brief'],
+  ['/docs/launch-brief?returnTo=%2Fboards%2Fwebsite-refresh%3Ftask%3Dt1', 'Launch brief'],
   ['/docs/content-outline', 'Content outline'],
   ['/docs/weekly-notes', 'Weekly notes'],
 ];
@@ -50,6 +51,18 @@ for (const [path, heading] of pages) {
     assert.equal(h1, heading, 'Expected page heading in server-rendered HTML');
     assert.ok(html.includes('Prototype · sample data'), 'Missing prototype disclosure');
     assert.ok(html.includes('id="main-content"'), 'Missing main landmark target');
+    if (path.startsWith('/boards/website-refresh')) {
+      const rows = html.match(/<li class="board-task(?: |")/g) ?? [];
+      assert.equal(rows.length, path.includes('q=launch') ? 1 : 6, 'Board filters must affect rendered task rows');
+    }
+    if (path.startsWith('/docs/')) {
+      assert.match(html, /<textarea[^>]*id="document-body"/, 'Missing document writing surface');
+      if (path.includes('returnTo=')) assert.match(html, /<a[^>]*href="\/boards\/website-refresh\?task=t1"[^>]*>[\s\S]*?Back to task<\/a>/, 'Missing contextual return link');
+    }
+    if (path === '/home?task=t1') {
+      assert.ok(html.includes('task-panel-title'), 'Missing selected-task detail');
+      assert.ok(html.includes('name="task-notes"'), 'Missing task notes');
+    }
   });
 }
 

@@ -27,7 +27,7 @@ The full requirements and architecture proposals are in [PLANNING.md](PLANNING.m
 
 ## Current delivery target
 
-M1: a reviewable design prototype with the app shell, Home, board, task panel, and Docs screen using sample data. M1.1 is specified in [DESIGN_SPEC.md](DESIGN_SPEC.md), including the user's dark/subtle direction and equal desktop/phone emphasis with larger controls. M1.2 is implemented locally and passes its production build and type check; browser visual/interaction verification is pending because the browser security policy could not be verified. Finish those checks before marking M1.2 complete, then continue M1.3. Exact visual details remain provisional; sample data does not imply implemented multi-user persistence.
+M1.2–M1.5 are now implemented as a connected sample-data prototype: shell, Home/My Day, grouped editable board, task detail panel and session-only Markdown Docs. TypeScript, production build, 15 behavioural tests and 16 HTTP checks pass. Browser access is still blocked by admin-policy verification, so all four increments remain acceptance-pending. Preserve the existing design and finish those checks before marking increments complete or advancing to M1.6. The latest handoff authorised implementation despite the tooling block, not a claim of visual verification.
 
 ## Scope boundaries and open decisions
 

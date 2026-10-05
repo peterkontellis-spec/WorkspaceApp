@@ -1,72 +1,60 @@
 # Current status
 
-Updated: 2026-10-05 (local preview started; self-check workflow implemented and exercised)
+Updated: 2026-10-05 — M1.2–M1.5 implemented; browser acceptance and GitHub upload pending.
 
-## Handoff snapshot
+## Delivery state
 
-The earlier checkpoint is condensed in [HANDOFF_REPORT.md](HANDOFF_REPORT.md). Dated archives in `../output/workspace-app-handoff-2026-10-05/` were verified against their checksums and matched the working files before this session. They are historical snapshots and do not include the new self-check workflow/scripts. This STATUS.md and the working directory contain the latest state.
+The user authorised M1.2 through M1.5, with checkpoints, work confined to this project workspace, no credits/resets and no deployment. The existing dark/subtle design is preserved. Data is fictional and in memory: edits and drafts survive internal navigation, then reset on refresh/tab closure. No real authentication, database, uploads or collaborative editing exists.
 
-## State
+| Increment | Implemented | Actual checks | Acceptance |
+| --- | --- | --- | --- |
+| M1.1 | Existing design specification | Prior planning review | Complete |
+| M1.2 | Shell/navigation, search, sample accounts, field metadata, modal scroll containment | TypeScript/build; HTTP 13/13 | Browser pending |
+| M1.3 | Personal overdue/today/upcoming/undated work, empty-state preview, recent Docs, shared state and task opening | Model 7/7; TypeScript/build; HTTP 14/14 | Browser pending |
+| M1.4 | Grouped tasks, add/rename/date/status/priority/multiple assignees, URL-backed combined filters/collapsed groups | Model 7/7; TypeScript/build; HTTP 15/15 | Browser pending |
+| M1.5 | Task notes/checklists/subtasks, sample file metadata, document linking, Markdown writing/formatting/safe preview and return context | Final model/Markdown/navigation 15/15; TypeScript/build; HTTP 16/16 | Browser pending |
+| M1.6 and M2–M5 | Not implemented | — | Open |
 
-Project workflow and M1.1 are complete. The M1.2 local application shell is implemented with dark/subtle styling, larger controls, responsive navigation, and fictional sample data. Build and source checks pass; browser visual/interaction verification remains pending. There is no database, real authentication, durable app data, or NAS deployment.
+All M1.2–M1.5 completion boxes stay open until their browser acceptance checks pass. The latest explicit handoff permits implementation while browser access is blocked; it does not turn pending checks into passes.
 
-| Milestone | State | Evidence |
+## Preview
+
+Local development server was running and responding at **http://127.0.0.1:3100/home** after the final HTTP checks. Server lifetime is session-dependent; see RUNNING.md to restart. It is bound to this Mac's loopback address, not publicly exposed or deployed to the NAS.
+
+Try Home → a task → linked Launch brief → edit text → Preview → Back to task → Close. Boards support editing/filtering. The sample account dialog includes Reset demo with confirmation. A refresh/close warning is registered after session changes; its actual browser behavior is still unverified.
+
+## Checkpoints
+
+Git is initialised inside this existing project folder, as instructed. `origin` is `https://github.com/peterkontellis-spec/WorkspaceApp.git`. Author is repository-local **Workspace Checkpoint Agent <checkpoint@localhost>**; no global Git identity was changed.
+
+| Local checkpoint | Commit/tag | Purpose |
 | --- | --- | --- |
-| Workflow setup | Complete | AGENTS.md, BRIEF.md, MILESTONES.md, STATUS.md, DECISIONS.md, HANDOFF.md, README.md |
-| Session roadmap | Complete | SESSION_CHECKLIST.md: 35 increments, session routines, completion criteria, and decision timing |
-| M1 — Design prototype | M1.1 complete; M1.2 implemented, browser checks pending | src/, package.json, pnpm-lock.yaml, RUNNING.md; only scaffold/data box additionally checked |
-| M2 — Persistent foundation | Not started | — |
-| M3 — Team workflow | Not started | — |
-| M4 — Advanced behavior and Docs | Not started | — |
-| M5 — NAS rollout | Not started | — |
+| Baseline | `3267038` / `baseline-2026-10-05` | Original shell, design and self-check instructions |
+| M1.2 | `5a7b9cd` / `m1.2-implemented` | Targeted shell refinements |
+| M1.3 | `ec90365` / `m1.3-implemented` | Home, shared state, initial task panel |
+| M1.4 | `736daa9` / `m1.4-implemented` | Grouped board editing/filtering |
+| M1.5 | `m1.5-implemented` | Connected task/Docs prototype and review fixes |
+
+**Remote backup is blocked:** the repository was reachable and empty, but push failed because HTTPS credentials were unavailable. A noninteractive SSH check also failed because no trusted GitHub host key was configured; nothing was changed or bypassed. Authentication was requested from the user. No checkpoint is claimed to be uploaded. Once authenticated, push `main` and the checkpoint tags without force-pushing.
+
+The October 5 ZIPs in the parent output folder are verified historical snapshots. They predate this implementation; the working tree and Git history are now the authoritative continuation source.
+
+## Final verification evidence
+
+- `pnpm check`: TypeScript, **15 behavioural tests**, and production build passed.
+- `pnpm check:smoke`: **16/16 HTTP checks** passed. These check redirects, page headings/disclosures, filtered server-rendered rows, task-notes/editor surfaces, contextual return-link markup and unknown-route status. They do not execute browser JavaScript.
+- Model tests cover immutable edits, validation, date/assignment buckets, combined filters, independent group/status, add-task IDs, document identity/recency and reset. Markdown tests cover formatting, empty text, safe HTTP(S) links and inert raw HTML. Navigation tests cover safe return destinations and preserving filters while opening/closing tasks.
+- Impeccable context loaded from the incumbent implementation/specification. Mechanical detector on components/CSS returned `[]`. Source reviewed with Impeccable, current Web Interface Guidelines and React best practices. No visual/accessibility score is claimed.
+- Independent source review led to fixes for URL filter-control synchronization, focus fallback after edited tasks leave a list, recent-document ordering, and draft retention. Board rename/date/new-task and task checklist/subtask input now live in shared session drafts.
+- `git diff --check` passed before checkpointing. No new runtime dependency was added.
+- Latest usage check: **89% of the reported weekly allowance remained**, ordinary usage allowed. No credits, purchases or resets used.
+
+## Browser blocker and outstanding checks
+
+Supported browser access again refused the local URL because the admin-enforced policy could not be verified. No screenshots, desktop/phone render checks, clicks, focus checks or software-keyboard checks succeeded. No alternative browser/renderer was used to bypass the restriction.
+
+Run RUNNING.md's full checklist once supported browser access is restored. Prioritise task/dialog focus (including a task disappearing from its filtered list), Home → board/task → Doc return with scroll/filter retention, formatting selection, draft retention, clear/reset controls, responsive overflow and unknown-route recovery.
 
 ## Next action
 
-Finish M1.2 browser checks in RUNNING.md when browser security-policy verification is available. Inspect desktop and phone layouts, navigation/direct refresh/history, dialogs, search, sample account switching, and keyboard focus. Do not bypass the browser restriction or claim these checks passed. Once verified, mark the remaining M1.2 boxes and begin M1.3 — Personal Home and My Day.
-
-## Latest session — preview and required self-check loop
-
-- User selected checks **after each task/session only**, with no daily automation. AGENTS.md now requires implement → inspect → run/test → design/UI review → fix → confirm → reassess next action before closure. SESSION_CHECKLIST.md and RUNNING.md carry the same gates.
-- Added `pnpm check` (typecheck plus production build) and `pnpm check:smoke` (`scripts/smoke-check.mjs`, no new dependencies). The HTTP script checks the root redirect, eight sample pages with headings/disclosures, and four HTTP 404 responses. It does not execute client interactions or prove error-page recovery links work.
-- Passed on October 5: `pnpm check`; `pnpm check:smoke` — **13 passed, 0 failed** against the development server. The initial smoke run exposed an incorrect test assumption about error-boundary HTML; assertions now cover HTTP status while recovery-link rendering/clicks remain browser acceptance. A read-only specialist reviewed the workflow/script; the earlier independent text/href assertions were removed.
-- Preview running at **http://127.0.0.1:3100/home** when checked. Sandbox port binding and loopback HTTP access required approved escalation. Server lifetime is session-dependent; use RUNNING.md to restart if needed. No external exposure or NAS deployment.
-- Browser attempt on October 5: creating a visible in-app preview was refused because the admin-enforced security policy could not be verified. No screenshot or browser interaction was obtained. No alternate browser or indirect rendering workaround was used. The user can open the preview link directly on this Mac.
-- Design/UI review evidence: read Impeccable and Web Design Guidelines instructions; loaded Impeccable context for the current shell; detector over `src/components` and `src/app/globals.css` returned `[]`. Reviewed source against current [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md) and DESIGN_SPEC.md. Existing labels, focus styles, 44–48 px controls, dark color scheme and mobile safe-area rules are present. This is a static review only, not a completed visual/accessibility audit.
-- Follow-ups for the browser review: `src/components/workspace-shell.tsx:116` uses unconditional search autofocus, which needs phone/keyboard assessment; `src/app/globals.css:167` lacks modal overscroll containment, so check background scroll chaining. The known overlay-switch regression and unknown-route recovery links still need live interaction checks. Preserve the selected design; no UI redesign was performed.
-- Reassessed next action: resolve supported browser access and finish the M1.2 checklist before expanding features. When starting M1.3, resolve its task-opening dependency on the M1.5 panel, preferably with a minimal panel first. M1.2 remains incomplete; the self-check tooling/instructions are delivered.
-
-## Current task
-
-- Objective: implement the M1.2 local shell and navigation using the selected design direction.
-- Delivered: Next.js/React/TypeScript scaffold, dark responsive shell, desktop sidebar, phone menu/bottom navigation, Home/Boards/Docs routes, read-only sample board/task content, Docs placeholders, page/project/document search, sample-account switcher, favicon, and shared button/field/panel/task-row/status/dialog primitives.
-- Data: four fictional members, two boards, three documents, twelve tasks; fixed demo date; account selection in memory only.
-- Owner: coordinating assistant; read-only specialist verified current official setup guidance and reviewed source. A dialog-switch race found during review was fixed with overlay-specific close handling; runtime regression check is still pending.
-- Earlier checks (September 25): dependency installation, typecheck/build, fixture ID/association/date checks, and initial HTTP response passed. Fresh October 5 build/HTTP results and preview state are recorded above.
-- Browser limitation: refusal due to unavailable admin-policy verification persisted on October 5. No screenshots or browser interaction checks succeeded. No indirect workaround was used.
-- Not yet checked: rendered desktop/phone layouts, overflow, actual focus/keyboard/dialog behavior, navigation/history/refresh, runtime search/account switching, unknown-route UI, or phone software keyboard. Build success is not evidence these pass.
-- Scope boundary: M1.3–M1.5 remain open; read-only fixture content is shell scaffolding, not completion of detailed dashboard, board editing, task panels, or document writing. All M2–M5 features remain unimplemented.
-
-## Decisions needed soon
-
-- Additional visual feedback can refine the shell once browser inspection is available; selected dark/subtle direction and equal desktop/phone emphasis remain the baseline.
-- Any deadline or budget that changes delivery priorities.
-
-Infrastructure, subdomain, and backup details become necessary for their corresponding implementation tasks, not for the first sample-data prototype.
-
-## Continuity
-
-This is the current authoritative status record. At the next meaningful milestone, replace stale state and include actual artifact paths and check results. The coordinating assistant owns updates; specialists return proposed changes. Use HANDOFF.md when switching chats.
-
-## M1.2–M1.5 execution handoff
-
-Baseline saved as `3267038`. Remote `origin` is the user-provided WorkspaceApp repository. Initial push failed because HTTPS credentials were unavailable; authentication requested, local work continues. Browser access was retried and is still refused by policy verification. Latest user instruction authorizes implementation of all four increments with browser acceptance kept pending. M1.2 source refinements remove forced search autofocus, add search field metadata/decorative-icon hiding, and contain modal overscroll.
-
-M1.2 refinement checks: `pnpm check` passed; HTTP smoke 13/13 passed. Static UI review confirms the targeted field/icon/scroll changes; browser acceptance remains pending. Next implementation step: M1.3 shared demo state, personal buckets and minimal task panel.
-
-### M1.3 implementation checkpoint
-
-Delivered shared in-memory task/document state, personal overdue/today/upcoming/undated buckets, new-collaborator preview without deleting tasks, recent Docs, task links and a minimal task panel. Data remains fictional and resets on refresh. Added seven behavioral model tests covering validation, immutable edits, assignments/date boundaries, combined filters, new tasks, document identity and reset. TypeScript and production build passed; 7/7 model tests passed; HTTP smoke 14/14 passed including Home with a task query. Source reviewed against the existing design/React guidance; rendered UX remains unverified due to the browser restriction. Next: integrate M1.4 grouped editable boards; keep M1.3 acceptance open.
-
-### M1.4 implementation checkpoint
-
-Grouped board implemented with add/rename/date edits, immediate status/priority/multiple-assignee edits, collapsible groups, combined URL-backed filters, empty/no-match states and explicit Later labels for other views/custom columns. Group remains independent of status. TypeScript/build and 7/7 model tests pass; HTTP smoke 15/15 passes including filtered board + selected task. Desktop grid switches to a labelled two-column task layout using container queries; static source review completed, browser interaction/layout still pending. Next: expand task details and session-only document writing in M1.5.
+Authenticate GitHub on this Mac so the existing local checkpoints can be pushed, then restore supported browser access and finish M1.2–M1.5 acceptance. Fix findings before marking increments complete or starting M1.6. No further product scope is authorised by this status record.

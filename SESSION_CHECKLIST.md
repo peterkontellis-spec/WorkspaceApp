@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md), then the next unfinished increment below. **M1.1 is complete**. **M1.2 is implemented, with browser checks pending**; open or restart the shell through [RUNNING.md](RUNNING.md). Finish its browser verification before advancing to M1.3. Use STATUS.md for the current position as work progresses.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1 is complete; M1.2–M1.5 are implemented with browser acceptance pending.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment; upload awaits GitHub authentication. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -113,6 +113,8 @@ You do not need to finish one increment per session. Some will take several sess
 - [ ] Label sample edits, collaboration indicators, and saving behavior accurately.
 
 **Done when:** you can move from a task into its document and back; no sample state is presented as durable server storage.
+
+**Implementation 2026-10-05:** M1.5 connected task/Docs prototype delivered. Final build, 15 behavioural tests and 16 HTTP checks pass; browser acceptance remains pending. Source-review fixes preserve drafts, recent-document ordering and focus fallback. See STATUS.md.
 
 ### M1.6 — Prototype review and refinements
 

@@ -1,14 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, ArrowUpRight, FileText, Layers3, LayoutTemplate } from 'lucide-react';
-import { boards, documents, boardFor, DEMO_DATE } from '@/lib/demo';
+import { ArrowRight, ArrowUpRight, FileText, Layers3, LayoutTemplate } from 'lucide-react';
+import { boards, boardFor, DEMO_DATE } from '@/lib/demo';
 import { AvatarStack, Panel, TaskRow } from '@/components/ui';
 import { useDemo } from '@/components/workspace-shell';
 import { useWorkspace } from './demo-provider';
 import { useTaskNavigation } from './task-navigation';
 import { TaskPanel } from './task-panel';
 import { BoardView } from './board-view';
+import { DocsView } from './docs-view';
 import { getPersonalBuckets } from '@/lib/demo-state';
 
 function ProjectCard({ board }: { board: (typeof boards)[number] }) {
@@ -63,27 +64,13 @@ function BoardsPage({ id }: { id?: string }) {
     <div className="project-grid">{boards.map((board) => <ProjectCard key={board.id} board={board} />)}</div>
     <StageNote>Open a board to add, edit and filter sample tasks. Changes last until refresh.</StageNote>
   </>;
-  return <BoardView id={id} />;
-}
-
-function DocsPage({ id }: { id?: string }) {
-  if (!id) return <>
-    <PageHeading eyebrow="ROOM FOR YOUR IDEAS" title="Docs" description="Briefs, notes, and shared starting points." />
-    <Panel className="docs-list"><div className="panel-heading"><h2>All documents</h2><span className="section-count">{documents.length} sample docs</span></div>{documents.map((doc) => <Link key={doc.id} className="document-row" href={`/docs/${doc.id}`}><span className="document-icon"><FileText size={22} aria-hidden="true" /></span><span className="document-row__title"><strong>{doc.title}</strong><span>{boardFor(doc.boardId)?.name}</span></span><span className="document-row__date">{doc.updated}</span><ArrowUpRight size={18} aria-hidden="true" /></Link>)}</Panel>
-    <StageNote>This is the document navigation. Writing and the task-to-document workflow follow in the Docs increment.</StageNote>
-  </>;
-  const doc = documents.find((document) => document.id === id)!;
-  return <>
-    <Link className="back-link" href="/docs"><ArrowLeft size={18} aria-hidden="true" />All docs</Link>
-    <PageHeading eyebrow={boardFor(doc.boardId)?.name.toUpperCase() ?? 'SHARED DOCUMENT'} title={doc.title} description={doc.description} />
-    <Panel className="document-placeholder"><span className="document-placeholder__icon"><FileText size={29} aria-hidden="true" /></span><h2>Your writing space goes here.</h2><p>The document editor is planned for the next Docs increment. This sample page establishes where it lives in the workspace.</p><Link href="/docs" className="button button--secondary">Back to documents<ArrowRight size={17} aria-hidden="true" /></Link></Panel>
-  </>;
+  return <BoardView key={id} id={id} />;
 }
 
 export function WorkspacePage({ section, id }: { section: 'home' | 'boards' | 'docs'; id?: string }) {
-  const { taskId } = useTaskNavigation();
+  const { taskId } = useTaskNavigation(true);
   return <div className={taskId && section !== 'docs' ? 'page-with-task' : undefined}>
-    {section === 'boards' ? <BoardsPage id={id} /> : section === 'docs' ? <DocsPage id={id} /> : <HomePage />}
+    {section === 'boards' ? <BoardsPage id={id} /> : section === 'docs' ? <DocsView id={id} /> : <HomePage />}
     {section !== 'docs' && <TaskPanel key={taskId} />}
   </div>;
 }

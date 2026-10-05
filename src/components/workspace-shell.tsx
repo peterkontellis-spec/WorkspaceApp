@@ -6,6 +6,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { ArrowUpRight, ChartNoAxesCombined, Check, ChevronDown, ChevronsUpDown, Clock3, FileText, Folder, House, LayoutGrid, Menu, Search, Settings2, X } from 'lucide-react';
 import { boards, documents, members, type Member } from '@/lib/demo';
 import { Avatar, AvatarStack, Button, Dialog, Field } from '@/components/ui';
+import { useWorkspace } from './demo-provider';
 
 const DemoContext = createContext<{ member: Member }>({ member: members[0] });
 export const useDemo = () => useContext(DemoContext);
@@ -35,6 +36,7 @@ function Brand() {
 }
 
 export function WorkspaceShell({ children }: { children: ReactNode }) {
+  const { resetDemo } = useWorkspace();
   const pathname = usePathname();
   const [member, setMember] = useState(members[0]);
   const [overlay, setOverlay] = useState<'navigation' | 'search' | 'account' | null>(null);
@@ -92,7 +94,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
             <Button variant="ghost" className="account-trigger" aria-label={`Sample account: ${member.name}. Switch sample account`} onClick={() => setOverlay('account')}><Avatar member={member} /><ChevronDown size={15} aria-hidden="true" /></Button>
           </div>
         </header>
-        <main id="main-content" className="main-content">{children}</main>
+        <main id="main-content" tabIndex={-1} className="main-content">{children}</main>
         <footer className="workspace-footer"><span>Prototype · sample data</span><span>Demo date: 25 September 2026</span></footer>
       </div>
 
@@ -123,7 +125,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
     <Dialog open={overlay === 'account'} onClose={() => closeOverlay('account')} title="Sample accounts">
       <p className="dialog-intro">Explore the shell as someone else on the sample team.</p>
       <div className="account-options">{members.map((person) => <button key={person.id} type="button" className={`account-option ${person.id === member.id ? 'account-option--selected' : ''}`} aria-pressed={person.id === member.id} onClick={() => { setMember(person); close(); }}><Avatar member={person} /><span><strong>{person.name}</strong><span>{person.role} · sample account</span></span>{person.id === member.id ? <Check size={19} aria-hidden="true" /> : <ChevronsUpDown size={17} aria-hidden="true" />}</button>)}</div>
-      <p className="dialog-note">No sign-in or permissions yet. Your selection lasts until you refresh.</p>
+      <p className="dialog-note">No sign-in or permissions yet. Accounts and edits reset on refresh.</p><Button onClick={() => { if (window.confirm("Reset all sample tasks, documents and unfinished input? This clears this session’s edits.")) { resetDemo(); setMember(members[0]); close(); } }}>Reset demo</Button>
     </Dialog>
   </DemoContext.Provider>;
 }

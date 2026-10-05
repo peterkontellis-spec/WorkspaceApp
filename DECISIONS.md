@@ -29,3 +29,7 @@ The user requested a self-check loop that actually runs/tests the app, reviews i
 ## 2026-10-05 — prototype execution and checkpoint policy
 
 The user handed off M1.2–M1.5 and authorised commit/push checkpoints to WorkspaceApp, with work restricted to the existing project workspace and no credits/resets. Preserve the shell and existing design. A minimal task panel moves into M1.3 to support its task-opening requirement; M1.5 expands it. Shared in-memory state stays above routes so edits survive navigation but not refresh. Browser denial does not authorise bypasses or a completion claim; implementation continues under the latest handoff with acceptance explicitly pending. GitHub pushes are waiting for authentication; local commits remain available.
+
+## 2026-10-05 — M1.5 implementation details
+
+Prototype Docs use a small Markdown text/preview editor with formatting controls and only safe HTTP(S) links. No additional runtime dependency, raw HTML execution, cloud editor or persistence is introduced. Fixed document titles keep this increment focused on writing; real editor/collaboration choices remain M4. Edits promote the document in session recency. Board/task drafts remain in the shared provider through navigation, and changed sessions register a refresh/close warning. Native task dialogs preserve visible desktop board context and use the full phone width; rendered behavior remains pending verification. Checkpoints are named implemented, not complete.

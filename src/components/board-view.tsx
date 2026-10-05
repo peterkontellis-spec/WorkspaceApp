@@ -11,16 +11,18 @@ import { useTaskNavigation } from './task-navigation';
 import { AvatarStack, Button } from './ui';
 import './board-view.css';
 
-function InlineEdit({ value, label, type = 'text', onSave }: { value: string; label: string; type?: 'text' | 'date'; onSave: (value: string) => string | null }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
+function InlineEdit({ draftKey, value, label, type = 'text', onSave }: { draftKey: string; value: string; label: string; type?: 'text' | 'date'; onSave: (value: string) => string | null }) {
+  const { drafts, setDraft: saveDraft } = useWorkspace();
+  const editing = Object.hasOwn(drafts, draftKey);
+  const draft = drafts[draftKey] ?? value;
+  const setDraft = (value: string) => saveDraft(draftKey, value);
   const [error, setError] = useState<string | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const errorId = useId();
-  function close() { setEditing(false); setError(null); requestAnimationFrame(() => trigger.current?.focus()); }
+  function close() { saveDraft(draftKey, null); setError(null); requestAnimationFrame(() => trigger.current?.focus()); }
   return <div className="board-inline-edit">
-    <button ref={trigger} type="button" className="button button--ghost board-edit-trigger" aria-label={label} aria-expanded={editing} disabled={editing} onClick={() => { setDraft(value); setError(null); setEditing(true); requestAnimationFrame(() => input.current?.focus()); }}><Pencil size={15} aria-hidden="true" />{type === 'date' ? formatDue(value || null) : 'Rename'}</button>
+    <button ref={trigger} type="button" className="button button--ghost board-edit-trigger" aria-label={label} aria-expanded={editing} disabled={editing} onClick={() => { setDraft(value); setError(null); requestAnimationFrame(() => input.current?.focus()); }}><Pencil size={15} aria-hidden="true" />{type === 'date' ? formatDue(value || null) : 'Rename'}</button>
     {editing ? <form className="board-edit-form" onSubmit={(event) => { event.preventDefault(); const issue = onSave(draft); setError(issue); if (!issue) close(); else input.current?.focus(); }} onKeyDown={(event) => { if (event.key === 'Escape') { event.stopPropagation(); event.preventDefault(); close(); } }}>
       <label>{label}<input ref={input} type={type} name={type === 'date' ? 'dueDate' : 'title'} value={draft} onChange={(event) => setDraft(event.target.value)} autoComplete="off" aria-invalid={!!error} aria-describedby={error ? errorId : undefined} /></label>
       {error ? <p role="alert" id={errorId} className="board-error">{error}</p> : null}
@@ -38,7 +40,7 @@ function EditableRow({ task }: { task: DemoTask }) {
   return <li className={`board-task ${taskId === task.id ? 'board-task--selected' : ''}`}>
     <div className="board-task-title">
       <Link href={taskHref(task.id)} scroll={false} data-task-id={task.id} className="task-title-link">{task.title}</Link>
-      <div className="board-task-meta"><InlineEdit value={task.title} label={`Rename ${task.title}`} onSave={(title) => updateTask(task.id, { title })} />{task.documentId ? <span><FileText size={14} aria-hidden="true" />Linked Doc</span> : null}{task.subtasks.length ? <span>{task.subtasks.length} subtask{task.subtasks.length === 1 ? '' : 's'}</span> : null}</div>
+      <div className="board-task-meta"><InlineEdit draftKey={`${task.id}:title`} value={task.title} label={`Rename ${task.title}`} onSave={(title) => updateTask(task.id, { title })} />{task.documentId ? <span><FileText size={14} aria-hidden="true" />Linked Doc</span> : null}{task.subtasks.length ? <span>{task.subtasks.length} subtask{task.subtasks.length === 1 ? '' : 's'}</span> : null}</div>
     </div>
     <label className="board-cell"><span className="board-cell-label">Status<span className="sr-only"> for {task.title}</span></span><select aria-label={`Status for ${task.title}`} value={task.status} onChange={(event) => change({ status: event.target.value as DemoTask['status'] })}>{taskStatuses.map((status) => <option key={status}>{status}</option>)}</select></label>
     <div className="board-cell board-assignees"><span className="board-cell-label" aria-hidden="true">Assignees</span><details onKeyDown={(event) => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus(); } }}>
@@ -46,27 +48,29 @@ function EditableRow({ task }: { task: DemoTask }) {
       <fieldset><legend>Assign people</legend>{members.map((member) => <label key={member.id}><input type="checkbox" checked={task.assigneeIds.includes(member.id)} onChange={(event) => change({ assigneeIds: event.target.checked ? [...task.assigneeIds, member.id] : task.assigneeIds.filter((id) => id !== member.id) })} />{member.name}</label>)}</fieldset>
     </details></div>
     <label className="board-cell"><span className="board-cell-label">Priority<span className="sr-only"> for {task.title}</span></span><select aria-label={`Priority for ${task.title}`} value={task.priority} onChange={(event) => change({ priority: event.target.value as DemoTask['priority'] })}>{taskPriorities.map((priority) => <option key={priority}>{priority}</option>)}</select></label>
-    <div className="board-cell board-date"><span className="board-cell-label">Due date</span><InlineEdit type="date" value={task.dueDate ?? ''} label={`Due date for ${task.title}`} onSave={(dueDate) => updateTask(task.id, { dueDate: dueDate || null })} />{overdue ? <span className="board-overdue">Overdue</span> : null}</div>
+    <div className="board-cell board-date"><span className="board-cell-label">Due date</span><InlineEdit draftKey={`${task.id}:date`} type="date" value={task.dueDate ?? ''} label={`Due date for ${task.title}`} onSave={(dueDate) => updateTask(task.id, { dueDate: dueDate || null })} />{overdue ? <span className="board-overdue">Overdue</span> : null}</div>
     {error ? <p className="board-error board-row-error" role="alert">{error}</p> : null}
   </li>;
 }
 
 function AddTask({ boardId, group, filtered }: { boardId: string; group: DemoTask['group']; filtered: boolean }) {
-  const { addTask } = useWorkspace();
-  const [adding, setAdding] = useState(false);
-  const [title, setTitle] = useState('');
+  const { addTask, drafts, setDraft } = useWorkspace();
+  const draftKey = `${boardId}:${group}:new`;
+  const adding = Object.hasOwn(drafts, draftKey);
+  const title = drafts[draftKey] ?? '';
+  const setTitle = (value: string) => setDraft(draftKey, value);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const trigger = useRef<HTMLButtonElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const errorId = useId();
-  function close() { setAdding(false); setTitle(''); setError(null); requestAnimationFrame(() => trigger.current?.focus()); }
+  function close() { setDraft(draftKey, null); setError(null); requestAnimationFrame(() => trigger.current?.focus()); }
   return <div className="board-add-task">
     {adding ? <form onSubmit={(event) => { event.preventDefault(); const issue = addTask(boardId, group, title); setError(issue); if (!issue) { setMessage(filtered ? 'Task added. Clear filters if it is not visible.' : 'Task added.'); close(); } else input.current?.focus(); }} onKeyDown={(event) => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); } }}>
       <label>New task in {group}<input ref={input} name="newTask" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="For example, review the launch brief…" autoComplete="off" aria-invalid={!!error} aria-describedby={error ? errorId : undefined} /></label>
       {error ? <p className="board-error" id={errorId} role="alert">{error}</p> : null}
       <div className="board-form-actions"><Button variant="primary" type="submit">Add task</Button><Button onClick={close}>Cancel</Button></div>
-    </form> : <button ref={trigger} type="button" className="button button--ghost" onClick={() => { setMessage(''); setAdding(true); requestAnimationFrame(() => input.current?.focus()); }}><Plus size={18} aria-hidden="true" />Add task<span className="sr-only"> in {group}</span></button>}
+    </form> : <button ref={trigger} type="button" className="button button--ghost" onClick={() => { setMessage(''); setTitle(''); requestAnimationFrame(() => input.current?.focus()); }}><Plus size={18} aria-hidden="true" />Add task<span className="sr-only"> in {group}</span></button>}
     <p className="board-add-message" role="status">{message}</p>
   </div>;
 }
@@ -85,14 +89,18 @@ export function BoardView({ id }: { id: string }) {
   const assigneeId = requestedAssignee === 'unassigned' || members.some((member) => member.id === requestedAssignee) ? requestedAssignee! : 'all';
   // Synchronize uncontrolled fields after URL navigation without remounting the
   // form, so applying a filter preserves the submit button's keyboard focus.
-  useEffect(() => { filterForm.current?.reset(); }, [query, status, priority, assigneeId]);
+  useEffect(() => { const form = filterForm.current;
+    if (form) for (const [name, value] of Object.entries({ q: query, status, priority, assignee: assigneeId })) {
+      const input = form.elements.namedItem(name);
+      if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) input.value = value;
+    } }, [query, status, priority, assigneeId]);
   const filters: BoardFilters = { query, status, priority, assigneeId };
   const filtered = !!query.trim() || status !== 'all' || priority !== 'all' || assigneeId !== 'all';
   const visible = filterBoardTasks(tasks, id, filters);
   const total = tasks.filter((task) => task.boardId === id).length;
   const collapsed = new Set((params.get('collapsed') ?? '').split(','));
   function replace(next: URLSearchParams) { router.replace(pathname + (next.size ? `?${next}` : ''), { scroll: false }); }
-  function clear() { const next = new URLSearchParams(params.toString()); ['q', 'status', 'priority', 'assignee'].forEach((key) => next.delete(key)); replace(next); }
+  function clear() { filterForm.current?.querySelector<HTMLInputElement>('[name="q"]')?.focus(); const next = new URLSearchParams(params.toString()); ['q', 'status', 'priority', 'assignee'].forEach((key) => next.delete(key)); replace(next); }
   function applyFilters(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
