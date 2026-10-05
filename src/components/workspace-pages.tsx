@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, ArrowUpRight, FileText, Layers3, LayoutGrid, LayoutTemplate, CalendarDays } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, FileText, Layers3, LayoutTemplate } from 'lucide-react';
 import { boards, documents, boardFor, DEMO_DATE } from '@/lib/demo';
 import { AvatarStack, Panel, TaskRow } from '@/components/ui';
 import { useDemo } from '@/components/workspace-shell';
 import { useWorkspace } from './demo-provider';
 import { useTaskNavigation } from './task-navigation';
 import { TaskPanel } from './task-panel';
+import { BoardView } from './board-view';
 import { getPersonalBuckets } from '@/lib/demo-state';
 
 function ProjectCard({ board }: { board: (typeof boards)[number] }) {
@@ -56,23 +57,13 @@ function HomePage() {
 }
 
 function BoardsPage({ id }: { id?: string }) {
-  const { tasks } = useWorkspace();
-  const { taskHref } = useTaskNavigation();
   if (!id) return <>
     <PageHeading eyebrow="TOGETHER, IN ONE PLACE" title="Boards" description="A clear home for each project." />
     <div className="section-heading"><h2>All projects</h2><span className="section-count">{boards.length} boards</span></div>
     <div className="project-grid">{boards.map((board) => <ProjectCard key={board.id} board={board} />)}</div>
-    <StageNote>Open a board to explore its sample tasks. Adding and editing boards comes in the next increments.</StageNote>
+    <StageNote>Open a board to add, edit and filter sample tasks. Changes last until refresh.</StageNote>
   </>;
-  const board = boardFor(id)!;
-  const boardTasks = tasks.filter((task) => task.boardId === id);
-  return <>
-    <Link className="back-link" href="/boards"><ArrowLeft size={18} aria-hidden="true" />All boards</Link>
-    <PageHeading eyebrow="SHARED BOARD" title={board.name} description={board.description}><AvatarStack ids={board.memberIds} /></PageHeading>
-    <div className="board-view-label"><span><LayoutGrid size={18} aria-hidden="true" />Task preview</span><span className="subtle-label">Read only</span></div>
-    <Panel><div className="panel-heading"><h2>Sample tasks</h2><span className="count-badge">{boardTasks.length}</span></div><ul className="task-list">{boardTasks.map((task) => <TaskRow key={task.id} task={task} href={taskHref(task.id)} />)}</ul></Panel>
-    <StageNote>The grouped table, custom columns, and task editing will be built in the board increment.</StageNote>
-  </>;
+  return <BoardView id={id} />;
 }
 
 function DocsPage({ id }: { id?: string }) {

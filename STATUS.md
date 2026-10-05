@@ -66,3 +66,7 @@ M1.2 refinement checks: `pnpm check` passed; HTTP smoke 13/13 passed. Static UI 
 ### M1.3 implementation checkpoint
 
 Delivered shared in-memory task/document state, personal overdue/today/upcoming/undated buckets, new-collaborator preview without deleting tasks, recent Docs, task links and a minimal task panel. Data remains fictional and resets on refresh. Added seven behavioral model tests covering validation, immutable edits, assignments/date boundaries, combined filters, new tasks, document identity and reset. TypeScript and production build passed; 7/7 model tests passed; HTTP smoke 14/14 passed including Home with a task query. Source reviewed against the existing design/React guidance; rendered UX remains unverified due to the browser restriction. Next: integrate M1.4 grouped editable boards; keep M1.3 acceptance open.
+
+### M1.4 implementation checkpoint
+
+Grouped board implemented with add/rename/date edits, immediate status/priority/multiple-assignee edits, collapsible groups, combined URL-backed filters, empty/no-match states and explicit Later labels for other views/custom columns. Group remains independent of status. TypeScript/build and 7/7 model tests pass; HTTP smoke 15/15 passes including filtered board + selected task. Desktop grid switches to a labelled two-column task layout using container queries; static source review completed, browser interaction/layout still pending. Next: expand task details and session-only document writing in M1.5.

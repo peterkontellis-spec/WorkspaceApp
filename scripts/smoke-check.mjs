@@ -8,6 +8,7 @@ const pages = [
   ['/home?task=t1', 'Welcome back, Alex.'],
   ['/boards', 'Boards'],
   ['/boards/website-refresh', 'Website refresh'],
+  ['/boards/website-refresh?q=launch&status=In+progress&task=t1', 'Website refresh'],
   ['/boards/team-operations', 'Team operations'],
   ['/docs', 'Docs'],
   ['/docs/launch-brief', 'Launch brief'],

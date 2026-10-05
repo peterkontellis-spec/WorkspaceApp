@@ -102,6 +102,8 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Done when:** the demonstrated controls work and the board remains readable with realistic sample content.
 
+**Implementation 2026-10-05:** M1.4 grouped editing/filtering delivered; model/build/HTTP checks pass. Browser acceptance remains pending; see STATUS.md.
+
 ### M1.5 — Task panel and Docs screen
 
 **Deliverable:** the two main detail views connected to the board.
