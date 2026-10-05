@@ -33,3 +33,7 @@ The user handed off M1.2–M1.5 and authorised commit/push checkpoints to Worksp
 ## 2026-10-05 — M1.5 implementation details
 
 Prototype Docs use a small Markdown text/preview editor with formatting controls and only safe HTTP(S) links. No additional runtime dependency, raw HTML execution, cloud editor or persistence is introduced. Fixed document titles keep this increment focused on writing; real editor/collaboration choices remain M4. Edits promote the document in session recency. Board/task drafts remain in the shared provider through navigation, and changed sessions register a refresh/close warning. Native task dialogs preserve visible desktop board context and use the full phone width; rendered behavior remains pending verification. Checkpoints are named implemented, not complete.
+
+## 2026-10-05 — GitHub authentication and upload complete
+
+The user completed GitHub CLI browser sign-in. The assistant configured an HTTPS credential helper in this repository only and pushed `main` plus baseline/M1.2/M1.3/M1.4/M1.5 tags atomically to the supplied WorkspaceApp remote. Future authorised checkpoints can be pushed from this project. The CLI binary and authentication configuration live under untracked `.git` metadata, with the credential reported in the OS keyring. Earlier authentication-block notes are historical; STATUS.md is current. No source changes, credits, resets or deployment were involved in this upload step.

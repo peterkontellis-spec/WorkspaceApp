@@ -1,6 +1,6 @@
 # Current status
 
-Updated: 2026-10-05 — M1.2–M1.5 implemented; browser acceptance and GitHub upload pending.
+Updated: 2026-10-05 — M1.2–M1.5 implemented and pushed to GitHub; browser acceptance pending.
 
 ## Delivery state
 
@@ -35,7 +35,9 @@ Git is initialised inside this existing project folder, as instructed. `origin` 
 | M1.4 | `736daa9` / `m1.4-implemented` | Grouped board editing/filtering |
 | M1.5 | `m1.5-implemented` | Connected task/Docs prototype and review fixes |
 
-**Remote backup is blocked:** the repository was reachable and empty, but push failed because HTTPS credentials were unavailable. A noninteractive SSH check also failed because no trusted GitHub host key was configured; nothing was changed or bypassed. Authentication was requested from the user. No checkpoint is claimed to be uploaded. Once authenticated, push `main` and the checkpoint tags without force-pushing.
+**Remote backup verified:** the user completed GitHub CLI sign-in as `peterkontellis-spec`. The five implementation checkpoints and all five milestone tags were pushed atomically to `origin`; `main` tracks `origin/main`. Initial HTTPS/SSH authentication failures are resolved through the project-local HTTPS credential helper. Credentials and the CLI binary remain outside tracked source, inside Git's local metadata/configuration or the OS credential store.
+
+Review the latest code at [WorkspaceApp](https://github.com/peterkontellis-spec/WorkspaceApp), [commit history](https://github.com/peterkontellis-spec/WorkspaceApp/commits/main), or [milestone tags](https://github.com/peterkontellis-spec/WorkspaceApp/tags).
 
 The October 5 ZIPs in the parent output folder are verified historical snapshots. They predate this implementation; the working tree and Git history are now the authoritative continuation source.
 
@@ -57,4 +59,4 @@ Run RUNNING.md's full checklist once supported browser access is restored. Prior
 
 ## Next action
 
-Authenticate GitHub on this Mac so the existing local checkpoints can be pushed, then restore supported browser access and finish M1.2–M1.5 acceptance. Fix findings before marking increments complete or starting M1.6. No further product scope is authorised by this status record.
+Restore supported browser access and finish M1.2–M1.5 acceptance. GitHub authentication and checkpoint upload are complete. Fix findings before marking increments complete or starting M1.6. No further product scope is authorised by this status record.

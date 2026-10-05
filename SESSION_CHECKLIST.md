@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1 is complete; M1.2–M1.5 are implemented with browser acceptance pending.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment; upload awaits GitHub authentication. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1 is complete; M1.2–M1.5 are implemented with browser acceptance pending.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
