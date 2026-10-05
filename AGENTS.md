@@ -45,3 +45,11 @@ Verify behavior proportionately. For code, discover actual project commands afte
 At meaningful progress points and before a handoff, update STATUS.md with delivered outputs, actual check results, blockers, and one next action. Record consequential decisions with rationale in DECISIONS.md. Keep the records concise. A mockup is not a completed backend feature; a plan is not an implementation; an untested check is not a pass.
 
 Prepare NAS deployment incrementally. Changing live infrastructure or granting external access requires authorization for that action; a local prototype request does not authorize deployment. Respect existing environment permissions. Do not record secrets in project documents.
+
+## Git checkpoints and current handoff
+
+User authorization on 2026-10-05: implement M1.2 through M1.5, commit and push a checkpoint after each meaningful step to https://github.com/peterkontellis-spec/WorkspaceApp.git. Work only in this project workspace; do not move the project or modify unrelated files. Preserve the current design. No purchases, credits, reset redemption or NAS deployment. Check account usage at milestones and stop with a checkpoint before exhausting the allowance.
+
+Keep a baseline and incremental commits; never force-push or rewrite published checkpoints. Include source, specifications and actual test results; exclude secrets, dependencies, generated builds and production data. Use progress wording when required checks are pending. A blocked push must be reported; local commits are still checkpoints but are not a remote backup. Repository-local author is Workspace Checkpoint Agent <checkpoint@localhost> until the user supplies a preferred Git identity.
+
+The current explicit M1.2–M1.5 handoff authorizes implementation while browser tooling remains blocked. This supersedes the earlier sequencing instruction to stop feature implementation at M1.2, but not the acceptance gate: every affected increment remains browser-verification-pending until real supported browser checks pass.

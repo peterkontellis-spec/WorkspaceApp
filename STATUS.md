@@ -56,3 +56,9 @@ Infrastructure, subdomain, and backup details become necessary for their corresp
 ## Continuity
 
 This is the current authoritative status record. At the next meaningful milestone, replace stale state and include actual artifact paths and check results. The coordinating assistant owns updates; specialists return proposed changes. Use HANDOFF.md when switching chats.
+
+## M1.2–M1.5 execution handoff
+
+Baseline saved as `3267038`. Remote `origin` is the user-provided WorkspaceApp repository. Initial push failed because HTTPS credentials were unavailable; authentication requested, local work continues. Browser access was retried and is still refused by policy verification. Latest user instruction authorizes implementation of all four increments with browser acceptance kept pending. M1.2 source refinements remove forced search autofocus, add search field metadata/decorative-icon hiding, and contain modal overscroll.
+
+M1.2 refinement checks: `pnpm check` passed; HTTP smoke 13/13 passed. Static UI review confirms the targeted field/icon/scroll changes; browser acceptance remains pending. Next implementation step: M1.3 shared demo state, personal buckets and minimal task panel.
