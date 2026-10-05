@@ -1,6 +1,6 @@
 # Workspace app — current conversation checkpoint
 
-Saved: **2026-10-06**, before browser-policy diagnostics. This is a durable project checkpoint, not a claim that internal conversation compaction occurred. Read STATUS.md for detailed test evidence. October 5 ZIPs remain historical snapshots.
+Saved: **2026-10-06**, with browser-policy diagnostic results. This is a durable project checkpoint, not a claim that internal conversation compaction occurred. Read STATUS.md for detailed test evidence. October 5 ZIPs remain historical snapshots.
 
 ## Current state
 
@@ -23,6 +23,7 @@ Saved: **2026-10-06**, before browser-policy diagnostics. This is a durable proj
 - User can work **two hours per day**. Their question about resource intensity meant **weekly Codex usage**, not NAS RAM.
 - No purchases, credits or usage-reset redemption. Snapshot: **24% used / 76% remaining**, reset **11 October 2026 at 09:59 Europe/Athens**. Limits are account-wide, not attributable to this task alone.
 - Suggested planning budget: about 8–10 percentage points per session, measured before/after bounded batches; this is not a usage forecast or guaranteed hard cap. Keep reserve and pause before allowance exhaustion. Avoid redundant rereads, duplicate agents and repeated already-passed tests without cause.
+- Theoretical allowance estimate given to the user: roughly 4–9 full weekly allowances for the original full scope, with 1–2 of those for the persistent foundation. This is a low-confidence planning scenario derived from assumed sessions and budget per session, not measured consumption or a guarantee; email/local-AI additions are extra. Recalibrate using actual sessions.
 - Earlier 2–3 weeks for a core / 2–3 months for full scope were rough calendar estimates assuming sufficient allowance and working tools. Re-estimate after measured backend sessions; do not promise completion against the subscription budget.
 
 ## New ideas — proposals, not implementation approval
@@ -35,7 +36,7 @@ Saved: **2026-10-06**, before browser-policy diagnostics. This is a durable proj
 
 User explicitly requested: answer weekly-usage question, save this checkpoint, then troubleshoot the intermittent browser-policy issue now. Diagnose supported browser access and local app reachability separately. Do not change security policies, switch origins/control paths to evade denial, or claim the app can fix a host policy-verification failure.
 
-Supported browser sometimes works, then reports: “The admin-enforced policy could not be verified.” An earlier suggested Settings → Browser permission UI was not visible to this user; do not repeat that path as verified for their app. The cause is not established.
+Supported browser sometimes works, then reports: “The admin-enforced policy could not be verified.” An earlier suggested Settings → Browser permission UI was not visible to this user; do not repeat that path as verified for their app. The cause is not established. On this retry, inspection worked but navigation failed because no preview server was listening. Restarted the existing standalone production build on loopback in its own process session (log: `.git/preview-server.log`); no system service/autostart was installed. Recovered from the generated connection-error data URL by opening the original local origin in a fresh tab of the same supported browser. Home → Website refresh → Home passed, with no captured browser warnings/errors. The preview is restored for now; neither long-term server lifetime nor a permanent policy fix is established. No security permissions changed.
 
 After access is restored, remaining acceptance includes refresh/close warning, physical phone/software keyboard, full screen/viewport coverage, and exact task→Doc→task filter/collapse/scroll preservation. Reuse existing evidence for calendar, mobile preview and reset checks unless code changes justify repetition.
 
@@ -45,4 +46,4 @@ Pre-existing security-planning edits in BRIEF.md, DECISIONS.md and STATUS.md, pl
 
 ## Continue after compaction
 
-Read this file, AGENTS.md and STATUS.md; then diagnose browser access within the user's project scope and no-spend constraints. Do not restart planning or repeat completed implementation. Consult RUNNING.md for preview commands and SESSION_CHECKLIST.md/MILESTONES.md for remaining acceptance.
+Read this file, AGENTS.md and STATUS.md; then continue remaining browser acceptance checks within the user's project scope and no-spend constraints. Do not restart planning or repeat completed implementation. Consult RUNNING.md for preview commands and SESSION_CHECKLIST.md/MILESTONES.md for remaining acceptance.

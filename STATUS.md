@@ -1,6 +1,6 @@
 # Current status
 
-Updated: 2026-10-06 — key browser checks passed; reset confirmation moved in-page; intermittent policy block returned.
+Updated: 2026-10-06 — key browser checks passed; reset confirmation moved in-page; preview recovered; intermittent policy cause unresolved.
 
 ## Delivery state
 
@@ -104,6 +104,12 @@ Validation: `pnpm check` passed TypeScript, 20 tests and production build; `pnpm
 Preview now uses the built standalone server on the same loopback address, with public/static assets copied into generated output. An initial `pnpm start` emitted a standalone-launcher warning; it was replaced with the supported standalone command. On the final browser reload, policy verification failed again. No bypass was attempted; viewport override was reset. The final standalone launch has HTTP evidence only; production browser evidence above came from the same build under `next start` immediately before the launcher switch.
 
 Remaining: refresh/close warning interaction, physical phone/software keyboard, full viewport coverage of every screen, and exact task→Doc→task scroll/collapsed/filter preservation matrix. Development profiler issue remains open; M1.6/Stage 1 are not closed. Usage: 77% of weekly allowance remained; no credits/resets/purchases used.
+
+## Browser recovery follow-up — 2026-10-06
+
+The supported browser could inspect the app, but navigation produced connection refused: port 3100 had no listener. Restarted the existing standalone production preview on 127.0.0.1:3100 in a separate process session, logging only inside `.git/preview-server.log`; no system service was installed. The generated connection-error data URL was denied by browser tooling. A fresh tab in the same browser at the original local origin restored access. Home → Website refresh → Home passed and the tab reported no captured warnings/errors. The server was still listening on a subsequent check. The intermittent admin-policy verification failure did not reproduce in this retry; its cause and long-term preview lifetime remain unresolved. No security policies or permissions changed. This bounded recovery check does not close M1.6 acceptance.
+
+Saved the conversation/usage constraints in HANDOFF_REPORT.md. Documentation-only update: reviewed content and local links, and ran `git diff --check`; no application code changed or redundant build was run. Next: verify refresh/close warning and task/Docs return-context preservation while browser access works, warning the user before tests that may show browser prompts.
 
 ## Next action
 
