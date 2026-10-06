@@ -36,13 +36,13 @@ function InlineEdit({ draftKey, value, label, type = 'text', onSave }: { draftKe
 
 function EditableRow({ task }: { task: DemoTask }) {
   const { updateTask } = useWorkspace();
-  const { taskHref, taskId } = useTaskNavigation();
+  const { taskHref, taskId, rememberOrigin } = useTaskNavigation();
   const [error, setError] = useState<string | null>(null);
   const overdue = task.dueDate && task.dueDate < DEMO_DATE && task.status !== 'Done';
   function change(patch: Partial<DemoTask>) { setError(updateTask(task.id, patch)); }
   return <li className={`board-task ${taskId === task.id ? 'board-task--selected' : ''}`}>
     <div className="board-task-title">
-      <Link href={taskHref(task.id)} scroll={false} data-task-id={task.id} className="task-title-link">{task.title}</Link>
+      <Link href={taskHref(task.id)} onClick={() => rememberOrigin(task.id)} scroll={false} data-task-id={task.id} className="task-title-link">{task.title}</Link>
       <div className="board-task-meta"><InlineEdit draftKey={`${task.id}:title`} value={task.title} label={`Rename ${task.title}`} onSave={(title) => updateTask(task.id, { title })} />{task.documentId ? <span><FileText size={14} aria-hidden="true" />Linked Doc</span> : null}{task.subtasks.length ? <span>{task.subtasks.length} subtask{task.subtasks.length === 1 ? '' : 's'}</span> : null}</div>
     </div>
     <label className="board-cell"><span className="board-cell-label">Status<span className="sr-only"> for {task.title}</span></span><select aria-label={`Status for ${task.title}`} value={task.status} onChange={(event) => change({ status: event.target.value as DemoTask['status'] })}>{taskStatuses.map((status) => <option key={status}>{status}</option>)}</select></label>

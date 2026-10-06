@@ -35,7 +35,7 @@ function StageNote({ children }: { children: React.ReactNode }) {
 function HomePage() {
   const { member } = useDemo();
   const { tasks, documents: sessionDocuments, emptyDemo, setEmptyDemo } = useWorkspace();
-  const { taskHref } = useTaskNavigation();
+  const { taskHref, rememberOrigin } = useTaskNavigation();
   const visibleTasks = emptyDemo ? [] : tasks;
   const buckets = getPersonalBuckets(visibleTasks, member.id, DEMO_DATE);
   const assigned = visibleTasks.filter((task) => task.assigneeIds.includes(member.id));
@@ -49,7 +49,7 @@ function HomePage() {
     <PageHeading eyebrow="FRIDAY, 25 SEPTEMBER · DEMO" title={`Welcome back, ${member.name.split(' ')[0]}.`} description="Your work, one day at a time."><Link className="button button--secondary" href="/boards">Browse boards<ArrowUpRight size={18} aria-hidden="true" /></Link></PageHeading>
     <div className="section-heading"><h2>My Day</h2><label className="demo-toggle"><input type="checkbox" checked={emptyDemo} onChange={(event) => setEmptyDemo(event.target.checked)} />Preview new collaborator</label></div>
     <p className="session-note">Sample assignments · 25 September 2026. Edits last until refresh.</p>
-    {assigned.length === 0 ? <Panel className="inline-empty"><h3>No tasks assigned yet.</h3><p>{emptyDemo ? 'This previews a new collaborator’s Home without changing your demo tasks.' : 'Your shared boards are ready when you are.'}</p><Link href="/boards" className="text-link">Explore the shared boards<ArrowRight size={16} aria-hidden="true" /></Link></Panel> : <div className="my-day-sections">{sections.map(({title, items, empty}) => <Panel key={title}><div className="panel-heading"><h3>{title}</h3><span className="count-badge">{items.length}</span></div>{items.length ? <ul className="task-list">{items.map((task) => <TaskRow key={task.id} task={task} href={taskHref(task.id)} />)}</ul> : <p className="bucket-empty">{empty}</p>}</Panel>)}</div>}
+    {assigned.length === 0 ? <Panel className="inline-empty"><h3>No tasks assigned yet.</h3><p>{emptyDemo ? 'This previews a new collaborator’s Home without changing your demo tasks.' : 'Your shared boards are ready when you are.'}</p><Link href="/boards" className="text-link">Explore the shared boards<ArrowRight size={16} aria-hidden="true" /></Link></Panel> : <div className="my-day-sections">{sections.map(({title, items, empty}) => <Panel key={title}><div className="panel-heading"><h3>{title}</h3><span className="count-badge">{items.length}</span></div>{items.length ? <ul className="task-list">{items.map((task) => <TaskRow key={task.id} task={task} href={taskHref(task.id)} onOpen={() => rememberOrigin(task.id)} />)}</ul> : <p className="bucket-empty">{empty}</p>}</Panel>)}</div>}
     <div className="section-heading docs-section-heading"><h2>Recent documents</h2><Link className="text-link" href="/docs">All docs<ArrowRight size={16} aria-hidden="true" /></Link></div>
     <div className="document-shortcuts">{sessionDocuments.slice(0, 2).map((doc) => <Link href={`/docs/${doc.id}`} key={doc.id} className="document-shortcut"><span className="document-icon"><FileText size={21} aria-hidden="true" /></span><span><strong>{doc.title}</strong><span>{boardFor(doc.boardId)?.name}</span></span><ArrowUpRight size={18} aria-hidden="true" /></Link>)}</div>
     <div className="section-heading docs-section-heading"><h2>Shared boards</h2><span className="section-count">{boards.length} projects</span></div>

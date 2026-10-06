@@ -128,6 +128,8 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Update 2026-10-06:** calendar, mobile preview, nested links and Assistant checks now have browser evidence. Reset confirmation was moved in-page and Cancel/Escape/reset verified. Build, 20 tests and 16 HTTP checks pass. Policy failure returned before all remaining checks; broad review boxes remain open. See STATUS.md.
 
+**Sign-off pass 2026-10-06:** additional testing found and fixed scroll loss after Back/Forward through a linked Doc; both narrow board and desktop Home regressions now pass. Phone testing with the user is pending hotspot confirmation. See the newest STATUS.md section before proceeding to M2; Stage 1 remains open.
+
 **Done when:** the next session can start backend work from a coherent, reviewable screen structure.
 
 - [ ] **Stage 1 complete:** all M1 acceptance checks in MILESTONES.md have evidence.

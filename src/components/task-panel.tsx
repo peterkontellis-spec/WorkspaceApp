@@ -32,7 +32,7 @@ export function TaskPanel() {
       <section className="task-detail-section" aria-labelledby="task-docs-heading"><h3 id="task-docs-heading">Linked document</h3>
         <label className="task-linked-doc">Document<select value={task.documentId ?? ''} onChange={(event) => setLinkError(updateTask(task.id, { documentId: event.target.value || undefined }))}><option value="">No linked document</option>{documents.filter((doc) => doc.boardId === task.boardId).map((doc) => <option key={doc.id} value={doc.id}>{doc.title}</option>)}</select></label>
         {linkError && <p role="alert" className="form-error">{linkError}</p>}
-        {task.documentId ? <Link className="button button--secondary" href={`/docs/${task.documentId}?returnTo=${encodeURIComponent(currentHref)}`} onClick={rememberOrigin}>Open {documents.find((doc) => doc.id === task.documentId)?.title ?? 'document'}</Link> : <p className="detail-empty">Choose a document from this board to connect it to the task.</p>}
+        {task.documentId ? <Link className="button button--secondary" href={`/docs/${task.documentId}?returnTo=${encodeURIComponent(currentHref)}`} onClick={() => rememberOrigin()}>Open {documents.find((doc) => doc.id === task.documentId)?.title ?? 'document'}</Link> : <p className="detail-empty">Choose a document from this board to connect it to the task.</p>}
       </section>
       <section className="task-detail-section"><h3>Planned tools</h3><p className="detail-empty">Dependencies, time entries and activity arrive in later milestones.</p></section>
       <Link className="text-link" href={`/boards/${task.boardId}?task=${task.id}`} scroll={false}>View task in its board</Link>

@@ -35,11 +35,13 @@ export function useTaskNavigation(restoreScroll = false) {
     if (!restoreScroll) return;
     const top = positions?.get(currentHref);
     if (top === undefined) return;
-    const frame = requestAnimationFrame(() => { window.scrollTo({ top, behavior: 'instant' }); positions?.delete(currentHref); });
+    // History can revisit this origin more than once (Back → Forward → Back to task).
+    // Keep it until a fresh task-opening click records the user's current position.
+    const frame = requestAnimationFrame(() => { window.scrollTo({ top, behavior: 'instant' }); });
     return () => cancelAnimationFrame(frame);
   }, [currentHref, positions, restoreScroll]);
   function taskHref(id: string) { return updateTaskQuery(pathname, params.toString(), id); }
   function closeTask() { router.replace(updateTaskQuery(pathname, params.toString(), null), { scroll: false }); }
-  function rememberOrigin() { positions?.set(currentHref, window.scrollY); }
+  function rememberOrigin(id?: string) { positions?.set(id ? taskHref(id) : currentHref, window.scrollY); }
   return { taskId, taskHref, closeTask, currentHref, rememberOrigin };
 }

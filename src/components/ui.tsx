@@ -33,11 +33,11 @@ export function AvatarStack({ ids }: { ids: readonly string[] }) {
   })}</div>;
 }
 
-export function TaskRow({ task, href }: { task: Task; href?: string }) {
+export function TaskRow({ task, href, onOpen }: { task: Task; href?: string; onOpen?: () => void }) {
   const overdue = task.dueDate && task.dueDate < DEMO_DATE && task.status !== 'Done';
   return <li className="task-row">
     <span className={`task-marker ${task.status === 'Done' ? 'task-marker--done' : ''}`} aria-hidden="true" />
-    <div className="task-row__name">{href ? <Link href={href} scroll={false} data-task-id={task.id} className="task-title-link">{task.title}</Link> : <span>{task.title}</span>}<span className="task-row__project">{boardFor(task.boardId)?.name}</span></div>
+    <div className="task-row__name">{href ? <Link href={href} onClick={onOpen} scroll={false} data-task-id={task.id} className="task-title-link">{task.title}</Link> : <span>{task.title}</span>}<span className="task-row__project">{boardFor(task.boardId)?.name}</span></div>
     <StatusLabel status={task.status} />
     <span className={`task-row__date ${overdue ? 'task-row__date--overdue' : ''}`}>{overdue ? 'Overdue · ' : ''}{formatDue(task.dueDate)}</span>
   </li>;
