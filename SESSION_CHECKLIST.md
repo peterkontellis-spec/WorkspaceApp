@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1 and M3.2 are implemented but browser acceptance remains pending; see STATUS.md and PENDING_CHECKS.md.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.3 are implemented but browser acceptance remains pending; see STATUS.md and PENDING_CHECKS.md.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -550,3 +550,10 @@ These boxes are a reusable routine. Completion of a session does not imply compl
 - [x] Source/design/interface/React review, 42 behavioral tests, production build/typecheck and 21 updated-preview HTTP checks.
 - [ ] Supported desktop/narrow browser and theme persistence/focus/contrast checks; browser policy verification blocked opening. See PENDING_CHECKS.md.
 - [ ] Physical phone checks remain deferred.
+
+## Random flare count — 2026-10-07
+
+- [x] Implement two recurring and up to two randomly enabled flares with per-lifetime choices and moving birth positions.
+- [x] Typecheck, 42 behavioral tests, production build, 21 preview HTTP checks and scoped motion/source review.
+- [ ] Actual shader, random birth/fade and device performance checks remain blocked by supported browser policy verification.
+- [x] Record the user-requested design freeze; next implementation block remains M3.4, with earlier browser acceptance open.

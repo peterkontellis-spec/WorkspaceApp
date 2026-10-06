@@ -23,6 +23,7 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform float u_progress;
 uniform float u_boundary;
+uniform float u_flare_seed;
 
 float hash(vec3 p) {
   p = fract(p * 0.1031);
@@ -88,15 +89,20 @@ void main() {
   vec3 flareLight = vec3(0.0);
   float flareAlpha = 0.0;
   if (radius > sphereRadius - 0.025) {
-    for (int index = 0; index < 2; index++) {
+    for (int index = 0; index < 4; index++) {
       float seed = float(index);
-      float cycle = u_time * 0.075 + seed * 0.5;
+      // Two recurring arches plus up to two randomly enabled ones. Decide at
+      // birth and keep the choice for the entire lifetime to avoid popping.
+      float offset = index == 1 ? 0.5 : index == 2 ? 0.25 : index == 3 ? 0.75 : 0.0;
+      float cycle = u_time * 0.075 + offset;
+      float count = 2.0 + floor(hash(vec3(floor(cycle), u_flare_seed, 7.3)) * 3.0);
+      if (seed >= count) continue;
       float phase = fract(cycle);
       float life = sin(phase * 3.141593);
       float strength = smoothstep(0.0, 0.18, phase) * (1.0 - smoothstep(0.68, 1.0, phase));
       // Each birth advances around the limb by the golden angle. Relocate only
       // between lifetimes, when strength is zero, so an active flare never jumps.
-      float birth = floor(cycle) * 2.0 - seed;
+      float birth = floor(cycle) * 4.0 - seed;
       float angle = birth * 2.399963 + 0.35 + sin(u_time * 0.08 + seed) * 0.10;
       vec2 axis = vec2(cos(angle), sin(angle));
       vec2 tangent = vec2(-axis.y, axis.x);
@@ -202,7 +208,9 @@ export function createStellarRenderer(canvas: HTMLCanvasElement): StellarRendere
     const timeUniform = context.getUniformLocation(program, 'u_time');
     const progressUniform = context.getUniformLocation(program, 'u_progress');
     const boundaryUniform = context.getUniformLocation(program, 'u_boundary');
-    if (position < 0 || resolution === null || timeUniform === null || progressUniform === null || boundaryUniform === null) { release(); return null; }
+    const flareSeedUniform = context.getUniformLocation(program, 'u_flare_seed');
+    if (position < 0 || resolution === null || timeUniform === null || progressUniform === null || boundaryUniform === null || flareSeedUniform === null) { release(); return null; }
+    const flareSeed = Math.random() * 31;
     context.bindBuffer(context.ARRAY_BUFFER, buffer);
     context.bufferData(context.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), context.STATIC_DRAW);
     canvas.addEventListener('webglcontextlost', onLost);
@@ -215,6 +223,7 @@ export function createStellarRenderer(canvas: HTMLCanvasElement): StellarRendere
         context.disable(context.DEPTH_TEST); context.disable(context.BLEND);
         context.uniform2f(resolution, canvas.width, canvas.height);
         context.uniform1f(timeUniform, Number.isFinite(time) ? Math.max(0, time) % 4096 : 0);
+        context.uniform1f(flareSeedUniform, flareSeed);
         const boundedProgress = progress !== null && Number.isFinite(progress) ? Math.max(0, Math.min(100, progress)) : -1;
         context.uniform1f(progressUniform, boundedProgress);
         const coverage = Math.max(0, Math.min(1, boundedProgress <= 60 ? boundedProgress / 60 : (boundedProgress - 60) / 20));

@@ -1,5 +1,13 @@
 # Current status
 
+## Random two-to-four flares; visual direction frozen — 2026-10-07
+
+User requested random 2/3/4 flares and then an end to UI/design changes for now. Two recurring slots remain, with two optional slots enabled by a seeded per-birth random count. Decisions remain fixed for each lifetime, positions continue advancing around the limb, and smooth fades prevent count/position jumps. At most four arches; brief fade transitions can show fewer. Existing local hue, pause, hidden/offscreen suspension, reduced-motion path and 30fps/canvas caps remain unchanged. One small seed uniform, no dependency or additional rendering pass; device performance is unmeasured.
+
+`pnpm check` passed TypeScript, **42/42 behavioral tests**, production build. Updated isolated Mac-only preview **PID 71523**, port3100; HTTP smoke **21/21 passed**, normal startup log. Scoped Impeccable motion/craft and fresh interface-guideline source review; detector `[]`. Supported browser check again failed administrator-policy verification before opening a tab. Actual GPU shader execution, random variation/fade continuity and desktop/phone smoothness remain pending, not covered by the build/server checks. No database suite repeated for this shader-only change.
+
+Design is now frozen at the approved direction; implement future functional screens consistently and fix verified defects, without unsolicited redesign. M1 and M2 are accepted locally. M3.1–M3.3 are implemented with browser acceptance open; next feature is M3.4 dashboards, then M3.5 time tracking, M3.6 templates and M3.7 integrated four-person review. M4 scheduling/automation/collaborative Docs and M5 verified NAS rollout remain. Next: close the recorded browser acceptance when supported access is available; do not treat the design freeze as test sign-off. Stop at this checkpoint given the latest **4% weekly remaining** snapshot; no credits/resets or external deployment.
+
 ## Appearance integrated into the running app — 2026-10-07
 
 User explicitly approved moving the theme proposal into the real app. Added Mineral light (ivory/limestone/sage) and ink/slate dark with lilac actions, steel-blue progress, green completion, softer row separators, selected-view underline and clearer document links. Header sun/moon button switches modes; Account → Appearance also controls optional faint star tint in sidebar/header. Choices persist on this browser; default is dark with tint enabled. The star remains an illustrative preview, not task scoring. Semantic task/status colours stay stable. No dependency, database, role or account changes.
