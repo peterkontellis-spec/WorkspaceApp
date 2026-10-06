@@ -1,5 +1,20 @@
 # Current status
 
+## M3.1 implemented — browser acceptance pending — 2026-10-06
+
+User requested fewer flares and progression into M3. The star now has at most **two** staggered flare loops, offset by half a cycle. M3.1 adds Table / Kanban / Calendar links to authenticated boards. Table retains existing groups/custom-field rows; Kanban maps built-in status; Calendar maps built-in due date with Monday-first weeks, outside-month counts and a separate undated list. Narrow layouts use stacked Kanban and calendar agenda. All views use the same filtered records and existing role-aware task editor; change status/date and Save task. View/month/filter/task-return context stays in the URL. No new write endpoint, dependency or schema. [BOARD_VIEWS.md](BOARD_VIEWS.md) defines mapping and limits.
+
+Verified:
+- `pnpm check`: TypeScript, **33/33 behavioral tests**, production build passed. Four new groups cover view/filter URL preservation, leap years/date boundaries, Monday-first cells, no duplicate records/subtasks, undated/outside-month counts and changed-task remapping.
+- Targeted isolated PostgreSQL saved-work suite **17/17 passed**, including owner/editor/viewer boundaries, competing revisions, validation and actual database restart persistence. Test cluster stopped.
+- Final preview HTTP smoke **20/20 passed**. Additional live HTTP check in an isolated fictional workspace saved a task's status/date, mapped the returned authoritative records through Kanban/Calendar helpers without duplicates, verified viewer reads/direct-write denial and stale-revision rejection, and loaded all three view routes. These are server/helper checks, **not browser interaction evidence**.
+- Scoped Impeccable/Operate/motion/craft, React and fresh Web Interface Guidelines source review completed; detector `[]`. Fixed incorrect status CSS selector, semantic colour override and undefined hover token. Visual review remains pending.
+- Removed only the recorded isolated M3.1 owner/viewer workspace, board and four fixture tasks. Preserved Preview Owner and current records: BOARDTEST 2 tasks, Team operations 2 tasks, Website refresh 1 task. Browser account switching never occurred; the user's existing login was untouched.
+
+**Open gate:** supported browser tool refused three separate-tab attempts because its admin-enforced policy could not be verified. User's requested extra preview tab could not be opened. Documentation recovery guidance did not expose a permitted fix; no alternate automation workaround used. Desktop/narrow visual review, real task Save → switch view consistency, filter/history/focus, month navigation, viewer read-only UI, Add task group selection and final two-flare visual check remain pending. No physical-device, OS motion, GPU-performance or console-error clearance claim for this build. This increment and Stage 3 are not signed off.
+
+Runtime: isolated preview **PID 65363**, loopback3100; database supervisor remains **51561**, loopback55432. Verify process identity before replacement. Weekly snapshot **86% used / 14% remaining**; no credits/resets, purchases, NAS/public deployment. Next: restore supported browser access and complete M3.1 acceptance using a fresh disposable fixture, then begin M3.2 live updates. Do not expand M3 while this acceptance gate remains unresolved.
+
 ## Solar flare animation refinement — 2026-10-06
 
 User accepted the star prototype and requested emitted solar flares in its existing shades. Added five staggered plasma arches anchored at the limb: slow expansion/fade, flowing uneven filaments, local red/orange/green hue inheritance, softened edge clipping and subdued neutral activity. Existing sphere, controls, layout, pause/reduced-motion/visibility gating and data remain unchanged. No new dependency or service. Shader work is bounded to the outer star region; actual phone GPU/battery cost remains unmeasured.

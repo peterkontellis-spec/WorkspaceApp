@@ -94,3 +94,9 @@ Adopt bounded raw streaming uploads to a dedicated private ATTACHMENT_ROOT, with
 User approved a literal star-like orb replacing the top-left logo/title and requested applicable design/UI skills. Prototype appearance first with an explicit slider, spatial colour transitions (0 red, 60 orange, 80 green, 100 brighter green), optional neutral state and pause control. At 75, target approximately 25% orange/75% green; texture makes the boundary organic. Do not imply these values measure real performance. The future score formula, time period and treatment of unplanned/overdue work remain undecided.
 
 Use a small dependency-free client WebGL renderer with visibility/motion gating and a static fallback; no generated bitmap, server inference or extra service. Mobile's star retains the existing navigation-button action. Preview preferences are intentionally temporary, reset per refresh/account. This is an approved visual prototype, not finalized branding or a new M3 feature.
+
+## 2026-10-06 — M3.1 shared views and calmer flares
+
+User authorized progression into M3 and reduced stellar activity to one or two visible flares. Cap the shader at two loops with half-cycle staggering. Keep the star a preview, independent of task scoring.
+
+Use built-in task status for Kanban and built-in due date for Calendar. Table retains board groups; neither alternate view changes group membership. Show undated tasks separately and count dates outside the selected month. Preserve view/month/filters in URLs. Reuse the existing task editor and Save flow for status/date changes instead of introducing a second mutation path or drag-only interaction. No live subscription until M3.2. M3.1 acceptance requires supported browser evidence; passing server/helper tests alone does not close it.

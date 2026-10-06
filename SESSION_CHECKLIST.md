@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. Focused UI review comes before M3.1.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1 is implemented but browser acceptance remains pending; see STATUS.md.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -256,8 +256,8 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** three views of the same tasks.
 
-- [ ] Connect all views to shared records and define status/date mapping.
-- [ ] Support useful view-specific changes, such as moving a card or changing a task date.
+- [x] Connect all views to shared records and define status/date mapping. See BOARD_VIEWS.md; server/helper evidence in STATUS.md.
+- [x] Support status/date changes from every view through the existing task editor and Save flow. Browser verification remains pending below.
 - [ ] Check filters, undated tasks, permissions, and consistency after switching views.
 
 **Done when:** a task changed in one view appears correctly in the others without duplication.

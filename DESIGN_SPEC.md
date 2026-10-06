@@ -271,3 +271,5 @@ Colour landmarks are red at 0%, orange at 60%, green at 80% and slightly brighte
 This is an appearance experiment, not a calculated personal-performance indicator. No planned work has a neutral star. Preferences reset on refresh/account change. Definition and data integration of a real progress score require a later decision; M3 is not started by this prototype. See STATUS.md for actual checks and device limits.
 
 Solar flare refinement (2026-10-06): use staggered growing/fading arches with uneven flowing plasma strands, matching their local surface colours. Keep flares inside the existing canvas and retain pause, reduced-motion, offscreen gating and the neutral palette. This refines the accepted appearance only; it does not implement task scoring.
+
+2026-10-06 refinement: cap stellar flare loops at two, staggered by half a cycle, following user feedback. M3.1 adds familiar Table/Kanban/Calendar navigation using the existing dark tokens and shared task editor; compact calendars become dated agendas and Kanban stacks at phone widths. Browser acceptance is pending as recorded in STATUS.md.
