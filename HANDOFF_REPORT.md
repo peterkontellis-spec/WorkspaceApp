@@ -2,7 +2,13 @@
 
 Saved: **2026-10-06**, with browser-policy diagnostic results. This is a durable project checkpoint, not a claim that internal conversation compaction occurred. Read STATUS.md for detailed test evidence. October 5 ZIPs remain historical snapshots.
 
-## Current M2.2 checkpoint — 2026-10-06
+## Current M2.3 progress checkpoint — 2026-10-06
+
+**M2.3 implemented; browser acceptance pending.** Invitations, team roles, removal/rejoin and operator recovery for reinvited identities are implemented. Thirty database groups across final regression/targeted runs, 23 unit tests, production build and 19 HTTP checks passed. Desktop/narrow invitation creation, copying, cancellation and cancelled-link rejection passed. New-password entry was handed to the user per browser policy; do not claim the join succeeded until confirmed. STATUS.md gives the exact remaining steps, temporary QA cleanup and runtime state. MEMBERSHIP.md documents operation and limits. Keep M2.4 separate until this gate closes.
+
+The disposable owner/invitee remain only for the open check; no real accounts existed before setup. Preview on loopback3100; no hotspot/deployment/spend/credits/reset. Latest allowance48% remaining. Unrelated drafts preserved, excluded from checkpoint.
+
+## Earlier M2.2 checkpoint — 2026-10-06
 
 **M2.1–M2.2 complete; M2.3 invitations/roles next.** Real password sign-in, protected screens, operator setup/recovery, idle/absolute expiry and revocation are implemented. User chose local operator identity verification and a short-lived reset link. TypeScript, 23 existing tests, 19 real PostgreSQL tests, production build and 17 HTTP checks passed. Desktop/narrow browser journeys passed; the user completed the disposable reset. Three independent review findings were fixed and checked. See STATUS.md for exact evidence/limits and AUTHENTICATION.md for setup.
 

@@ -67,7 +67,7 @@ Both commands passed during M1.6 refinement checks. A native framework standalon
 
 ### Repeatable self-check commands
 
-Run `pnpm check` for TypeScript, behavioural model/Markdown/navigation tests, and the production build. With this project's server running at `127.0.0.1:3100`, run `pnpm check:smoke` in another terminal. In explicit prototype mode the smoke script runs 16 checks covering the Home redirect, sample pages, task/filter/return query routes, prototype disclosure, filtered row count, task/editor markup and four HTTP 404 responses. Accounts mode adds signed-out rejection checks (17 total) and needs an ignored disposable credentials file; see AUTHENTICATION.md. Recovery-link rendering and clicks remain browser checks. The script exits nonzero on failure and uses no additional dependencies.
+Run `pnpm check` for TypeScript, behavioural model/Markdown/navigation tests, and the production build. With this project's server running at `127.0.0.1:3100`, run `pnpm check:smoke` in another terminal. In explicit prototype mode the smoke script runs 16 checks covering the Home redirect, sample pages, task/filter/return query routes, prototype disclosure, filtered row count, task/editor markup and four HTTP 404 responses. Accounts mode adds signed-out rejection, team and invalid-invitation checks (19 total) and needs an ignored disposable credentials file; see AUTHENTICATION.md. Recovery-link rendering and clicks remain browser checks. The script exits nonzero on failure and uses no additional dependencies.
 
 These HTTP checks do not execute client JavaScript, click controls, inspect layout, or replace the browser checklist below. Do not use them as a workaround for a denied browser check. Extend the checks as routes and behavior evolve.
 

@@ -1,6 +1,6 @@
 # Local accounts — M2.2
 
-Password accounts and server-checked sessions now protect workspace pages. Boards, tasks and Docs still use fictional in-memory records; refreshing or signing out clears sample edits. Invitations and full role administration are M2.3; real board/task persistence is M2.4. No customer portal, private admin access, MFA, email service or NAS deployment is enabled.
+Password accounts and server-checked sessions now protect workspace pages. Boards, tasks and Docs still use fictional in-memory records; refreshing or signing out clears sample edits. M2.3 adds invitations and team role administration; see [MEMBERSHIP.md](MEMBERSHIP.md). Real board/task persistence is M2.4. No customer portal, private admin access, MFA, email service or NAS deployment is enabled.
 
 ## Create your first owner
 
@@ -10,7 +10,7 @@ From this project folder, with Node and pnpm on your PATH:
 2. Run `pnpm account:setup` in another local terminal. Enter your name, email and a password of 12–128 characters; password input is hidden. Email is a sign-in identifier; no email is sent. Do not paste your password into chat.
 3. Reuse the running [Mac preview](http://127.0.0.1:3100/sign-in), or run `pnpm dev:db` after stopping that preview. Sign in with your new account.
 
-Setup allows only the first bound workspace owner. It never gives the fictional seed accounts a password. Failed membership creation cleans up the newly created identity so setup can be retried. This staff owner has no NAS or customer-portal privileges. The disposable QA account was removed after checks; there is no default login.
+Setup allows only the first bound workspace owner. It never gives the fictional seed accounts a password. Failed membership creation cleans up the newly created identity so setup can be retried. This staff owner has no NAS or customer-portal privileges. There is no default production login. Temporary QA accounts may exist while current browser checks are open; STATUS.md records their cleanup before first real owner setup.
 
 `pnpm dev:db` loads `.local/database.env` and `.local/auth.env`. Plain `pnpm dev` requires equivalent environment configuration; missing configuration fails closed. Use `pnpm dev:prototype` only for an explicitly anonymous sample-data preview. Never deploy prototype mode with real records.
 
@@ -22,9 +22,9 @@ HOSTNAME=127.0.0.1 PORT=3100 node --env-file=.local/database.env --env-file=.loc
 
 ## Recovery and operator actions
 
-The user selected local identity verification rather than an assumed email provider. Run `pnpm account:recover`, enter the account email, independently verify the person, and type `verified`. The command writes a one-use, 15-minute reset link to an owner-only file under `.local/recovery/`. Share it directly with that verified person, then remove the local file. The person opens it and enters their new password themselves. Issuing another link invalidates the previous one; successful recovery revokes existing sessions. Expired or reused links cannot reset a password. Disabled accounts cannot recover.
+The user selected local identity verification rather than an assumed email provider. Run `pnpm account:recover`, enter the account email, independently verify the person, and type `verified`. The command writes a one-use, 15-minute reset link to an owner-only file under `.local/recovery/`. Share it directly with that verified person, then remove the local file. The person opens it and enters their new password themselves. Issuing another link invalidates the previous one; successful recovery revokes existing sessions. Expired or reused links cannot reset a password. Disabled accounts cannot recover. A removed person with a valid pending invitation from an active owner can use verified operator recovery; recovery does not grant membership, and they must still accept the invitation.
 
-`pnpm account:revoke` signs out all sessions and cancels outstanding recovery links. `pnpm account:disable` also blocks future sign-ins. Each prompts for an email and explicit confirmation. These are trusted local operator commands, not public HTTP endpoints. Re-enabling and ongoing membership administration belong to M2.3.
+`pnpm account:revoke` signs out all sessions and cancels outstanding recovery links. `pnpm account:disable` also blocks future sign-ins. Each prompts for an email and explicit confirmation. These are trusted local operator commands, not public HTTP endpoints. Team membership administration is described in MEMBERSHIP.md. Re-enabling an operator-disabled account is not exposed in the UI.
 
 ## Session and request boundaries
 
@@ -40,7 +40,7 @@ All local databases, credentials, recovery files and auth configuration are igno
 
 ## Verification
 
-`pnpm check` runs TypeScript, 23 existing behavioral tests and a production build. `pnpm test:db` runs 19 real PostgreSQL tests across isolated clusters on ports 55433/55434, including auth, restart, membership, recovery, concurrency and foundation checks. They stop their own clusters and preserve development data.
+`pnpm check` runs TypeScript, 23 existing behavioral tests and a production build. `pnpm test:db` runs 30 real PostgreSQL tests across isolated clusters on ports 55433/55434/55435, including auth, restart, membership, recovery, concurrency and foundation checks. They stop their own clusters and preserve development data.
 
 For HTTP smoke checks in accounts mode, supply `WORKSPACE_SMOKE_CREDENTIALS_FILE` pointing to an ignored owner-only JSON file with a disposable test account's `email` and `password`. The script uses the cookie only in memory. Remove the file/account after testing. With an explicit prototype preview, no account file is needed. Never put passwords in command arguments, committed fixtures or test output.
 

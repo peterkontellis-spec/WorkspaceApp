@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3 invitations/roles is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3 is implemented; final user-assisted browser checks are pending.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -140,7 +140,7 @@ You do not need to finish one increment per session. Some will take several sess
 
 ---
 
-**Current reconciliation 2026-10-06:** M1 was signed off as a sample-data prototype; see STATUS.md for evidence and limitations. M2.1 is now verified; M2.2 is next. Earlier progress notes are historical.
+**Current reconciliation 2026-10-06:** M1 was signed off as a sample-data prototype; see STATUS.md for evidence and limitations. M2.1–M2.2 are verified; see current STATUS.md for M2.3 acceptance. Earlier progress notes are historical.
 
 ## Stage 2 — Working foundation
 
@@ -176,11 +176,13 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** a shared workspace with owner, editor, and viewer access.
 
-- [ ] Implement expiring invitations and membership management; owner-generated invitation links are the initial proposal.
-- [ ] Define permitted actions for each role and enforce them on the server.
+- [x] Implement expiring invitations and membership management; owner-generated invitation links are the initial proposal.
+- [x] Define permitted actions for each role and enforce them on the server.
 - [ ] Check expired/reused invitations, direct unauthorized requests, and access after a membership change.
 
 **Done when:** the right people can join and role restrictions work beyond the visible interface.
+
+**Progress 2026-10-06:** backend permission/invitation tests pass (30 database groups across final targeted/regression runs), 23 unit tests, build and 19 HTTP checks pass. Desktop/narrow invitation creation/cancellation checked. User must submit the disposable new-password/join form; viewer and remaining member-change UI confirmation follow. M2.3 acceptance stays open; see STATUS.md and MEMBERSHIP.md.
 
 ### M2.4 — Persistent boards, groups, and tasks
 

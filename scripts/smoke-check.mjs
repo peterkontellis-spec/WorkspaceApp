@@ -98,5 +98,19 @@ for (const path of unknownPages) {
   });
 }
 
+
+if (cookie) {
+  await check('team page is protected and available to a signed-in account', async () => {
+    const response = await request('/team');
+    assert.equal(response.status, 200);
+    assert.ok((await response.text()).includes('Team access'));
+    assert.equal((await fetch(`${origin}/api/team`)).status, 401);
+  });
+  await check('invalid invitations fail without exposing membership', async () => {
+    const response = await fetch(`${origin}/api/invitations?token=invalid`);
+    assert.equal(response.status, 400);
+    assert.match(response.headers.get('cache-control'), /no-store/);
+  });
+}
 console.log(`\n${passed} passed; ${failed} failed. HTTP only; browser acceptance remains separate.`);
 if (failed) process.exitCode = 1;

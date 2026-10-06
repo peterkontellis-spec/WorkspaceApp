@@ -26,12 +26,30 @@ export async function createFirstOwner(pool, options, { name, email, password })
 }
 
 export async function issueRecovery(pool, options, email) {
-  const user = (await pool.query(`SELECT a.id FROM auth_user a JOIN app_user u ON u.auth_user_id=a.id
-    JOIN membership m ON m.user_id=u.id WHERE lower(a.email)=lower($1) AND u.disabled_at IS NULL LIMIT 1`, [email])).rows[0];
-  if (!user) throw new Error('No active workspace account matches that email.');
+  // A removed collaborator may need to recover their existing password before
+  // accepting a new invitation. Recovery changes credentials only; it never
+  // restores membership or bypasses the invitation's one-use acceptance.
+  const eligible = `SELECT a.id, access.workspace_id FROM auth_user a
+    JOIN app_user u ON u.auth_user_id=a.id
+    JOIN LATERAL (
+      SELECT m.workspace_id FROM membership m WHERE m.user_id=u.id
+      UNION
+      SELECT i.workspace_id FROM workspace_invitation i
+        JOIN membership issuer ON issuer.workspace_id=i.workspace_id AND issuer.user_id=i.created_by AND issuer.role='owner'
+        JOIN app_user creator ON creator.id=issuer.user_id AND creator.disabled_at IS NULL
+        WHERE i.email=lower(a.email) AND i.accepted_at IS NULL AND i.revoked_at IS NULL AND i.expires_at>now()
+    ) access ON true
+    WHERE lower(a.email)=lower($1) AND u.disabled_at IS NULL ORDER BY access.workspace_id LIMIT 1`;
   let resetToken;
   await transaction(pool, async (c) => {
     await c.query('SELECT pg_advisory_xact_lock(73022002)');
+    let user = (await c.query(eligible, [email])).rows[0];
+    if (!user) throw new Error('No active workspace account or valid invitation matches that email.');
+    // Share the membership mutation lock so a simultaneous invite cancellation
+    // or owner demotion cannot race recovery issuance based on stale access.
+    await c.query('SELECT id FROM workspace WHERE id=$1 FOR UPDATE', [user.workspace_id]);
+    user = (await c.query(eligible, [email])).rows[0];
+    if (!user) throw new Error('No active workspace account or valid invitation matches that email.');
     await c.query('DELETE FROM auth_verification WHERE value=$1', [user.id]);
     const auth = createAuthentication(pool, { ...options, onReset: async ({ token }) => { resetToken = token; } });
     await auth.api.requestPasswordReset({ body: { email, redirectTo: `${options.baseURL}/reset-password` } });
