@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { SignedInAccount } from '@/server/auth';
+import { StellarProvider, StellarControl, StellarOrb } from './stellar-identity';
 import { useWork } from './work-provider';
 import { filterWorkTasks, readWorkFilters } from '@/lib/work-filters.mjs';
 import { localToday } from '@/lib/work';
@@ -9,7 +10,7 @@ import { SignOutButton } from './session-boundary';
 import './auth.css';
 import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { ArrowUpRight, ChartNoAxesCombined, Check, ChevronDown, ChevronsUpDown, Clock3, Bot, FileText, Folder, House, LayoutGrid, Menu, Search, Settings2, Users, X } from 'lucide-react';
+import { ArrowUpRight, ChartNoAxesCombined, Check, ChevronDown, ChevronsUpDown, Clock3, Bot, FileText, Folder, House, LayoutGrid, Search, Settings2, Users, X } from 'lucide-react';
 import { boards, documents, members, type Member } from '@/lib/demo';
 import { Avatar, AvatarStack, Button, Dialog, Field } from '@/components/ui';
 import { useWorkspace } from './demo-provider';
@@ -40,10 +41,6 @@ function Navigation({ close, mobile = false }: { close?: () => void; mobile?: bo
       return <div key={item.label} className="nav-item nav-item--later" aria-label={`${item.label}. ${item.later}`}><Icon size={20} aria-hidden="true" /><span>{item.label}</span><span className="later-label">Later</span></div>;
     })}
   </nav>;
-}
-
-function Brand() {
-  return <div className="brand"><span className="brand-mark" aria-hidden="true"><span /><span /><span /></span><span>Workspace<span className="brand__subtitle">A shared space</span></span></div>;
 }
 
 export function WorkspaceShell({ children, account }: { children: ReactNode; account: SignedInAccount | null }) {
@@ -118,11 +115,11 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
     ...documents.map((doc) => ({ name: doc.title, detail: 'Sample document · not saved', href: `/docs/${doc.id}`, kind: 'Doc' })),
   ].filter((item) => `${item.name} ${item.detail}`.toLowerCase().includes(query.trim().toLowerCase())).concat(taskMatches.slice(0,8).map(task => ({name:task.title, detail:savedWork?.boards.find(board=>board.id===task.boardId)?.name ?? 'Saved task', href:`${taskSearchHref}&task=${encodeURIComponent(task.id)}`, kind:'Task'})));
 
-  return <DemoContext.Provider value={{ member }}>
+  return <StellarProvider key={account?.id ?? member.id}><DemoContext.Provider value={{ member }}>
     <a className="skip-link" href="#main-content">Skip to content</a>
     <div className="workspace-shell">
       <aside className="sidebar">
-        <Brand />
+        <StellarControl name={account?.name ?? member.name}/>
         <p className="nav-heading">WORKSPACE</p>
         <Navigation />
         <div className="sidebar__bottom">
@@ -136,7 +133,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
       <div className="workspace-body">
         <header className="topbar">
           <div className="topbar__location">
-            <Button variant="ghost" className="icon-button mobile-menu-trigger" aria-label="Open navigation" onClick={() => setOverlay('navigation')}><Menu size={22} aria-hidden="true" /></Button>
+            <Button variant="ghost" className="icon-button mobile-menu-trigger" aria-label="Open navigation" onClick={() => setOverlay('navigation')}><StellarOrb compact/></Button>
             <span className="breadcrumb-root">Workspace</span><span className="breadcrumb-divider" aria-hidden="true">/</span><span className="current-page">{currentLabel}</span>
           </div>
           <div className="topbar__actions">
@@ -160,6 +157,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
     </div>
 
     <Dialog open={overlay === 'navigation'} onClose={() => closeOverlay('navigation')} title="Workspace navigation" className="navigation-dialog">
+      <StellarControl name={account?.name ?? member.name}/>
       <Navigation mobile close={close} />
       {account ? <Link href="/team" onClick={close} className={`nav-item ${section === 'team' ? 'nav-item--active' : ''}`} aria-current={section === 'team' ? 'page' : undefined}><Users size={20} aria-hidden="true" /><span>Team access</span></Link> : null}
           <div className="nav-item nav-item--later"><Settings2 size={20} aria-hidden="true" /><span>Settings</span><span className="later-label">Later</span></div>
@@ -187,5 +185,5 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
       <p className="dialog-intro">Reset all sample tasks, documents and unfinished input? This clears this session’s edits and restores the original sample data.</p>
       <div className="reset-actions"><Button onClick={() => setOverlay('account')}>Cancel</Button><Button variant="primary" onClick={() => { resetDemo(); setMember(members[0]); close(); }}>Reset sample data</Button></div>
     </Dialog>
-  </DemoContext.Provider>;
+  </DemoContext.Provider></StellarProvider>;
 }

@@ -1,5 +1,22 @@
 # Current status
 
+## Stellar identity preview — 2026-10-06
+
+User approved a personal star/orb in place of the top-left Workspace branding, before M3. Added a procedural textured sphere, moving corona and spatial red → orange → green phases: red at 0, orange at 60, green at 80, slightly brighter at 100; 75 shows approximately one-quarter orange and three-quarters green. Organic boundaries are illustrative, not a precise chart. Click the star to adjust the preview, choose neutral “No planned work”, or pause animation. On mobile the compact star opens navigation; full controls are inside that menu.
+
+This is an appearance prototype, **not a task score**. Settings are tab-local, survive ordinary navigation and reset on refresh/account change. No database, account, task or attachment changes; Preview Owner, BOARDTEST and other saved work preserved. No dependency added. The renderer runs on the viewing device, capped around 30 fps, stops when hidden/offscreen, respects reduced motion and has a static fallback. Actual GPU/battery cost is unmeasured.
+
+Checks completed:
+- `pnpm check`: TypeScript, **29/29 behavioral tests**, production build passed. Final shader refinement also passed the production build/typecheck. Authenticated HTTP smoke **20/20 passed**.
+- Supported browser: desktop/default and wide 1440×900, narrow 360×800 and 390×844. Inspected surface/corona, keyboard range endpoints/60/75/100, disclosure keyboard toggle, neutral disabled range, shared desktop/mobile state, navigation and refresh. Paused screenshot samples were byte-identical; moving samples changed. Home/Boards/Docs/Files, account → Cmd+K search, no-match/matching search, mobile menu Escape and focus return worked. No captured console warnings/errors.
+- Impeccable motion/craft guidance, current Web Interface Guidelines and React best-practices review applied; scoped detector returned `[]`. Renderer and lifecycle reviewed independently. No layout overflow observed; 360px document width was 345px. Visible labels explain the prototype and controls have comfortable targets.
+- Final preview restart and smoke initially hit sandbox process/network restrictions; approved scoped retries succeeded. A browser geometry-read call timed out; screenshot-based inspection and pixel comparison completed the affected check. No app failure was inferred from those tool errors.
+- Limits: no new physical-phone, software-keyboard, 200% zoom, OS reduced-motion, forced WebGL-failure/context-loss or hardware performance test. Reduced-motion/fallback/cleanup paths were source-reviewed, not claimed as browser-tested. No full database regression repeated because this change is client-only.
+
+Runtime: isolated loopback preview **PID 63656**, port3100; database supervisor remains **51561**, port55432. Verify identity before acting. Weekly usage snapshot **82% used / 18% remaining**; no credits/resets, purchases, NAS/public deployment or publication audit.
+
+Next: user reviews the star appearance. Decide what a future personal progress score should mean before connecting real tasks/goals; M3 has not started. Existing M2 acceptance is unchanged. Earlier sections below are historical.
+
 ## M2.8 accepted — Stage 2 persistent foundation complete — 2026-10-06
 
 The connected account → invitation → task/assignment → attachment → search journey is verified. Added a permanent isolated integration regression, corrected outdated sample-only/setup documentation, and preserved the existing application/UI. [FOUNDATION_REVIEW.md](FOUNDATION_REVIEW.md) records the permission matrix, acceptance evidence and remaining boundaries.

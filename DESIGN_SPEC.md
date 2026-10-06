@@ -261,3 +261,11 @@ M1.1 is complete when this document captures known direction and explicitly prov
 **Next increment: M1.2 — App shell and navigation.** Read this brief, the latest user preferences, and STATUS.md. Validate the minimal prototype tooling, then build the local shell with working navigation for demonstrated screens and shared sample state. M1.3–M1.5 deliver the detailed Home, board, task, and Docs interactions. Do not describe the plan or shell as a finished M1 prototype.
 
 Reference scope: [PLANNING.md](PLANNING.md) · Delivery checks: [MILESTONES.md](MILESTONES.md) · Session steps: [SESSION_CHECKLIST.md](SESSION_CHECKLIST.md)
+
+## 10. Approved stellar identity prototype — 2026-10-06
+
+Replace the sidebar brand with a luminous textured star and compact “Your star / percentage / Preview” caption. A disclosure holds a labelled appearance slider, plain colour-phase explanation, neutral-state switch and animation toggle. Keep existing dark tokens and navigation; mobile shows a compact star as the navigation trigger, with full controls in its menu.
+
+Colour landmarks are red at 0%, orange at 60%, green at 80% and slightly brighter green at 100%. Intermediate phases occupy spatial areas with a soft turbulent boundary: 75% should look approximately one-quarter orange and three-quarters green. Emit subtle drifting corona wisps; no flashing or rapid pulses. Respect reduced motion and allow pausing. Retain explanatory text so colour is not the only signal.
+
+This is an appearance experiment, not a calculated personal-performance indicator. No planned work has a neutral star. Preferences reset on refresh/account change. Definition and data integration of a real progress score require a later decision; M3 is not started by this prototype. See STATUS.md for actual checks and device limits.

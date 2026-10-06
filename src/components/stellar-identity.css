@@ -1,0 +1,30 @@
+.stellar-control { margin: -14px 0 22px; min-width: 0; }
+.stellar-control > summary { display: flex; align-items: center; gap: 1px; cursor: pointer; list-style: none; border-radius: 12px; min-height: 114px; padding: 2px 8px 2px 0; }
+.stellar-control > summary::-webkit-details-marker { display: none; }
+.stellar-control > summary:hover { background: var(--hover); }
+.stellar-control > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stellar-orb { position: relative; display: inline-block; width: 116px; height: 116px; flex: 0 0 116px; isolation: isolate; pointer-events: none; }
+.stellar-orb canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+.stellar-orb canvas.stellar-canvas--ready { opacity: 1; }
+.stellar-fallback { position: absolute; inset: 22%; border-radius: 50%; background: radial-gradient(circle at 39% 32%, #fff5d9 0%, var(--star-colour) 30%, #13141a 100%); box-shadow: 0 0 16px 2px color-mix(in srgb,var(--star-colour) 45%,transparent); }
+.stellar-fallback[hidden] { display: none; }
+.stellar-caption { display: grid; gap: 4px; min-width: 0; font-size: .8125rem; color: var(--muted); }
+.stellar-caption strong { font-size: 1.375rem; line-height: 1.25; color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
+.stellar-preview-label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: .75rem; }
+.stellar-control[open] .stellar-preview-label svg { transform: rotate(180deg); }
+.stellar-adjustments { padding: 12px 8px 16px; border-bottom: 1px solid var(--line); }
+.stellar-person { font-size: .875rem; font-weight: 500; overflow-wrap: anywhere; margin-bottom: 8px; }
+.stellar-explainer,.stellar-footnote { color: var(--muted); font-size: .8125rem; line-height: 1.6; }
+.stellar-range-label { display: flex; justify-content: space-between; gap: 8px; margin-top: 18px; font-size: .8125rem; }
+.stellar-range-label output { font-variant-numeric: tabular-nums; }
+.stellar-adjustments input[type=range] { display: block; width: 100%; min-width: 0; height: 44px; accent-color: var(--accent); cursor: pointer; }
+.stellar-adjustments input[type=range]:disabled { opacity: .4; cursor: default; }
+.stellar-phase { font-size: .75rem; color: var(--muted); line-height: 1.5; min-height: 36px; }
+.stellar-option { display: flex; align-items: center; gap: 9px; min-height: 44px; font-size: .8125rem; cursor: pointer; }
+.stellar-option input { width: 17px; height: 17px; margin: 0; accent-color: var(--accent); }
+.stellar-footnote { font-size: .75rem; margin-top: 10px; }
+.stellar-orb--compact { width: 46px; height: 46px; flex-basis: 46px; }
+.mobile-menu-trigger:has(.stellar-orb) { padding: 0; }
+.navigation-dialog .stellar-control { margin: 0 0 16px; }
+.navigation-dialog .stellar-control > summary { justify-content: center; }
+@media (prefers-reduced-motion: reduce) { .stellar-control * { scroll-behavior: auto; } }

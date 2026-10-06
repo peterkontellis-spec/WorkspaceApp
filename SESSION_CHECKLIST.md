@@ -530,3 +530,10 @@ These boxes are a reusable routine. Completion of a session does not imply compl
 | [DECISIONS.md](DECISIONS.md) | Confirmed choices, proposals, and reasons |
 | [README.md](README.md) | Project workflow and useful starting prompts |
 | [HANDOFF.md](HANDOFF.md) | Continuing in another chat |
+
+## Stellar prototype review — 2026-10-06
+
+- [x] Implement approved star appearance and clearly labelled temporary controls.
+- [x] Run typecheck, behavioral tests, production build and HTTP smoke; inspect desktop/narrow UI and affected keyboard/navigation journey.
+- [x] Apply scoped design/interface/React review; record actual evidence and limitations in STATUS.md.
+- [ ] Review appearance with the user and define real task/goal scoring before connecting data.

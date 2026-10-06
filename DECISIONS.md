@@ -88,3 +88,9 @@ Search literal case-insensitive title/notes text, capped at 200 characters. Comb
 ## 2026-10-06 — M2.7 private task attachments
 
 Adopt bounded raw streaming uploads to a dedicated private ATTACHMENT_ROOT, with PostgreSQL metadata and UUID storage names. Initial types are PDF, PNG/JPEG and UTF-8 TXT/Markdown/CSV, up to 25 MiB; owners/editors upload and shared staff members download. Files are forced downloads, with no inline rendering or format parsing/malware-scanning claim. Same-origin requests and fresh role/membership checks apply, including after transfer. Two upload slots per process and deadlines bound active work. Task changes and upload commits are separate; uncertain responses require refresh before retry. Uncertain database commits preserve bytes, accepting possible orphan storage rather than deleting a committed attachment. No dependency, migration, deletion UI, public/NAS deployment or full publication audit is included. See FILES.md and STATUS.md.
+
+## 2026-10-06 — personal stellar identity prototype
+
+User approved a literal star-like orb replacing the top-left logo/title and requested applicable design/UI skills. Prototype appearance first with an explicit slider, spatial colour transitions (0 red, 60 orange, 80 green, 100 brighter green), optional neutral state and pause control. At 75, target approximately 25% orange/75% green; texture makes the boundary organic. Do not imply these values measure real performance. The future score formula, time period and treatment of unplanned/overdue work remain undecided.
+
+Use a small dependency-free client WebGL renderer with visibility/motion gating and a static fallback; no generated bitmap, server inference or extra service. Mobile's star retains the existing navigation-button action. Preview preferences are intentionally temporary, reset per refresh/account. This is an approved visual prototype, not finalized branding or a new M3 feature.
