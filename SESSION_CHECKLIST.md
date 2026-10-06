@@ -276,9 +276,10 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** a clear record of changes and an in-app notification center.
 
-- [ ] Record useful activity with actor and time, such as assignment and status changes.
-- [ ] Add assignment/update notifications, read/unread state, and links to the affected task.
-- [ ] Verify recipients, permissions, and duplicate prevention; connect due-date reminders after M4.2.
+- [x] Record useful activity with actor and time, including assignment and status changes; transactional database evidence in STATUS.md.
+- [x] Implement assignment/update notifications, personal read/unread state and task links. UI acceptance remains pending.
+- [x] Verify recipients, permissions and duplicate prevention in isolated database/HTTP tests. Due-date reminders remain deferred until M4.2.
+- [ ] Exercise notification delivery, links, read state, activity and error/focus/layout behavior in the supported browser; see PENDING_CHECKS.md.
 
 **Done when:** users receive relevant in-app updates and can understand who changed a task. Email, push, and mentions remain separate decisions.
 

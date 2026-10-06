@@ -110,6 +110,15 @@ for (const path of unknownPages) {
 
 
 if (cookie) {
+  await check('Notifications page and updates API respect account boundaries', async () => {
+    const page = await request('/notifications'); assert.equal(page.status, 200);
+    assert.match(await page.text(), /<h1>Notifications<\/h1>/);
+    const response = await request('/api/updates'); assert.equal(response.status, 200);
+    const data = await response.json(); assert.ok(Array.isArray(data.items));
+    assert.match(response.headers.get('cache-control'), /no-store/);
+    assert.equal((await fetch(`${origin}/api/updates`)).status, 401);
+    assert.equal((await request('/notifications/unexpected')).status, 404);
+  });
   await check('Files page and API respect account boundaries', async () => {
     const page = await request('/files'); assert.equal(page.status, 200);
     assert.match(await page.text(), /Attachments saved with/);
@@ -121,7 +130,7 @@ if (cookie) {
   });
   await check('work API returns only the authenticated workspace', async () => {
     const response = await request('/api/work'); assert.equal(response.status, 200);
-    const data = await response.json(); assert.ok(data.actor.id); assert.ok(Array.isArray(data.boards)); assert.ok(Array.isArray(data.tasks));
+    const data = await response.json(); assert.ok(data.actor.id); assert.ok(Array.isArray(data.boards)); assert.ok(Array.isArray(data.tasks)); assert.ok(Number.isInteger(data.unreadNotifications) && data.unreadNotifications >= 0);
     assert.equal((await fetch(`${origin}/api/work`)).status, 401);
     assert.match(response.headers.get('cache-control'), /no-store/);
   });

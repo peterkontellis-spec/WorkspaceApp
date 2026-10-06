@@ -1,5 +1,21 @@
 # Current status
 
+## M3.3 implemented — browser acceptance pending — 2026-10-06
+
+Added task activity (actor, time and meaningful changed-field summaries) and personal in-app notifications. The topbar bell opens `/notifications`; task details include Activity. Owner/editor task saves create history and recipient notifications in the same database transaction. Assignment, meaningful updates and unassignment notify active affected assignees, excluding the actor. No-op saves, creation retries, conflicts and rolled-back saves produce no duplicate events. Pure task reordering records activity without notifying. Viewers can read shared task history and change only their own notification read state.
+
+Additive migration `006_task_updates.sql` is applied locally. Existing records are preserved; earlier activity is not invented/backfilled. The bell count joins M3.2 polling; lists load on opening and offer Refresh and bounded Older/Latest pages. Read-state changes are explicit. No email, push, due reminders, mentions, attachment history or new service/dependency. [ACTIVITY_NOTIFICATIONS.md](ACTIVITY_NOTIFICATIONS.md) records behavior and limits.
+
+Verified:
+- `pnpm check`: TypeScript, **42/42 behavioral tests**, production build passed. Final request-timeout/error-copy refinement also passed build and TypeScript.
+- Full sequential isolated `pnpm test:db`: **67/67 passed**, no skips. Eight new tests cover recipients/self suppression, duplicate/no-op/conflict prevention, late rollback, viewer/private read state, workspace isolation, disabled/removed members, idle expiry, cursor pages under new writes, migration rerun, real database restart and revocation in flight. Application-role inserts verified; test clusters stopped. Expected invalid-password logging is a passing rejection test.
+- Updated isolated preview HTTP smoke **21/21 passed**, including Notifications page/API, unread snapshot count, no-store responses and signed-out denial. Normal preview startup log. Existing user boards/tasks/login preserved; no live QA workspace or task mutation was needed.
+- Scoped Impeccable craft/Operate, current Web Interface Guidelines and React source review completed; detector `[]`. Reviewed bounded list rendering, touch controls, long text, focus, labelled bell, abort/stale-response handling, expiry clearing and error states. Fixed an undefined color token and added bounded request timeouts. This is source evidence, not measured layout/contrast.
+
+**Open acceptance:** supported browser retry failed admin-enforced policy verification before opening a tab. No workaround or account switching. Actual assignment → bell → notification → task journey, read-state persistence in UI, desktop/narrow layout, keyboard/focus, error states and console/runtime checks remain unchecked in [PENDING_CHECKS.md](PENDING_CHECKS.md). M3.1/M3.2, motion/fallback and deferred phone checks remain open. M3.3 and Stage 3 are not signed off.
+
+Runtime: Mac-only isolated preview **PID 69471**, loopback3100; database supervisor **51561**, loopback55432. Verify identities before acting. Latest weekly snapshot **91% used / 9% remaining**; no credits, resets, purchases or deployment. Stop after this checkpoint to preserve allowance. Next: restore supported browser access and run the recorded M3.1–M3.3 acceptance batch; next implementation block is M3.4 personal/team dashboards.
+
 ## M3.2 implemented — browser acceptance pending — 2026-10-06
 
 User asked to write down pending checks, deferred the phone preview and explicitly instructed continuation. [PENDING_CHECKS.md](PENDING_CHECKS.md) now lists M3.1, M3.2, physical-phone and motion/fallback checks individually. This continuation supersedes the earlier instruction to wait before further M3 implementation; it does not sign off those checks. Network inspection found the active connection was not the previous phone hotspot. No phone/LAN listener was started, and non-loopback HTTPS authentication requirements remain intact.

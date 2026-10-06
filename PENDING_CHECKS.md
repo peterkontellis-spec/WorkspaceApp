@@ -46,3 +46,16 @@ The user explicitly instructed continuation into M3.2 while phone checks wait. E
 - [ ] During a slow refresh, save a newer change; the delayed read must not roll the UI back.
 - [ ] Expire/revoke an account or switch identity: cached saved records and drafts are removed, and old credentials cannot reload.
 - [ ] Inspect changed UI focus, narrow layout and browser console/runtime errors.
+
+## M3.3 — activity and in-app notifications
+
+- [ ] In isolated owner/editor/viewer sessions, assign a task to someone else: recipient bell increments, actor gets no self notification, and notification links to the correct saved task.
+- [ ] Change status/date/notes/checklist; inspect correct actor, time and useful summary in task Activity. Saved notes must not be copied into history text.
+- [ ] Remove an assignee: only eligible affected recipients receive an update. Verify no history/notification for no-op or failed/conflicting saves, and no duplicate after retry.
+- [ ] Mark read, refresh/reopen and verify it stays read; mark unread and verify the bell catches up on the next normal poll. Another user's read state must not change.
+- [ ] Viewer can read history and manage personal notification read state while task editing remains unavailable.
+- [ ] Check Latest/Older cursor pages, Refresh, empty activity/notification states, long task/member names and stale/error recovery without dropped or duplicate rows.
+- [ ] Simulate expired/revoked sessions and connection failures: cached lists clear on access loss; transient errors offer recovery; leaving a page aborts pending requests without stale replies.
+- [ ] Desktop and narrow: bell, list, task links, read-state buttons and Activity panel remain readable/reachable; keyboard focus and task close/return work; check captured runtime/console errors.
+
+No M3.3 browser checks passed this session: the supported tool again refused policy verification before opening the Notifications page. Physical phone checks remain deferred.

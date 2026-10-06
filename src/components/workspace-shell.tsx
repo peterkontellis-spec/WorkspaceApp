@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { SignedInAccount } from '@/server/auth';
 import { StellarProvider, StellarControl, StellarOrb } from './stellar-identity';
+import { NotificationsLink } from './work-updates';
 import { WorkSyncStatus } from './work-sync-status';
 import { useWork } from './work-provider';
 import { filterWorkTasks, readWorkFilters } from '@/lib/work-filters.mjs';
@@ -53,7 +54,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
   const [query, setQuery] = useState('');
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const section = pathname.split('/')[1];
-  const currentLabel = section === 'files' && account ? 'Files' : section === 'team' ? 'Team access' : navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ?? 'Workspace';
+  const currentLabel = section === 'notifications' && account ? 'Notifications' : section === 'files' && account ? 'Files' : section === 'team' ? 'Team access' : navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ?? 'Workspace';
   const close = () => setOverlay(null);
   const closeOverlay = (name: 'navigation' | 'search' | 'account' | 'reset') => {
     setOverlay((current) => current === name ? null : current);
@@ -111,7 +112,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
     { name: 'Home', detail: 'Your personal workspace', href: '/home', kind: 'Page' },
     { name: 'Boards', detail: 'Your team’s projects', href: '/boards', kind: 'Page' },
     { name: 'Docs', detail: 'Shared writing', href: '/docs', kind: 'Page' },
-    ...(account ? [{name:'Files',detail:'Saved task attachments',href:'/files',kind:'Page'}, { name: 'Team access', detail: 'Real members and invitations', href: '/team', kind: 'Page' }] : []),
+    ...(account ? [{name:'Notifications',detail:'Your task updates',href:'/notifications',kind:'Page'}, {name:'Files',detail:'Saved task attachments',href:'/files',kind:'Page'}, { name: 'Team access', detail: 'Real members and invitations', href: '/team', kind: 'Page' }] : []),
     ...(account ? savedWork?.boards ?? [] : boards).map((board) => ({ name: board.name, detail: board.description, href: `/boards/${board.id}`, kind: 'Board' })),
     ...documents.map((doc) => ({ name: doc.title, detail: 'Sample document · not saved', href: `/docs/${doc.id}`, kind: 'Doc' })),
   ].filter((item) => `${item.name} ${item.detail}`.toLowerCase().includes(query.trim().toLowerCase())).concat(taskMatches.slice(0,8).map(task => ({name:task.title, detail:savedWork?.boards.find(board=>board.id===task.boardId)?.name ?? 'Saved task', href:`${taskSearchHref}&task=${encodeURIComponent(task.id)}`, kind:'Task'})));
@@ -139,6 +140,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
           </div>
           <div className="topbar__actions">
             <Button variant="ghost" className="search-trigger" aria-label="Find a page, board, task, or document" onClick={() => { setQuery(''); setOverlay('search'); }}><Search size={19} aria-hidden="true" /><span>Go to…</span><kbd>⌘ K</kbd></Button>
+            {account ? <NotificationsLink/> : null}
             <span className="topbar__separator" />
             <Button variant="ghost" className="account-trigger" aria-label={account ? `Account: ${account.name}` : `Sample account: ${member.name}. Switch sample account`} onClick={() => setOverlay('account')}><Avatar member={account ? { ...member, name: account.name, initials: account.name.split(/\s+/).map((word) => word[0]).slice(0, 2).join('') } : member} /><ChevronDown size={15} aria-hidden="true" /></Button>
           </div>

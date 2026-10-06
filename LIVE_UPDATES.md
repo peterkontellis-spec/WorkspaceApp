@@ -2,7 +2,7 @@
 
 The initial four-person workspace uses authorized snapshot refreshes approximately every five seconds while a tab is visible and online. This is polling, not an instant push channel. Delivery time includes the interval and request latency. No extra server, broker or database migration is introduced.
 
-Each read uses the existing session/membership-checked `/api/work` transaction. Reads do not extend the session's idle timeout. A reconnect fetches the current full authorized snapshot, so intermediate missed events do not need replay. This covers boards, groups, columns, task values and the snapshot's member roster. It is not a live feed for attachments, the Team administration screen or sample Docs.
+Each read uses the existing session/membership-checked `/api/work` transaction. Reads do not extend the session's idle timeout. A reconnect fetches the current full authorized snapshot, so intermediate missed events do not need replay. This covers boards, groups, columns, task values and the snapshot's member roster. M3.3 also includes the current user's unread notification count; notification/activity lists load separately and offer explicit Refresh. It is not a live feed for attachments, the Team administration screen or sample Docs.
 
 Requirements for this increment:
 

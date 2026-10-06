@@ -1,4 +1,5 @@
 import { transaction } from './database.mjs';
+import { taskActivityState, recordTaskActivity } from './updates-core.mjs';
 
 export class WorkError extends Error {
   constructor(status, message) { super(message); this.status = status; }
@@ -30,7 +31,7 @@ async function liveMember(c, session, workspaceId) {
   if (!member) fail(401, 'Sign in required.');
   return member;
 }
-async function withMember(pool, auth, headers, write, action) {
+export async function withMember(pool, auth, headers, write, action, allowViewer = false) {
   const session = await auth.api.getSession({ headers });
   if (!session) fail(401, 'Sign in required.');
   return transaction(pool, async c => {
@@ -39,7 +40,7 @@ async function withMember(pool, auth, headers, write, action) {
     // authoritative before writes, including requests handled by another worker.
     await c.query(`SELECT id FROM workspace WHERE id=$1 FOR ${write ? 'UPDATE' : 'SHARE'}`, [initial.workspace_id]);
     const member = await liveMember(c, session, initial.workspace_id);
-    if (write && !['owner', 'editor'].includes(member.role)) fail(403, 'Only owners and editors can change workspace work.');
+    if (write && !allowViewer && !['owner', 'editor'].includes(member.role)) fail(403, 'Only owners and editors can change workspace work.');
     const result = await action(c, member);
     if (write) await c.query('UPDATE auth_session SET "updatedAt"=now() WHERE id=$1', [session.session.id]);
     return result;
@@ -59,7 +60,8 @@ async function snapshot(c, member) {
   const members = (await c.query(`SELECT u.id,u.display_name AS name,a.email,m.role FROM membership m
     JOIN app_user u ON u.id=m.user_id JOIN auth_user a ON a.id=u.auth_user_id
     WHERE m.workspace_id=$1 AND u.disabled_at IS NULL ORDER BY u.display_name,u.id`, workspace)).rows;
-  return { boards, groups, columns, tasks, members, actor: { id: member.id, name: member.name, role: member.role } };
+  const unreadNotifications = (await c.query('SELECT count(*)::integer AS n FROM task_notification WHERE workspace_id=$1 AND recipient_id=$2 AND read_at IS NULL', [member.workspace_id,member.id])).rows[0].n;
+  return { boards, groups, columns, tasks, members, unreadNotifications, actor: { id: member.id, name: member.name, role: member.role } };
 }
 export function readWork(pool, auth, headers) { return withMember(pool, auth, headers, false, snapshot); }
 async function row(c, table, workspace, itemId) {
@@ -272,14 +274,17 @@ export function manageWork(pool, auth, headers, input) {
       const task = inserted((await c.query(`INSERT INTO task(id,workspace_id,board_id,group_id,parent_id,title,status,priority,due_date,position)
         VALUES(coalesce($1::uuid,gen_random_uuid()),$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT(id) DO NOTHING RETURNING id`, [create.id, workspace, board.id, value.group_id, value.parent_id, value.title, value.status, value.priority, value.due_date, value.position])).rows[0]);
       await assignments(c, workspace, task.id, value);
+      await recordTaskActivity(c, member, null, await taskActivityState(c, workspace, task.id));
     } else if (input.action === 'updateTask') {
       keys(input, ['action', 'id', 'revision', 'patch']);
       const saved = await row(c, 'task', workspace, input.id); checkRevision(saved, input.revision);
+      const before = await taskActivityState(c, workspace, saved.id);
       const value = await taskValues(c, workspace, saved.board_id, saved.id, input.patch, saved);
       await c.query(`UPDATE task SET group_id=$3,parent_id=$4,title=$5,status=$6,priority=$7,due_date=$8,position=$9,notes=$11,revision=revision+1,updated_at=now()
         WHERE workspace_id=$1 AND id=$2 AND revision=$10`, [workspace, saved.id, value.group_id, value.parent_id, value.title, value.status, value.priority, value.due_date, value.position, saved.revision, value.notes]);
       await assignments(c, workspace, saved.id, value);
       await details(c, workspace, saved.board_id, saved.id, input.patch);
+      await recordTaskActivity(c, member, before, await taskActivityState(c, workspace, saved.id));
     } else fail(400, 'Choose a valid work action.');
     return snapshot(c, member);
   });

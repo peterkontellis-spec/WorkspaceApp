@@ -1,0 +1,31 @@
+.notifications-link { position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 8px; color: var(--muted); }
+.notifications-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.notifications-link:hover { background: var(--hover); color: var(--text); }
+.notifications-count { position: absolute; top: 0; right: 0; min-width: 17px; padding: 2px 3px; background: var(--accent); color: var(--background); border-radius: 5px; font-size: .625rem; line-height: 1.2; font-weight: 700; font-variant-numeric: tabular-nums; }
+.updates-page { max-width: 900px; min-width: 0; }
+.updates-page .page-heading { margin-bottom: 18px; }
+.updates-hint, .update-meta { color: var(--muted); font-size: .875rem; line-height: 1.6; }
+.task-activity { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
+.task-activity h3 { margin-bottom: 8px; font-size: 1rem; }
+.update-feed { margin-top: 16px; }
+.updates-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.updates-list { list-style: none; margin: 12px 0; padding: 0; }
+.updates-list li { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--line-soft); }
+.update-copy { min-width: 0; overflow-wrap: anywhere; line-height: 1.6; }
+.update-copy strong { font-weight: 600; }
+.update-task-link { display: flex; align-items: center; min-height: 44px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.update-task-link:hover { color: var(--accent); }
+.update-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 6px; font-size: .8125rem; }
+.update-meta span { color: var(--text); }
+.updates-list .button { flex-shrink: 0; }
+.updates-pagination { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.update-feed .button { min-height: 44px; }
+.updates-empty { margin-block: 24px; max-width: 65ch; color: var(--muted); line-height: 1.6; }
+@media (max-width: 600px) {
+  .updates-list li { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .update-feed .button { min-height: 48px; }
+  .current-page { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .topbar__location { min-width: 0; }
+}
+
+.updates-toolbar > p:focus { outline: 2px solid var(--accent); outline-offset: 4px; }
