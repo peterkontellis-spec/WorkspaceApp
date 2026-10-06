@@ -1,5 +1,13 @@
 # Current status
 
+## Solar flare positions vary between births — 2026-10-06
+
+User requested that the two flares stop repeating in the same areas. Each successive birth now advances around the star by approximately 137.5 degrees; each slot relocates only between lifetimes when its strength is zero. At most two arches remain visible, with the existing staggered timing, local colors and gentle drift. Pause/reduced-motion/visibility controls and application data are unchanged. No extra rendering pass or dependency.
+
+Checks: `pnpm check` passed TypeScript, **42/42 behavioral tests** and production build; updated local preview HTTP smoke **21/21 passed**. Scoped Impeccable motion/craft and current interface-guideline source review; detector `[]`. Supported browser retry again failed policy verification before opening a tab. Actual new positions/fade continuity, desktop/narrow appearance and WebGL runtime/console remain pending; no visual or physical-phone sign-off claimed. No database suite repeated for this shader-only edit.
+
+Preview **PID 70125**, Mac-only port3100; verify process identity before replacement. Next: inspect multiple births over 30–45 seconds when supported browser access returns; existing M3.1–M3.3 acceptance and phone checks remain open. No credits/resets or deployment.
+
 ## M3.3 implemented — browser acceptance pending — 2026-10-06
 
 Added task activity (actor, time and meaningful changed-field summaries) and personal in-app notifications. The topbar bell opens `/notifications`; task details include Activity. Owner/editor task saves create history and recipient notifications in the same database transaction. Assignment, meaningful updates and unassignment notify active affected assignees, excluding the actor. No-op saves, creation retries, conflicts and rolled-back saves produce no duplicate events. Pure task reordering records activity without notifying. Viewers can read shared task history and change only their own notification read state.

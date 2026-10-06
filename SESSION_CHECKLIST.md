@@ -540,3 +540,6 @@ These boxes are a reusable routine. Completion of a session does not imply compl
 - [ ] Review appearance with the user and define real task/goal scoring before connecting data.
 
 - [x] Solar flare refinement: local-colour emission, desktop/mobile and pause checks, build/tests/smoke and scoped design review recorded in STATUS.md (2026-10-06).
+
+- [x] Vary each solar flare birth position while retaining the two-flare limit; build/tests/HTTP and source review passed (2026-10-06).
+- [ ] Visually confirm changing flare locations and fade continuity; supported browser access remains blocked.

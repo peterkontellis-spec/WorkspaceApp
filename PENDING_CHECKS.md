@@ -14,7 +14,7 @@ Updated 2026-10-06. These items are open; implementation, automated tests and se
 - [ ] Keyboard links, focus outlines, task-dialog Escape/focus return and month controls remain usable.
 - [ ] Desktop and narrow layouts have no page overflow/clipped task controls; narrow calendar uses an agenda and Kanban stacks.
 - [ ] Check captured browser console/runtime errors in the changed journey.
-- [ ] Confirm the final stellar change displays no more than two solar flares and pause still works.
+- [ ] Confirm the final stellar change displays no more than two solar flares, successive births appear around different parts of the limb over 30–45 seconds without jumping while visible, and pause still works.
 
 ## Physical phone — deferred
 
