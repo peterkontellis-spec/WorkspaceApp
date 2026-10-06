@@ -44,3 +44,11 @@ The user completed GitHub CLI browser sign-in. The assistant configured an HTTPS
 - Replaced native date inputs with an in-page calendar after two embedded-browser crashes on opening the native popup. App HTTP responses remained healthy and keyboard date edits worked; browser internals were not diagnosed. Preserve ISO date-only values and existing board Save/Cancel vs task immediate-update semantics.
 - Keep Docs mode controls reachable while scrolling and bring the editor start into view on mode changes. A 360px pre-fix inspection showed Preview content, so the user's complete mobile visibility concern remains to be confirmed after the refinement.
 - Never close M1.6 solely on automated results: final browser access was denied by admin-policy verification after partial direct testing. STATUS.md records each failure and remaining check.
+
+## 2026-10-06 — M2 authorization and foundation choices
+
+The user requested an M2 outline and implementation, and explicitly confirmed a shared staff workspace with owner/editor/viewer access; customer access and private admin material remain separate. Continue bounded tested checkpoints under the existing no-spend/no-reset/no-deployment constraints.
+
+Adopt PostgreSQL 18 with the pinned pg driver, a small server-side pool and explicit transactional/checksummed SQL migrations. Use the pinned embedded-postgres package only for project-local development and integration tests; production PostgreSQL packaging remains M5. All local database data and generated credentials stay under ignored `.local/`. The runtime role cannot alter schema/history. Keep the M1 UI clearly sample-only until authenticated persistence is wired in M2.4.
+
+Select Better Auth with PostgreSQL for M2.2; its authentication schema will be generated from the reviewed pinned configuration then, not hand-invented now. Password/session handling, local owner setup, invitations, recovery without an assumed mail provider and stronger admin/customer requirements remain to implement/test. Staff workspace ownership does not imply portal administrator or NAS privileges. [DATABASE.md](DATABASE.md) records the exact boundaries and remaining gates.

@@ -13,18 +13,28 @@
     "typecheck": "tsc --noEmit",
     "check": "pnpm typecheck && pnpm test && pnpm build",
     "check:smoke": "node scripts/smoke-check.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "db:start": "node scripts/db/start.mjs",
+    "db:migrate": "node scripts/db/command.mjs migrate",
+    "db:seed": "node scripts/db/command.mjs seed",
+    "db:status": "node scripts/db/command.mjs status",
+    "dev:db": "node --env-file=.local/database.env node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 3100",
+    "test:db": "node --test --test-concurrency=1 tests/database/*.test.mjs"
   },
   "dependencies": {
     "lucide-react": "1.48.0",
     "next": "16.3.6",
+    "pg": "8.23.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/pg": "8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "embedded-postgres": "18.4.0-beta.17",
     "typescript": "^5.9.0"
   }
 }

@@ -1,0 +1,90 @@
+# M2 database foundation
+
+M2.1 adds a real local PostgreSQL development database. The browser still uses the clearly labelled M1 sample data. No account, task-editing or file API is exposed yet. Use fictional data only until the later authentication, permission and workflow checks pass. Collaborative Docs persistence remains M4.
+
+## M2 delivery order
+
+| Increment | Observable result |
+| --- | --- |
+| M2.1 — Foundation | A record survives a real database restart and an additive schema update. |
+| M2.2 — Accounts | Password sign-in, logout, protected routes, expiry/revocation and recovery work. |
+| M2.3 — Membership | Invitations expire and cannot be reused; roles are enforced on direct requests. |
+| M2.4 — Boards/tasks | Edits survive refresh/restart; concurrent edits show a conflict. |
+| M2.5 — Details | Validated custom fields, notes and checklists are saved. |
+| M2.6 — Finding work | Search and combined filters return only permitted tasks. |
+| M2.7 — Files | Bounded uploads and authorized downloads survive restart. |
+| M2.8 — Verification | Invite → sign in → board/task → assignment → attachment → search passes with real accounts. |
+
+Each increment has a checked result and a Git checkpoint. No deployment, AI integration, email organizer or push service is included in M2. Full criteria remain in MILESTONES.md and SESSION_CHECKLIST.md.
+
+## Selected approach
+
+Keep Next.js/React and the existing UI. Adopt PostgreSQL 18 for the database and the pinned `pg` driver with a four-connection pool per app process. SQL migrations are explicit, ordered, checksummed and transactional. PostgreSQL constraints guard workspace/board relationships. Parameterized repository operations use revisions to detect conflicting writes. No ORM or extra always-running service is necessary for this foundation.
+
+Select **Better Auth** for M2.2, with its PostgreSQL adapter and password/session implementation. It is selected but **not installed or configured yet**. Generate its authentication schema from the pinned configuration in M2.2 rather than guessing library-owned credential/session columns. `app_user.id` is the application identity; M2.2 must bind it to a verified authentication subject and test that binding. The development seed identity has no login and must never become a default account. Disable public signup; bootstrap the first owner locally. Invitation-only provisioning, recovery without an assumed email provider, session expiry/revocation and the stronger customer/admin authentication requirements must be implemented and tested before real accounts are accepted.
+
+Primary references checked on 2026-10-06: [PostgreSQL adapter](https://better-auth.com/docs/adapters/postgresql), [password authentication](https://better-auth.com/docs/authentication/email-password), [transaction handling](https://node-postgres.com/features/transactions), [embedded development PostgreSQL](https://github.com/leinelissen/embedded-postgres). These choices do not constitute a production security audit.
+
+## Access boundary
+
+User confirmed 2026-10-06: invited staff share the workspace according to owner/editor/viewer roles. Planned matrix: all three read shared staff boards/tasks; owner/editor edit; owner manages invitations and membership. Customer access and private admin material remain separate. A workspace owner is not automatically a portal administrator or NAS operator.
+
+This schema contains shared staff records only. It has no customer-folder grants, admin-private documents or public sharing. Do not place private admin material into a shared staff board. Future customer/admin records need a separate explicit access model, not an extra implicit privilege on staff membership.
+
+The narrow task repository checks membership for reads and owner/editor membership for renaming; it holds the membership row during the write and requires the expected revision. This is repository-level evidence only: authentication, direct HTTP authorization and the full M2 access matrix are still open. Never take `actorId` from request JSON or the sample account selector. Database credentials stay server-side.
+
+## Data relationships
+
+- `app_user` → `membership` → `workspace`: explicit staff membership and role.
+- `workspace` → `board` → `board_group` → `task`: composite foreign keys prevent crossing workspace or board boundaries.
+- `task.parent_id`: same-board subtask relationship; self-parent rejected. Full cycle/move validation is required with the M2.4 mutation service.
+- `task_assignee`: multiple assignees, each a member of that workspace. Membership removal removes assignments.
+- `column_definition` / `task_field_value`: per-board columns and task values; type-specific JSON validation and column-change behavior arrive in M2.5.
+- `task.notes` / `checklist_item`: notes and ordered checklist items. The second migration adds notes without losing existing records.
+- `attachment`: task ownership, uploader identity, generated UUID storage key, original name, media type, bounded byte size and pending/ready/rejected state. The initial 25 MiB ceiling is a development default; no uploads or downloads exist yet.
+
+Board/group/task/column revisions are reserved for their mutation services. Only task rename currently implements compare-and-update. Group names and completion status remain independent, matching the current prototype; any workflow change needs an explicit product decision.
+
+## Local startup
+
+Run from `workspace-app` with Node 20.9+ and the pinned pnpm version (checks here use bundled Node 24). All database data, credentials and dependency cache are ignored under `.local/`; they are **not Git checkpoints or backups**.
+
+```sh
+pnpm install --workspace-root --frozen-lockfile
+pnpm db:start
+```
+
+The development helper uses the project's pinned PostgreSQL binary. The reviewed macOS x64 package postinstall is allowed in pnpm-workspace.yaml; other operating systems require reviewing/allowing their matching package before use. This helper is development-only, not the NAS deployment plan.
+
+`db:start` initializes only if needed, applies migrations, inserts fictional records without overwriting existing edits, and grants a separate non-superuser runtime role access to application tables. Passwords are generated randomly, stored with owner-only permissions and never printed. Temporary initialization files stay under `.local/tmp`. PostgreSQL listens only on `127.0.0.1:55432`, requires SCRAM password authentication and creates no Unix socket. It uses 32 MiB shared buffers and at most 20 connections; this is configuration, not a measured NAS memory result.
+
+Keep that terminal open. Ctrl+C stops PostgreSQL without deleting records. Starting a second copy must fail without stopping the first. If initialization fails, inspect the reported condition; do not delete a nonempty data directory as a troubleshooting shortcut.
+
+In another terminal, after stopping any existing app preview on 3100:
+
+```sh
+pnpm dev:db
+```
+
+This loads `.local/database.env` for the app server. The normal `pnpm dev` remains usable without a database. `/api/health` returns `ready` only when the app can read the expected database schema; unavailable/missing schema returns 503 with no connection details, and an unconfigured app reports `prototype`. Responses are not cached. The health route never returns task/account data. **A ready database does not mean UI edits are persistent.**
+
+Other commands:
+
+```sh
+pnpm db:status
+pnpm db:migrate
+pnpm db:seed
+pnpm test:db
+pnpm check
+pnpm check:smoke
+```
+
+The database commands deliberately target only this project's development database. `db:seed` preserves edits. Add a new numbered migration rather than editing one already applied. The migration runner rejects missing/reordered/modified history, serializes concurrent runs and rolls back a failed migration batch. Runtime credentials cannot change schema or migration history. No destructive reset command is provided.
+
+`test:db` starts its own PostgreSQL cluster on loopback port 55433 and retains isolated fictional evidence under `.local/tests/`; it does not reset the development database. Both ports must be free for their respective server. The suite stops its own database processes afterward. Build/unit checks do not silently start PostgreSQL; run `test:db` explicitly for database changes.
+
+## Remaining work and operating limits
+
+Authentication tables, invitation lifecycle, recovery, session cookies, protected pages, CSRF checks and HTTP permission tests are M2.2–M2.3. Wiring real board/task saves and visible error/conflict states is M2.4–M2.5. Attachment filesystem handling is M2.7. The runtime database role can read application tables; every future HTTP operation must use verified sessions and explicit authorization. This is not row-level-security isolation between database users.
+
+NAS PostgreSQL packaging, restricted production network/credentials, backup/restore and measured memory are M5. Do not copy the development superuser credentials into deployment. Back up through PostgreSQL-aware tooling when that procedure is implemented; copying a live data directory or pushing source code is not a database backup. No automatic retention/deletion is configured.

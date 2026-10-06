@@ -2,6 +2,14 @@
 
 Saved: **2026-10-06**, with browser-policy diagnostic results. This is a durable project checkpoint, not a claim that internal conversation compaction occurred. Read STATUS.md for detailed test evidence. October 5 ZIPs remain historical snapshots.
 
+## Current M2 checkpoint — 2026-10-06
+
+**M2.1 complete; M2.2 next.** PostgreSQL foundation, schema/migrations, fictional development seed, server readiness and a narrow conflict-aware task repository are implemented. Eleven real database tests (including restart, failed migrations, role checks and concurrent edits), 23 existing tests, production build and 16 HTTP checks passed. Running app outage/reconnection checks passed. See the newest STATUS.md section and [DATABASE.md](DATABASE.md) for the M2 outline, exact evidence, local startup and limits.
+
+The user confirmed shared staff access by role, separate from private admin/customer material. Better Auth is selected but not installed; UI editing remains sample-only. No NAS/public deployment, credits or resets. Latest allowance snapshot: 57% weekly remaining. Unrelated local security/critique drafts remain outside this checkpoint.
+
+Earlier sections below describe prior checkpoints; they do not supersede the current M2 status.
+
 ## Latest interaction follow-up — 2026-10-06
 
 Post-sign-off user requests are implemented and browser-checked: shared floating multi-select assignee dropdowns; full-width Add task/title touch areas; outside-tap task dismissal with draft/focus preservation and a 24px phone gutter. Dragging out from inside does not close the panel. Narrow date/group fields remain readable. TypeScript, 23 tests, production build and 16 HTTP checks passed; desktop/360/390px interaction evidence and exact test limits are in the top STATUS.md section. No fresh physical-iPhone check is claimed. Loopback preview refreshed; hotspot remains closed. M2 remains next, not started. Unrelated planning/critique drafts remain local-only.

@@ -4,11 +4,11 @@
 
 M1.2–M1.5 implement the shell, personal Home/My Day, editable grouped boards, task details and session-only Docs writing/preview. Use the same shared sample records across screens. Task status, priority, assignees and notes apply immediately; board titles/dates use explicit Save/Cancel. Board filters and collapsed groups live in the URL; unfinished task/board input stays in memory through internal navigation.
 
-Docs use a small Markdown subset with formatting controls and a safe preview. This is not a full word processor or collaborative editor. Attachments are sample metadata only. All edits reset on refresh/tab closure, with a beforeunload warning after changes. Reset demo in the account dialog asks for confirmation before clearing session data.
+Docs use a small Markdown subset with formatting controls and a safe preview. This is not a full word processor or collaborative editor. Attachments are sample metadata only. All edits reset on refresh/tab closure, and unload warnings are not dependable (physical iPhone refresh was silent). Reset demo in the account dialog asks for confirmation before clearing session data.
 
-No database, real accounts, permissions, upload/download, durable saving or NAS deployment exists. Sample roles are illustrative. The demo date remains 25 September 2026.
+M2.1 adds a separate local PostgreSQL foundation; see [DATABASE.md](DATABASE.md) for startup and checks. These UI screens still have no real accounts, enforced permissions, upload/download or durable saving. No NAS deployment exists. Sample roles are illustrative. The demo date remains 25 September 2026.
 
-M1.6 performed part of the direct browser review, then policy verification blocked access again. Native calendar popup crashes were reproduced twice; the implementation now uses an in-page calendar. Its final browser confirmation and the remaining acceptance checks are pending. Build/model/HTTP tests are not substitutes. See STATUS.md for current results and Git checkpoints.
+M1 was signed off as a sample-data prototype on 2026-10-06, including the replacement in-page calendar and phone/keyboard/zoom checks. Earlier browser-policy failures are historical; see STATUS.md for the recorded limits and current M2 progress. Build/model/HTTP checks do not substitute for browser verification.
 
 ## October 6 verification update
 
@@ -40,7 +40,7 @@ From a terminal:
 
 ```sh
 cd /Users/peterkontellis/.codex/.chatgpt-projects/g-p-6a0f76716e988191962260a53dc7ed97/workspace-app
-pnpm install --frozen-lockfile
+pnpm install --workspace-root --frozen-lockfile
 pnpm dev
 ```
 

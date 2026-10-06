@@ -140,7 +140,7 @@ You do not need to finish one increment per session. Some will take several sess
 
 ---
 
-**Pre-M2 reconciliation 2026-10-06:** Individual delivery boxes above now reflect recorded checks; historical progress notes describe earlier states. The broad component/panel/layout and Stage 1 gates remain open. STATUS.md contains the complete carry-forward register, including inconclusive unload warning, remaining viewport/keyboard/history coverage and physical phone testing. Q:M2 starts with M2.1 architecture and a bounded local persistence slice, not a claim that all M1 checks passed.
+**Current reconciliation 2026-10-06:** M1 was signed off as a sample-data prototype; see STATUS.md for evidence and limitations. M2.1 is now verified; M2.2 is next. Earlier progress notes are historical.
 
 ## Stage 2 — Working foundation
 
@@ -152,11 +152,13 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** the app connected to a development database.
 
-- [ ] Finalize the initial framework/database/authentication choices and record why they fit the constraints.
-- [ ] Define users, workspace membership, boards, groups, tasks, custom fields, and attachment relationships.
-- [ ] Set up schema changes, development data, configuration, and a documented local startup procedure.
+- [x] Finalize the initial framework/database/authentication choices and record why they fit the constraints.
+- [x] Define users, workspace membership, boards, groups, tasks, custom fields, and attachment relationships.
+- [x] Set up schema changes, development data, configuration, and a documented local startup procedure.
 
 **Done when:** a development record can be saved, read after a restart, and changed through a repeatable schema update.
+
+**Verified 2026-10-06:** real PostgreSQL restart/additive-migration checks, 11 database tests, 23 existing tests, production build and 16 HTTP checks passed. See STATUS.md and DATABASE.md. UI remains sample-only; authentication is M2.2.
 
 ### M2.2 — Accounts and sessions
 

@@ -1,5 +1,28 @@
 # Current status
 
+## M2.1 — Application and data foundation complete — 2026-10-06
+
+User authorized M2 and confirmed shared staff boards/tasks according to owner/editor/viewer roles; customer access and private admin material remain separate. M2 is being delivered in the eight existing increments, outlined in [DATABASE.md](DATABASE.md). M2.1 is complete; M2.2–M2.8 and Stage 2 remain open.
+
+Delivered: pinned PostgreSQL 18.4 development binary and pg driver; project-local loopback-only database with random owner-only credentials; non-superuser app role; users/membership/board/group/task/assignee/custom-field/checklist/attachment schema; ordered checksummed transactional migrations; non-destructive fictional seed; narrow membership-checked task read/rename repository with revision conflicts; server-only connection and no-store readiness endpoint. Better Auth is selected for M2.2, not installed or functioning yet. No task-write HTTP endpoint exists. Existing UI remains sample-only and retains its M1 disclosure; Docs persistence remains M4.
+
+Actual checks:
+- `pnpm check`: TypeScript, existing **23 tests**, production build passed. No React/UI behavior changed in this increment.
+- `pnpm test:db`: **11/11 real PostgreSQL integration tests passed**. A task with a changed title/revision survived additive migration 002 and a real stop/start with a different PostgreSQL PID. Seed reruns preserved edits. Concurrent renames produced one save/one conflict; viewer writes, unknown/revoked reads, cross-workspace links, nonmember assignments, invalid task fields, schema changes by the runtime role and bad database passwords were rejected. Failed transactions and migrations rolled back; checksum drift failed closed; concurrent migration runs serialized.
+- Reviewed startup failure found and fixed: the embedded helper could wait on an already-exited child and normalize a failed start to exit 0. The regression subprocess now exits 1 promptly on duplicate startup and the original database remains alive.
+- First sandboxed database run failed at OS shared-memory permission, before application assertions. Re-ran through approved execution with PostgreSQL's needed permissions; final results above are the real checks. No security restriction was bypassed.
+- pnpm workspace/store mismatch initially prevented checks. Reconciled installation into the ignored project-local cache; clean isolated offline installation using `pnpm install --workspace-root --frozen-lockfile` succeeded. The only allowed dependency build script is the inspected macOS x64 PostgreSQL symlink hydration.
+- Production `/api/health`: unconfigured reports prototype; configured reports ready; stopping the actual development database returns sanitized **503 unavailable**, then restarting it recovers ready without restarting the app. All responses checked no-store. `pnpm check:smoke`: **16/16 passed**. `db:status`: two migrations and one fictional task.
+- Independent read-only foundation review completed and its startup finding fixed/tested. Impeccable/Web Design Guidelines/React UI review and fresh desktop/phone interaction checks are not applicable to this backend-only increment; no new UI or physical-device acceptance is claimed. Existing M1 browser evidence remains historical.
+
+Runtime: Mac-only production preview PID 51513 on 127.0.0.1:3100; local database supervisor PID 51561 on 127.0.0.1:55432 (verify live PIDs before any action). Integration clusters stopped; hotspot remains closed. All database records/credentials are ignored under `.local/`, not Git backups. No NAS/public deployment, credits or resets. Latest account-wide weekly snapshot: **43% used / 57% remaining**.
+
+Limits: repository membership checks are not HTTP/session authentication; custom-field validation, subtask cycle/move rules and full mutation permission checks belong to subsequent M2 increments. No login, durable UI edits, uploads or customer portal is enabled. NAS memory, backup/restore and production hardening are not signed off. Unrelated local security/critique drafts are preserved and excluded from this checkpoint.
+
+Next action: **M2.2** — configure the selected authentication library with a generated reviewed schema, local first-owner setup, invitation-only account provisioning, protected routes, secure sessions and a defined recovery method without assuming an email provider. Test direct signed-out requests, expiry/logout/revocation and recovery before connecting real UI data.
+
+Earlier sections below are historical and do not override this M2.1 status.
+
 ## M1 interaction follow-up — 2026-10-06
 
 Implemented the user's post-sign-off interaction requests:
