@@ -8,6 +8,7 @@ import { DatePicker } from './date-picker';
 import { Button, StatusLabel } from './ui';
 import { useWork } from './work-provider';
 import { SavedFieldValue } from './saved-field-value';
+import { SavedTaskAttachments } from './saved-files';
 import './saved-task-editor.css';
 
 type Draft = Pick<WorkTask, 'title' | 'status' | 'priority' | 'groupId' | 'parentId' | 'dueDate' | 'assigneeIds'> & { position: string; notes: string; checklist: WorkChecklistItem[]; fields: Record<string, string>; removedChecklist: WorkChecklistItem[] };
@@ -168,12 +169,12 @@ export function SavedTaskEditor({ task, columns, groups, tasks, members, canEdit
       <section className="saved-task-section"><h3>Columns</h3>{columns.filter((column) => column.boardId === task.boardId).length ? <dl className="saved-task-facts">{columns.filter((column) => column.boardId === task.boardId).map((column) => <div key={column.id}><dt>{column.name}</dt><dd><SavedFieldValue column={column} value={task.fields.find((field) => field.columnId === column.id)?.value} /></dd></div>)}</dl> : <p className="detail-empty">This board has no custom columns.</p>}</section>
       <section className="saved-task-section"><h3>Notes</h3><p className="saved-task-notes">{task.notes || 'No notes yet.'}</p></section>
       <section className="saved-task-section"><h3>Checklist</h3>{task.checklist.length ? <ul className="saved-task-checklist-read">{task.checklist.map((item) => <li key={item.id}><span className="saved-task-hint">{item.done ? 'Done' : 'To do'}</span><span>{item.label}</span></li>)}</ul> : <p className="detail-empty">No checklist items yet.</p>}</section>
-      <p className="dialog-note">File attachments arrive in a later milestone.</p>
+      <SavedTaskAttachments taskId={task.id} canEdit={false}/>
       <Button onClick={close}>Close task</Button>
     </div>;
   }
 
-  return <form ref={formRef} className="saved-task-editor" onSubmit={submit} aria-busy={pending}>
+  return <><form ref={formRef} className="saved-task-editor" onSubmit={submit} aria-busy={pending}>
     {message && <div className="saved-task-error">
       <p ref={errorRef} tabIndex={-1} role="alert" className="form-error">{message}</p>
       <Button disabled={pending} onClick={() => dirty ? setConfirmReload(true) : reload()}>Reload saved task</Button>
@@ -223,10 +224,9 @@ export function SavedTaskEditor({ task, columns, groups, tasks, members, canEdit
         {draft.removedChecklist.length > 0 && <div className="saved-task-undo" aria-live="polite">{draft.removedChecklist.map((item) => <div key={item.id}><span>{item.label || 'Empty item'} removed from this draft.</span><Button disabled={draft.checklist.length >= 50} variant="ghost" onClick={() => undoChecklist(item.id)}>Undo removal</Button></div>)}</div>}
       </section>
     </fieldset>
-    <p className="dialog-note">File attachments arrive in a later milestone.</p>
     <div className="saved-task-actions"><Button type="submit" variant="primary" disabled={pending || confirmReload}>{pending ? 'Saving…' : 'Save task'}</Button><Button disabled={pending} variant="ghost" onClick={close}>Cancel</Button></div>
     <p className="saved-task-hint" aria-live="polite">{dirty ? 'Unsaved changes' : 'Changes are saved when you choose Save task.'}</p>
-  </form>;
+  </form><SavedTaskAttachments taskId={task.id} canEdit={canEdit} blocked={dirty || pending || confirmReload}/></>;
 }
 
 function safeLink(value: string) {

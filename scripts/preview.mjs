@@ -23,6 +23,8 @@ for (const file of ['database.env', 'auth.env']) {
 }
 // Local configuration must not accidentally expose this preview to the LAN.
 env.HOSTNAME = '127.0.0.1'; env.PORT = '3100';
+// Attachments must outlive build snapshots and never enter public assets.
+env.ATTACHMENT_ROOT = join(local, 'attachments');
 const pidFile = join(local, 'preview-server.pid');
 const releaseFile = join(local, 'preview-release.txt');
 const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));

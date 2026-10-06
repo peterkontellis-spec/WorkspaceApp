@@ -2,9 +2,9 @@
 
 ## Current scope
 
-Accounts mode now provides real sign-in, staff roles and saved boards/tasks, custom columns, notes and checklists through M2.5, plus M2.6 saved-task search and filters. Use explicit Save for persistent changes. See [SAVED_WORK.md](SAVED_WORK.md) for behavior, draft recovery and limits. Docs remain a sample.
+Accounts mode now provides real sign-in, staff roles and saved boards/tasks, custom columns, notes and checklists through M2.5, plus M2.6 saved-task search/filters and M2.7 task attachments/Files. Use explicit Save for persistent changes. See [SAVED_WORK.md](SAVED_WORK.md) for behavior, draft recovery and limits. Docs remain a sample.
 
-Docs use a small Markdown subset with formatting controls and a safe preview. This is not a full word processor or collaborative editor. Doc sample edits reset on refresh/tab closure, and unload warnings are not dependable (physical iPhone refresh was silent). File attachments remain a later increment.
+Docs use a small Markdown subset with formatting controls and a safe preview. This is not a full word processor or collaborative editor. Doc sample edits reset on refresh/tab closure, and unload warnings are not dependable (physical iPhone refresh was silent). Saved task attachments are available in accounts mode; see [FILES.md](FILES.md).
 
 See [DATABASE.md](DATABASE.md) for PostgreSQL startup and checks, and [AUTHENTICATION.md](AUTHENTICATION.md) for account setup/recovery. No NAS deployment exists. Explicit prototype mode retains the original M1 sample UI, illustrative roles and 25 September 2026 demo date; its edits are temporary. It is separate from the accounts preview.
 
@@ -21,7 +21,7 @@ pnpm build
 pnpm preview
 ```
 
-`pnpm preview` copies the completed standalone build, static scripts and public assets to ignored `.local/preview-releases/`, reads the local database/auth configuration, and starts a detached Mac-only server at `127.0.0.1:3100`. Future builds do not change the running snapshot. Activate a new build with `pnpm preview` when users have saved their work, then refresh their tabs. Do not run builds and preview activation concurrently.
+`pnpm preview` copies the completed standalone build, static scripts and public assets to ignored `.local/preview-releases/`, reads the local database/auth configuration, and sets ATTACHMENT_ROOT to the persistent private `.local/attachments` folder, and starts a detached Mac-only server at `127.0.0.1:3100`. Future builds do not change the running snapshot. Activate a new build with `pnpm preview` when users have saved their work, then refresh their tabs. Do not run builds and preview activation concurrently.
 
 The launcher uses macOS `lsof` to verify the previous process's project directory and port ownership before stopping it. It refuses to stop another service and confirms the replacement process owns the port and passes readiness before recording it. Current state: `.local/preview-server.pid`, `.local/preview-release.txt`; log: `.local/preview-server.log`. Verify process identity before manual stopping. Old snapshots remain ignored local files; this helper is not NAS service management or a backup system. Do not use the older `.local/restart-preview.py` helper or serve directly from `.next` while building.
 
@@ -70,7 +70,7 @@ Both commands passed during M1.6 refinement checks. A native framework standalon
 
 ### Repeatable self-check commands
 
-Run `pnpm check` for TypeScript, behavioural model/Markdown/navigation tests, and the production build. With this project's server running at `127.0.0.1:3100`, run `pnpm check:smoke` in another terminal. In explicit prototype mode the smoke script runs 16 checks covering the Home redirect, sample pages, task/filter/return query routes, prototype disclosure, filtered row count, task/editor markup and four HTTP 404 responses. Accounts mode adds signed-out rejection, team and invalid-invitation checks (19 total) and needs an ignored disposable credentials file; see AUTHENTICATION.md. Recovery-link rendering and clicks remain browser checks. The script exits nonzero on failure and uses no additional dependencies.
+Run `pnpm check` for TypeScript, behavioural model/Markdown/navigation tests, and the production build. With this project's server running at `127.0.0.1:3100`, run `pnpm check:smoke` in another terminal. In explicit prototype mode the smoke script runs 16 checks covering the Home redirect, sample pages, task/filter/return query routes, prototype disclosure, filtered row count, task/editor markup and four HTTP 404 responses. Accounts mode adds signed-out rejection, team, invalid-invitation and Files checks (20 total) and needs an ignored disposable credentials file; see AUTHENTICATION.md. Recovery-link rendering and clicks remain browser checks. The script exits nonzero on failure and uses no additional dependencies.
 
 These HTTP checks do not execute client JavaScript, click controls, inspect layout, or replace the browser checklist below. Do not use them as a workaround for a denied browser check. Extend the checks as routes and behavior evolve.
 

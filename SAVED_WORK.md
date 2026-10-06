@@ -14,7 +14,7 @@ In accounts mode, Home and Boards use PostgreSQL records belonging to the signed
 - If a save times out, its outcome is uncertain. Reconnect and inspect saved work. Each create form keeps one random creation ID, so retrying that logical creation returns its existing record rather than making a duplicate. Once committed, retrying creation does not apply subsequently edited fields; open the saved item to edit it. Updates use revision checks.
 - Connection failures retain forms. Session checks continue, with a Retry connection notice; signed-out/revoked identities are redirected. No automatic offline write queue or live synchronization is claimed. Use Refresh to see another person's changes.
 
-Docs are still explicitly labelled sample data, reset on refresh, and are not collaborative or access-controlled stored documents. Explicit prototype mode retains the original sample interface. Notes/checklists/custom fields and task search/filters are implemented. Attachments follow in M2.7, durable Docs M4. No saved-item deletion UI is included yet.
+Docs are still explicitly labelled sample data, reset on refresh, and are not collaborative or access-controlled stored documents. Explicit prototype mode retains the original sample interface. Notes/checklists/custom fields and task search/filters are implemented. Task attachments and the Files library are implemented in M2.7; see [FILES.md](FILES.md) for accepted types, the 25 MiB limit and storage behavior. Durable Docs remain M4. No saved-item deletion UI is included yet.
 
 ## Finding saved work
 

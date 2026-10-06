@@ -1,0 +1,29 @@
+.saved-files-page, .saved-task-attachments { min-width: 0; }
+.saved-files-intro { margin-bottom: 22px; color: var(--muted); }
+.saved-files-empty { padding-block: 28px; border-top: 1px solid var(--line); }
+.saved-files-empty p { color: var(--muted); margin-top: 12px; }
+.saved-task-attachments { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 20px; }
+.saved-files-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.saved-files-heading h3 { font-size: 1rem; }
+.saved-file-list { list-style: none; padding: 0; margin: 14px 0; }
+.saved-file-list li { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; align-items: center; gap: 14px; padding-block: 16px; border-bottom: 1px solid var(--line-soft); }
+.saved-file-list li > svg { color: var(--muted); }
+.saved-file-copy { min-width: 0; overflow-wrap: anywhere; }
+.saved-file-copy strong { font-size: .9375rem; font-weight: 500; }
+.saved-file-copy p { color: var(--muted); font-size: .8125rem; margin-top: 5px; font-variant-numeric: tabular-nums; }
+.saved-file-task { display: flex; align-items: center; width: fit-content; min-height: 44px; font-size: .875rem; }
+.saved-file-download { min-height: 48px; }
+.saved-file-upload { display: grid; gap: 12px; margin-top: 20px; }
+.saved-file-upload input { padding: 10px; font-size: .875rem; }
+.saved-file-upload input::file-selector-button { min-height: 44px; margin-right: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--hover); color: var(--text); font: inherit; cursor: pointer; }
+.saved-file-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.saved-file-actions .button { min-height: 48px; }
+.saved-file-selection { overflow-wrap: anywhere; font-size: .875rem; }
+.saved-file-notice { color: var(--accent); margin-top: 14px; overflow-wrap: anywhere; }
+.saved-task-attachments .auth-error { margin-top: 14px; }
+.saved-task-attachments .auth-error:focus { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (max-width: 600px) {
+  .saved-file-list li { grid-template-columns: 24px minmax(0,1fr); gap: 10px; }
+  .saved-file-download { grid-column: 2; justify-self: start; }
+  .saved-files-heading { flex-wrap: wrap; }
+}

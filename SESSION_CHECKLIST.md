@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.6 are accepted; M2.7 attachments and Files is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.7 are accepted; M2.8 foundation verification is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -222,11 +222,13 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** an attachment library backed by a dedicated storage folder.
 
-- [ ] Implement bounded uploads, file metadata, generated storage identifiers, and task links.
-- [ ] Add authorized downloads and a lightweight Files view; scope any previews separately.
-- [ ] Check invalid/oversized uploads, interrupted transfers, direct file access, and persistence after restart.
+- [x] Implement bounded uploads, file metadata, generated storage identifiers, and task links.
+- [x] Add authorized downloads and a lightweight Files view; scope any previews separately.
+- [x] Check invalid/oversized uploads, interrupted transfers, direct file access, and persistence after restart.
 
 **Done when:** files remain available to permitted users without granting access to unrelated NAS folders.
+
+**Accepted 2026-10-06:** bounded private storage, role-safe upload/download, invalid/interrupted transfers, restart persistence and desktop/narrow browser checks passed. See FILES.md and STATUS.md for limits and evidence.
 
 ### M2.8 — Foundation verification
 

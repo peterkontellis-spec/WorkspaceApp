@@ -30,9 +30,11 @@ const navigation = [
 
 function Navigation({ close, mobile = false }: { close?: () => void; mobile?: boolean }) {
   const pathname = usePathname();
+  const { enabled } = useWork();
   return <nav aria-label={mobile ? 'Mobile workspace navigation' : 'Workspace navigation'} className="side-nav">
     {navigation.map((item) => {
       const Icon = item.icon;
+      if (item.label === 'Files' && enabled) return <Link key={item.label} href="/files" onClick={close} className={`nav-item ${pathname === '/files' ? 'nav-item--active' : ''}`} aria-current={pathname === '/files' ? 'page' : undefined}><Icon size={20} aria-hidden="true"/><span>Files</span></Link>;
       if ('href' in item) return <Link key={item.label} href={item.href} onClick={close} className={`nav-item ${pathname.startsWith(item.href) ? 'nav-item--active' : ''}`} aria-current={pathname.startsWith(item.href) ? 'page' : undefined}><Icon size={20} aria-hidden="true" /><span>{item.label}</span></Link>;
       if (item.label === 'Assistant') return <button key={item.label} type="button" className="nav-item nav-item--later nav-assistant" aria-disabled="true" aria-label="Assistant — Later" title={item.later}><Icon size={20} aria-hidden="true" /><span>Assistant</span><span className="later-label">Later</span></button>;
       return <div key={item.label} className="nav-item nav-item--later" aria-label={`${item.label}. ${item.later}`}><Icon size={20} aria-hidden="true" /><span>{item.label}</span><span className="later-label">Later</span></div>;
@@ -53,7 +55,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
   const [query, setQuery] = useState('');
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const section = pathname.split('/')[1];
-  const currentLabel = section === 'team' ? 'Team access' : navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ?? 'Workspace';
+  const currentLabel = section === 'files' && account ? 'Files' : section === 'team' ? 'Team access' : navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ?? 'Workspace';
   const close = () => setOverlay(null);
   const closeOverlay = (name: 'navigation' | 'search' | 'account' | 'reset') => {
     setOverlay((current) => current === name ? null : current);
@@ -111,7 +113,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
     { name: 'Home', detail: 'Your personal workspace', href: '/home', kind: 'Page' },
     { name: 'Boards', detail: 'Your team’s projects', href: '/boards', kind: 'Page' },
     { name: 'Docs', detail: 'Shared writing', href: '/docs', kind: 'Page' },
-    ...(account ? [{ name: 'Team access', detail: 'Real members and invitations', href: '/team', kind: 'Page' }] : []),
+    ...(account ? [{name:'Files',detail:'Saved task attachments',href:'/files',kind:'Page'}, { name: 'Team access', detail: 'Real members and invitations', href: '/team', kind: 'Page' }] : []),
     ...(account ? savedWork?.boards ?? [] : boards).map((board) => ({ name: board.name, detail: board.description, href: `/boards/${board.id}`, kind: 'Board' })),
     ...documents.map((doc) => ({ name: doc.title, detail: 'Sample document · not saved', href: `/docs/${doc.id}`, kind: 'Doc' })),
   ].filter((item) => `${item.name} ${item.detail}`.toLowerCase().includes(query.trim().toLowerCase())).concat(taskMatches.slice(0,8).map(task => ({name:task.title, detail:savedWork?.boards.find(board=>board.id===task.boardId)?.name ?? 'Saved task', href:`${taskSearchHref}&task=${encodeURIComponent(task.id)}`, kind:'Task'})));

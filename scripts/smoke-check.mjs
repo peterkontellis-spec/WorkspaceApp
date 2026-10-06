@@ -110,6 +110,15 @@ for (const path of unknownPages) {
 
 
 if (cookie) {
+  await check('Files page and API respect account boundaries', async () => {
+    const page = await request('/files'); assert.equal(page.status, 200);
+    assert.match(await page.text(), /Attachments saved with/);
+    const response = await request('/api/files'); assert.equal(response.status, 200);
+    assert.ok(Array.isArray((await response.json()).files));
+    assert.match(response.headers.get('cache-control'), /no-store/);
+    assert.equal((await fetch(`${origin}/api/files`)).status, 401);
+    assert.equal((await request('/files/unexpected')).status, 404);
+  });
   await check('work API returns only the authenticated workspace', async () => {
     const response = await request('/api/work'); assert.equal(response.status, 200);
     const data = await response.json(); assert.ok(data.actor.id); assert.ok(Array.isArray(data.boards)); assert.ok(Array.isArray(data.tasks));
