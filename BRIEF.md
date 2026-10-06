@@ -27,7 +27,7 @@ The full requirements and architecture proposals are in [PLANNING.md](PLANNING.m
 
 ## Current delivery target
 
-M1.2–M1.5 are implemented as a connected sample-data prototype. M1.6 is authorised and underway: direct browser checks exercised the main journey and identified a native calendar crash and a nested Markdown preview bug. Refinements replace the native popup, improve mobile preview access and add the requested Assistant · Later placeholder. TypeScript, 20 tests and build pass. October 6 browser checks confirmed the calendar, mobile preview, nested links and Assistant placeholder; Reset demo now uses a verified in-page confirmation. Explicit local-site approval restored browser access. A desktop filtered/collapsed/scrolled task→Doc→task round trip and Home empty state now pass. See STATUS.md for the open M1 register and Q:M2 handoff. M1.6/Stage 1 remain open; M2.1 planning is next and M2 code has not started.
+M1.1–M1.6 / Stage 1 were accepted on 2026-10-06 as a connected sample-data prototype. Desktop/narrow browser journeys, physical iPhone Firefox task/date/Docs and software-keyboard checks, desktop keyboard checks, and user-confirmed 200% zoom have evidence in STATUS.md. Latest implementation checks passed: TypeScript, 23 tests, production build and 16 HTTP checks. Phone refresh silently resets sample edits; unload warnings are not dependable. UI critique findings remain a refinement backlog, not a claim of production readiness. M2.1 database/authentication and access-model planning is next; M2 code has not started.
 
 ## Scope boundaries and open decisions
 

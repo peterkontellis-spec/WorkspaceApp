@@ -27,6 +27,8 @@ First task: establish a provisional screen/interaction specification from the pl
 
 M1.1 specification: [DESIGN_SPEC.md](DESIGN_SPEC.md). User direction is dark with subtle accents, equal desktop/phone focus, and larger controls. This planning output does not satisfy the runnable prototype acceptance checks above.
 
+**Accepted 2026-10-06 as a sample-data prototype.** Evidence and explicit limitations are in STATUS.md. No durable storage or production/security readiness is implied; separate UI critique recommendations remain a refinement backlog.
+
 ## M2 — Persistent foundation
 
 Deliver accounts, invitations, workspace roles, boards/groups/tasks/subtasks/custom fields/multiple assignees, task notes/checklists, search/filtering, and attachments.

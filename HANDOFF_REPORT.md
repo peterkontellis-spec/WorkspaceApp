@@ -2,27 +2,35 @@
 
 Saved: **2026-10-06**, with browser-policy diagnostic results. This is a durable project checkpoint, not a claim that internal conversation compaction occurred. Read STATUS.md for detailed test evidence. October 5 ZIPs remain historical snapshots.
 
-## M1 closing checklist — current
+## M1 sign-off — 2026-10-06
 
-This section supersedes older pending-state notes below. The user confirmed on their physical iPhone in Firefox that the corrected bottom navigation disappears completely with the keyboard and returns correctly when dismissed ("Both are perfect"). Home/navigation, Docs typing/scrolling/Preview, and this keyboard fix now have user-observed phone evidence. Source checkpoint: **8a3ed51**.
+**M1.1–M1.6 / Stage 1 are complete as a reviewable sample-data prototype.** This current record supersedes historical pending-check notes below. It is not production readiness or a claim that every usability recommendation has been implemented. M2 has not started.
 
-Only the following acceptance checks remain:
-1. Physical-phone board/task journey: date selection, opening the linked Doc, returning and closing the task. The corresponding emulated narrow and desktop paths already passed; one device journey is still needed.
-2. Remaining desktop keyboard traversal and 200% zoom/reflow checks across the main controls/dialogs.
-3. User-observed refresh/close behavior with disposable text. Record browser support and limitations; do not promise reliable mobile unload warnings or durable saving in the prototype.
+Closing evidence:
+- Physical iPhone / Firefox: the user confirmed Home/navigation, Docs writing/Preview, keyboard hiding/restoring bottom navigation, and the requested board → task → date change → linked Doc → return/close journey ("Everything is fine, date changed succesfully"). Exact phone/iOS/browser versions were not supplied.
+- Physical iPhone refresh: user reported "No warnings ... Just resets the data altogether". Record this as observed sample-data reset and **no dependable unload warning**, not a warning pass. Desktop dirty refresh/close warning remains inconclusive; it is a known limitation, not protection for real work. Durable saving is a later-stage requirement.
+- Desktop keyboard, supported browser: Skip to content moved focus into main content; Tab traversed Home actions/tasks; Enter opened a task; task fields were reachable; Shift+Tab stayed within the modal boundary; Escape returned focus to the originating task. At the last modal control, focus passed through the browser boundary before returning to the dialog rather than reaching background page controls. Cmd+K, query entry and keyboard result activation opened Launch brief. Formatting/link fields/editor were reachable by Tab; Preview worked by Space. Account choices and Reset demo were keyboard reachable; keyboard Cancel returned to accounts. No captured browser warnings/errors.
+- Actual 200% zoom: user confirmed Home, board/task and Launch brief "readable and usable". In the diagnostic tab, DPR changed from 2 to 4 and viewport from 1165×814 to 582×407; Docs Preview had readable wrapped content, visible focus and no page-wide overflow (scrollWidth 575). This was actual scale change, not a viewport-emulation substitute. No viewport override was applied in this pass.
+- Prior recorded calendar, Markdown, reset, filter/history/scroll, desktop/narrow and design-skill checks remain valid. Latest application validation: TypeScript, 23 behavioural tests, production build and 16 HTTP checks passed for 8a3ed51. No application code changed during closure, so no redundant build was run.
+- Temporary hotspot server PID 48690 was stopped and port 3101 verified to have no listener. The Mac-only preview on 127.0.0.1:3100 was left running. Diagnostic tab closed; user tabs were preserved.
 
-After those checks, reconcile M1 checkboxes and stop the temporary hotspot preview. The listener at 172.20.10.2:3101 was still active at this update; automatic 30-minute shutdown remains configured. Historical development-only profiler error and intermittent browser-policy verification remain known environment issues, not new feature requests or evidence that production navigation is failing. Security-planning drafts are a separate repository/handoff item. Do not mark Stage 1 complete yet.
+Remaining limitations and next action:
+- Prototype edits reset on refresh/closure; no real authentication, persistent storage, uploads, collaboration or connected Assistant exists. Real task saving/restart recovery belongs to M2; durable collaborative Docs remain in M4.
+- The separate local UI critique remains a refinement backlog: mobile controls precede tasks, linked Docs sit deep in details, group/status terminology and save conventions need clarification, decorative completion markers and offscreen validation need improvement, and search initially focuses Close. Prototype sign-off does not resolve these findings or certify accessibility. Preserve that report and review it before the next UI change.
+- Known environment issues remain recorded: development-only profiler error and previously intermittent browser-policy verification. Neither prevented the completed production-preview journeys.
+- Separate local security-planning and critique drafts are preserved and are not included in this sign-off checkpoint. Do not describe the whole working tree as remotely backed up.
+- Next: Q:M2 / M2.1 — settle database/authentication and the staff/customer access matrix, then implement one bounded local save/read/restart/migration slice. No NAS/public deployment or spending is authorized by this sign-off. Current account-wide weekly usage: 38% used / 62% remaining; no credits or resets used.
 
 ## Current state
 
 - Working folder: `/Users/peterkontellis/.codex/.chatgpt-projects/g-p-6a0f76716e988191962260a53dc7ed97/workspace-app`.
-- GitHub: https://github.com/peterkontellis-spec/WorkspaceApp.git. Latest implementation checkpoint **397af19** was pushed to main.
-- M1.2–M1.5 implemented as session-only sample data. M1.6 refinements and review underway; Stage 1 remains open. M2 backend work has not started.
+- GitHub: https://github.com/peterkontellis-spec/WorkspaceApp.git. Latest implementation checkpoint **8a3ed51** was pushed to main.
+- M1.1–M1.6 / Stage 1 accepted as a sample-data prototype; see current sign-off above. M2 backend work has not started.
 - Shell/Home, editable boards, task notes/checklists/subtasks and linked Markdown Docs work in the prototype. Refresh/tab closure clears demo edits.
 - Fixed embedded native-calendar crash with an in-page calendar; verified date selection, Save/Cancel, month/year keyboard navigation, Clear and Escape.
 - Verified mobile Preview, nested bold/italic links, inert unsafe markup, empty document state and Assistant · Later on desktop/mobile. Assistant is a placeholder, not a connected AI service.
 - Reset demo now uses an in-page confirmation. Cancel/Escape preserve edits; explicit Reset sample data restores sample records. The earlier native popup appeared to the user while browsing settings; it affected temporary prototype data only. Warn before tests that may present browser/system prompts.
-- Last full validation: TypeScript, **20 tests**, production build and **16 HTTP checks** passed. Supported browser evidence is recorded in STATUS.md. A Next.js development profiler error on a not-found route did not reproduce in the production preview.
+- Last full validation: TypeScript, **23 tests**, production build and **16 HTTP checks** passed. Supported browser evidence is recorded in STATUS.md. A Next.js development profiler error on a not-found route did not reproduce in the production preview.
 - Preview: `http://127.0.0.1:3100/home`. Last started using the standalone production server; verify current lifetime rather than assuming it is running.
 
 ## User constraints and cadence
@@ -96,7 +104,7 @@ The user requested final checks and offered to run a physical iPhone/Firefox tes
 
 **Visual evidence added:** desktop Home, Boards list, Docs list, Weekly notes editor, and task panel with board context; 360px Weekly notes Write/Preview, Docs/Boards lists, Team operations controls and task panel. No horizontal page overflow in measured narrow document/task states (scroll width 345, viewport 360). Together with earlier calendar, Launch brief/Content outline, reset and 390/1024 checks this extends coverage; physical keyboard/touch and 200% zoom remain distinct gaps.
 
-**Validation:** `pnpm check` passed TypeScript, **20 tests**, production build; restarted the standalone preview and `pnpm check:smoke` passed **16/16**. Source review followed React best practices plus Impeccable and current Web Interface Guidelines; mechanical detector on all five changed components returned `[]`. Reviewed change scope and `git diff --check`. No dependency upgrade, spending or policy change.
+**Validation:** `pnpm check` passed TypeScript, **23 tests**, production build; restarted the standalone preview and `pnpm check:smoke` passed **16/16**. Source review followed React best practices plus Impeccable and current Web Interface Guidelines; mechanical detector on all five changed components returned `[]`. Reviewed change scope and `git diff --check`. No dependency upgrade, spending or policy change.
 
 **Still not signed off:** user-observed refresh/close warning, physical iPhone/Firefox keyboard/touch, remaining keyboard/zoom checks, and the historical development-only profiler/policy issues (not reproduced/fixed by this change). Mobile `beforeunload` cannot be treated as a universal data-loss guarantee; browser documentation notes unreliable delivery on mobile. M2 must provide real durable saving, not rely on a warning. Source: https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
 

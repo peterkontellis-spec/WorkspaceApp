@@ -1,17 +1,26 @@
 # Current status
 
+## M1 sign-off — 2026-10-06
+
+**M1.1–M1.6 / Stage 1 are complete as a reviewable sample-data prototype.** This current record supersedes historical pending-check notes below. It is not production readiness or a claim that every usability recommendation has been implemented. M2 has not started.
+
+Closing evidence:
+- Physical iPhone / Firefox: the user confirmed Home/navigation, Docs writing/Preview, keyboard hiding/restoring bottom navigation, and the requested board → task → date change → linked Doc → return/close journey ("Everything is fine, date changed succesfully"). Exact phone/iOS/browser versions were not supplied.
+- Physical iPhone refresh: user reported "No warnings ... Just resets the data altogether". Record this as observed sample-data reset and **no dependable unload warning**, not a warning pass. Desktop dirty refresh/close warning remains inconclusive; it is a known limitation, not protection for real work. Durable saving is a later-stage requirement.
+- Desktop keyboard, supported browser: Skip to content moved focus into main content; Tab traversed Home actions/tasks; Enter opened a task; task fields were reachable; Shift+Tab stayed within the modal boundary; Escape returned focus to the originating task. At the last modal control, focus passed through the browser boundary before returning to the dialog rather than reaching background page controls. Cmd+K, query entry and keyboard result activation opened Launch brief. Formatting/link fields/editor were reachable by Tab; Preview worked by Space. Account choices and Reset demo were keyboard reachable; keyboard Cancel returned to accounts. No captured browser warnings/errors.
+- Actual 200% zoom: user confirmed Home, board/task and Launch brief "readable and usable". In the diagnostic tab, DPR changed from 2 to 4 and viewport from 1165×814 to 582×407; Docs Preview had readable wrapped content, visible focus and no page-wide overflow (scrollWidth 575). This was actual scale change, not a viewport-emulation substitute. No viewport override was applied in this pass.
+- Prior recorded calendar, Markdown, reset, filter/history/scroll, desktop/narrow and design-skill checks remain valid. Latest application validation: TypeScript, 23 behavioural tests, production build and 16 HTTP checks passed for 8a3ed51. No application code changed during closure, so no redundant build was run.
+- Temporary hotspot server PID 48690 was stopped and port 3101 verified to have no listener. The Mac-only preview on 127.0.0.1:3100 was left running. Diagnostic tab closed; user tabs were preserved.
+
+Remaining limitations and next action:
+- Prototype edits reset on refresh/closure; no real authentication, persistent storage, uploads, collaboration or connected Assistant exists. Real task saving/restart recovery belongs to M2; durable collaborative Docs remain in M4.
+- The separate local UI critique remains a refinement backlog: mobile controls precede tasks, linked Docs sit deep in details, group/status terminology and save conventions need clarification, decorative completion markers and offscreen validation need improvement, and search initially focuses Close. Prototype sign-off does not resolve these findings or certify accessibility. Preserve that report and review it before the next UI change.
+- Known environment issues remain recorded: development-only profiler error and previously intermittent browser-policy verification. Neither prevented the completed production-preview journeys.
+- Separate local security-planning and critique drafts are preserved and are not included in this sign-off checkpoint. Do not describe the whole working tree as remotely backed up.
+- Next: Q:M2 / M2.1 — settle database/authentication and the staff/customer access matrix, then implement one bounded local save/read/restart/migration slice. No NAS/public deployment or spending is authorized by this sign-off. Current account-wide weekly usage: 38% used / 62% remaining; no credits or resets used.
+
+
 Updated: 2026-10-06 — sign-off checks active; history-scroll regression fixed and verified.
-
-## M1 closing checklist — current
-
-This section supersedes older pending-state notes below. The user confirmed on their physical iPhone in Firefox that the corrected bottom navigation disappears completely with the keyboard and returns correctly when dismissed ("Both are perfect"). Home/navigation, Docs typing/scrolling/Preview, and this keyboard fix now have user-observed phone evidence. Source checkpoint: **8a3ed51**.
-
-Only the following acceptance checks remain:
-1. Physical-phone board/task journey: date selection, opening the linked Doc, returning and closing the task. The corresponding emulated narrow and desktop paths already passed; one device journey is still needed.
-2. Remaining desktop keyboard traversal and 200% zoom/reflow checks across the main controls/dialogs.
-3. User-observed refresh/close behavior with disposable text. Record browser support and limitations; do not promise reliable mobile unload warnings or durable saving in the prototype.
-
-After those checks, reconcile M1 checkboxes and stop the temporary hotspot preview. The listener at 172.20.10.2:3101 was still active at this update; automatic 30-minute shutdown remains configured. Historical development-only profiler error and intermittent browser-policy verification remain known environment issues, not new feature requests or evidence that production navigation is failing. Security-planning drafts are a separate repository/handoff item. Do not mark Stage 1 complete yet.
 
 ## Delivery state
 
@@ -20,20 +29,20 @@ The user authorised M1.2 through M1.6, with checkpoints, work confined to this p
 | Increment | Implemented | Actual checks | Acceptance |
 | --- | --- | --- | --- |
 | M1.1 | Existing design specification | Prior planning review | Complete |
-| M1.2 | Shell/navigation, search, sample accounts, field metadata, modal scroll containment | TypeScript/build; HTTP 13/13 | Core checks recorded; review matrix open |
-| M1.3 | Personal overdue/today/upcoming/undated work, empty-state preview, recent Docs, shared state and task opening | Model 7/7; TypeScript/build; HTTP 14/14 | Core checks recorded; review matrix open |
-| M1.4 | Grouped tasks, add/rename/date/status/priority/multiple assignees, URL-backed combined filters/collapsed groups | Model 7/7; TypeScript/build; HTTP 15/15 | Core checks recorded; review matrix open |
-| M1.5 | Task notes/checklists/subtasks, sample file metadata, document linking, Markdown writing/formatting/safe preview and return context | Final model/Markdown/navigation 15/15; TypeScript/build; HTTP 16/16 | Core checks recorded; review matrix open |
-| M1.6 | Direct browser review, in-page calendar replacement, Docs preview refinements, Assistant · Later navigation | See current review below | Partial browser review; open register below |
+| M1.2 | Shell/navigation, search, sample accounts, field metadata, modal scroll containment | TypeScript/build; HTTP 13/13 | Accepted prototype; evidence above |
+| M1.3 | Personal overdue/today/upcoming/undated work, empty-state preview, recent Docs, shared state and task opening | Model 7/7; TypeScript/build; HTTP 14/14 | Accepted prototype; evidence above |
+| M1.4 | Grouped tasks, add/rename/date/status/priority/multiple assignees, URL-backed combined filters/collapsed groups | Model 7/7; TypeScript/build; HTTP 15/15 | Accepted prototype; evidence above |
+| M1.5 | Task notes/checklists/subtasks, sample file metadata, document linking, Markdown writing/formatting/safe preview and return context | Final model/Markdown/navigation 15/15; TypeScript/build; HTTP 16/16 | Accepted prototype; evidence above |
+| M1.6 | Direct browser review, in-page calendar replacement, Docs preview refinements, Assistant · Later navigation | See current review below | Accepted prototype; limitations above |
 | M2–M5 | Not implemented | — | Open |
 
-Only delivery items supported by recorded evidence are checked in SESSION_CHECKLIST.md. Broad M1.6/Stage 1 acceptance remains open; partial checks are not full passes.
+M1 delivery items are reconciled in SESSION_CHECKLIST.md against the recorded prototype acceptance evidence. Historical pending notes below are retained as a diagnostic log.
 
 ## Preview
 
 Local development server was running and responding at **http://127.0.0.1:3100/home** after the final HTTP checks. Server lifetime is session-dependent; see RUNNING.md to restart. It is bound to this Mac's loopback address, not publicly exposed or deployed to the NAS.
 
-Try Home → a task → linked Launch brief → edit text → Preview → Back to task → Close. Boards support editing/filtering. The sample account dialog includes Reset demo with confirmation. A refresh/close warning is registered after session changes; its actual browser behavior is still unverified.
+Try Home → a task → linked Launch brief → edit text → Preview → Back to task → Close. Boards support editing/filtering. The sample account dialog includes Reset demo with confirmation. A refresh/close warning is registered after session changes, but physical iPhone Firefox refresh showed no warning and reset sample edits. Do not rely on it to protect work.
 
 ## Checkpoints
 

@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1 is complete; M1.2–M1.5 are implemented; M1.6 review/refinements are in progress with final browser confirmation pending.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype (2026-10-06); M2 is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -48,6 +48,8 @@ You do not need to finish one increment per session. Some will take several sess
 
 ---
 
+**Current M1 acceptance (2026-10-06):** physical iPhone task/date/Docs and keyboard checks passed by user report; desktop keyboard checks and user-observed 200% zoom completed. Phone refresh silently resets sample data: this is a recorded prototype limitation, not a dependable warning. See STATUS.md for evidence and the separate UI refinement backlog. Earlier dated progress notes below are historical, not current blockers. The temporary hotspot preview is stopped.
+
 ## Stage 1 — Design prototype
 
 **Purpose:** settle the screens and everyday workflow before building the complete backend.  
@@ -72,7 +74,7 @@ You do not need to finish one increment per session. Some will take several sess
 
 - [x] Establish the minimal prototype project and consistent sample data after checking dependency choices.
 - [x] Build the sidebar, top bar, account area, and navigation between demonstrated screens.
-- [ ] Define reusable buttons, fields, task rows, status labels, and panels with keyboard focus.
+- [x] Define reusable buttons, fields, task rows, status labels, and panels with keyboard focus.
 
 **Done when:** the prototype opens locally and navigation works; unfinished areas are clearly identified.
 
@@ -108,7 +110,7 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** the two main detail views connected to the board.
 
-- [ ] Open/close task details alongside the desktop board, with notes, subtasks/checklist, files, and future feature locations.
+- [x] Open/close task details alongside the desktop board, with notes, subtasks/checklist, files, and future feature locations.
 - [x] Build the Docs list/editor layout and a sample task-to-document link.
 - [x] Label sample edits, collaboration indicators, and saving behavior accurately.
 
@@ -120,7 +122,7 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** a reviewable prototype and a short remaining-issues list.
 
-- [ ] Inspect desktop and narrow layouts; check keyboard operation, focus, readable labels, and panel behavior.
+- [x] Inspect desktop and narrow layouts; check keyboard operation, focus, readable labels, and panel behavior.
 - [x] Walk through the main journey, capture user feedback, and fix issues chosen for this stage.
 - [x] Record the preview location, checks, design decisions, and remaining prototype limitations.
 
@@ -132,7 +134,7 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Done when:** the next session can start backend work from a coherent, reviewable screen structure.
 
-- [ ] **Stage 1 complete:** all M1 acceptance checks in MILESTONES.md have evidence.
+- [x] **Stage 1 complete:** all M1 acceptance checks in MILESTONES.md have evidence.
 
 ---
 

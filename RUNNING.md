@@ -75,9 +75,9 @@ Every task/session follows the required self-check loop in AGENTS.md: implement,
 
 Next.js automatic agent-instruction generation is disabled in next.config.ts so development does not append generated guidance to the existing project AGENTS.md.
 
-## Browser checks to finish M1.2
+## Reusable browser regression checklist
 
-Run these once browser inspection is available, recording actual results in STATUS.md:
+M1 was signed off on 2026-10-06 using the cumulative evidence in STATUS.md, physical iPhone Firefox checks, desktop keyboard checks and user-confirmed 200% zoom. These unchecked boxes are a reusable regression checklist, not outstanding M1 gates. Repeat only the checks affected by a change; do not infer every combination/browser was tested.
 
 - [ ] Visit Home, Boards, and Docs; verify the current section, direct refresh, and browser Back/Forward.
 - [ ] Open both sample boards and each sample document, then return to their lists.
@@ -101,9 +101,9 @@ Run these once browser inspection is available, recording actual results in STAT
 - [ ] Test formatting by mouse and keyboard, focus/selection restoration, refresh/close warning and Reset demo confirmation/cancellation.
 - [ ] Inspect task panel, board controls and editor at 360/390 px, medium and wide desktop. Desktop must keep board context visible; phone controls/keyboard must not hide active input.
 
-No phone hardware or phone software-keyboard behavior has been tested. STATUS.md records partial direct browser evidence; combined checklist boxes remain open until every part passes.
+Physical iPhone Firefox typing/Preview, keyboard hiding/restoring bottom navigation, task/date/Doc return and refresh were user-tested. Refresh silently reset sample edits; never depend on an unload warning. The temporary hotspot preview is stopped. STATUS.md is authoritative for actual evidence and remaining limitations.
 
-### Current handoff note — 2026-10-06
+### Earlier handoff note — superseded by current STATUS.md sign-off
 
 Explicit approval for browser access to `http://127.0.0.1:3100` restored supported tool access. The local standalone preview is running in its own process session, with logs at `.git/preview-server.log`; this is not an autostart service. A clean refresh passed, but a dirty-document refresh retained text without exposing an inspectable warning, so refresh/close warning behavior remains inconclusive. See the pre-M2 open register in STATUS.md before treating any broad box above as passed.
 
