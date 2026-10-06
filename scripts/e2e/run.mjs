@@ -14,8 +14,9 @@ import { createFirstOwner } from '../../src/server/account-operator.mjs';
 const root = resolve(import.meta.dirname, '../..');
 process.umask(0o077);
 const args = process.argv.slice(2);
-if (args.some((arg) => !['--setup-check', '--serve'].includes(arg)) || args.length > 1)
-  throw new Error('Usage: node scripts/e2e/run.mjs [--setup-check | --serve]');
+const grep = args.length === 2 && args[0] === '--grep' && args[1].length <= 500 ? args[1] : null;
+if (!grep && (args.some((arg) => !['--setup-check', '--serve'].includes(arg)) || args.length > 1))
+  throw new Error('Usage: node scripts/e2e/run.mjs [--setup-check | --serve | --grep pattern]');
 await readFile(join(root, '.next/BUILD_ID'), 'utf8');
 await mkdir(join(root, '.local/e2e'), { recursive: true, mode: 0o700 });
 const directory = await mkdtemp(join(root, '.local/e2e/run-'));
@@ -177,12 +178,12 @@ try {
     mode: 0o600,
   });
   console.log(`Disposable browser-test environment ready at ${baseURL}. Artifacts: ${directory}`);
-  if (args.includes('--setup-check')) {
+  if (args[0] === '--setup-check') {
     console.log(
       'Setup check passed: isolated database, migrations, four accounts, app and authenticated snapshots. No browser launched.',
     );
     resultCode = 0;
-  } else if (args.includes('--serve')) {
+  } else if (args[0] === '--serve') {
     await writeFile(
       join(directory, 'fictional-logins.json'),
       JSON.stringify({
@@ -203,6 +204,7 @@ try {
         'test',
         '--config',
         join(root, 'playwright.config.mjs'),
+        ...(grep ? ['--grep', grep] : []),
       ],
       {
         cwd: root,

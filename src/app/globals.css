@@ -62,6 +62,11 @@ input:focus-visible {
 input {
   min-width: 0;
 }
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
 h1,
 h2,
 h3,

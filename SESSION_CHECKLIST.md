@@ -12,7 +12,8 @@ See DECISIONS.md, “External review assessment and corrective blocks”, for sc
 - [x] Block 1 local tooling: separate formatting checkpoint, isolated repeatable browser harness, core M3 regression coverage and explicit remaining-acceptance map.
 - [x] Block 2 local UI: board density/scanability, task panel with pinned actions and revision-safe quick edits; desktop/narrow/keyboard/error/conflict checks recorded. Physical software-keyboard checks remain below.
 - [x] Block 3 implementation: archive/restore permissions, subtree/Undo/board/draft behavior, database attachment/race coverage and core browser checks; non-editable Docs placeholder pending NAS configuration.
-- [ ] Complete the extended browser acceptance and physical-phone/device checks in PENDING_CHECKS.md before unconditional M3 sign-off; archive attachment/historical-link browser checks are included there.
+- [x] Complete the extended local browser matrix, including archive attachment bytes/historical links, themes and access/recovery paths; see STATUS.md for exact run totals.
+- [ ] Complete the physical-phone/OS, native-zoom and real-background-visibility checks retained in PENDING_CHECKS.md before unconditional device/Stage 3 sign-off.
 
 ## Before every session — two-minute check
 
@@ -266,8 +267,8 @@ You do not need to finish one increment per session. Some will take several sess
 **Deliverable:** three views of the same tasks.
 
 - [x] Connect all views to shared records and define status/date mapping. See BOARD_VIEWS.md; server/helper evidence in STATUS.md.
-- [x] Support status/date changes from every view through the existing task editor and Save flow. Browser verification remains pending below.
-- [ ] Check filters, undated tasks, permissions, and consistency after switching views.
+- [x] Support status/date changes from every view through the existing task editor and Save flow. Core browser verification is recorded in STATUS.md; device gaps are separate.
+- [x] Check filters, undated tasks, permissions, and consistency after switching views (isolated Chromium matrix, 2026-10-07).
 
 **Done when:** a task changed in one view appears correctly in the others without duplication.
 
@@ -275,9 +276,9 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** shared boards that update during team use.
 
-- [x] Automatically refresh committed changes for authorized visible tabs using bounded polling; browser delivery check remains pending.
-- [x] Implement connection notices and authoritative refresh after reconnecting; controller tests pass, browser presentation remains pending.
-- [ ] Exercise simultaneous edits and reconnect behavior with four accounts.
+- [x] Automatically refresh committed changes for authorized visible tabs using bounded polling; four-context browser delivery is verified; real background visibility remains an environment gap.
+- [x] Implement connection notices and authoritative refresh after reconnecting; controller and browser reconnect/draft/conflict checks pass.
+- [x] Exercise simultaneous edits and reconnect behavior with four isolated browser accounts; real multi-device performance remains later.
 
 **Done when:** teammates see saved changes without refreshing, and missed updates are recovered.
 
@@ -286,9 +287,9 @@ You do not need to finish one increment per session. Some will take several sess
 **Deliverable:** a clear record of changes and an in-app notification center.
 
 - [x] Record useful activity with actor and time, including assignment and status changes; transactional database evidence in STATUS.md.
-- [x] Implement assignment/update notifications, personal read/unread state and task links. UI acceptance remains pending.
+- [x] Implement assignment/update notifications, personal read/unread state and task links. Core browser journeys are verified; physical/device acceptance remains separate.
 - [x] Verify recipients, permissions and duplicate prevention in isolated database/HTTP tests. Due-date reminders remain deferred until M4.2.
-- [ ] Exercise notification delivery, links, read state, activity and error/focus/layout behavior in the supported browser; see PENDING_CHECKS.md.
+- [x] Exercise notification delivery, links, read state, activity and error/focus/layout behavior in isolated Chromium and supported manual inspection; see PENDING_CHECKS.md for environment limits.
 
 **Done when:** users receive relevant in-app updates and can understand who changed a task. Email, push, and mentions remain separate decisions.
 
