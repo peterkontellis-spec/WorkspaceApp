@@ -1,5 +1,25 @@
 # Current status
 
+## M2.5 accepted; preview stability fixed — 2026-10-06
+
+User resumed development with “Proceed with next block.” Delivered per-board text, status, number/cost, date and link columns; saved task notes and ordered/completed checklists; owner/editor editing and viewer read-only details. Column rename/reorder preserves values; changing a populated column's type/number format/currency or removing an in-use status option is refused. Initial costs support EUR/USD/GBP without conversion. See [SAVED_WORK.md](SAVED_WORK.md).
+
+Actual checks:
+- Final `pnpm check`: TypeScript, **23/23 behavioral tests** and production build passed. Refreshed preview `pnpm check:smoke`: **19/19 passed**.
+- Affected PostgreSQL work suite: **16/16 groups passed**, including all field types, distinct board definitions, limits/invalid data, owner/editor/viewer isolation, stale task/column revisions, checklist identity, transaction rollback, concurrent workers, restart persistence and creation retries. Together with the previously passed unchanged foundation/auth/membership suites, 46 groups are covered across runs; no single new full-suite run is claimed. Temporary work test cluster stopped.
+- Supported browser: created six columns (including separate number and cost), saved each value plus multiline notes/checklist completion, removed/undid an item and saved a later removal. Refresh and application restart retained details. Renamed/reordered a populated cost column; type/format/currency stayed locked. Removing an in-use status produced a focused error and retained input.
+- Unsaved notes survived Back/Forward; a new column draft survived command-menu navigation and Resume draft. A second authenticated session changed a column; the browser refused the stale task save, retained notes and required explicit discard before reloading the current schema/data. Escape protected a dirty column draft.
+- Viewer login showed the same saved fields, escaped plain-text notes and completed checklist, with zero editable controls in the task dialog and no board/column editing actions. Desktop/default and 1440×900 inspection plus 360×800 narrow checks covered custom controls, calendar/Escape, notes, checklist, board values and column dialogs. Narrow document width was 345px within 360px, task dialog 297px; controls remained reachable. No new physical-phone/software-keyboard or 200% zoom test is claimed. Captured console warnings/errors were empty.
+- Scoped Impeccable, current Web Interface Guidelines and React review completed; detector `[]`. Independent integration review found and fixed a valid large-cost rejection caused by floating-point tolerance; `1073741825.09` then saved and displayed correctly in the browser.
+
+Preview incident: a running standalone server referenced `.next` files replaced by subsequent builds. Replaced this with `pnpm preview`, which serves a separate ignored build snapshot. A diagnostic rebuilt the app and confirmed every script asset used by the running preview stayed available and byte-identical. The launcher verifies the recorded process's project directory and port ownership, requires it to stop, and records the replacement only after its own healthy listener starts. Independent review tightened these guards; final launcher activation passed. This is a Mac-local helper, not NAS service management.
+
+User-requested persistent `preview@example.test` owner login and sample boards are retained. **BOARDTEST and its two user-created tasks are preserved.** QA used another workspace; its two identities, one board/task and six columns were removed with identity/workspace guards. User preview login restored; viewport reset. Local credentials remain ignored, never committed. Git checkpoints do not back up database content.
+
+Runtime: preview PID **59089** on loopback3100; database supervisor **51561** on loopback55432. Verify process identities before acting. No NAS/public deployment, purchases, credits or resets. Latest weekly snapshot: **66% used / 34% remaining**.
+
+Next: **M2.6 — saved task search and combined filters**, with role-safe results, no-result states and navigation preservation. Attachments remain M2.7; Docs remain sample-only until M4. The Cloudflare pre-publication audit gate still applies; no audit or publication was performed here. Older pause/status sections below are historical.
+
 ## Paused; pre-publication audit required — 2026-10-06
 
 User paused development after M2.4. Resume at M2.5 only on their continuation. Installed Cloudflare's official `security-audit` skill at `/Users/peterkontellis/.codex/skills/security-audit/SKILL.md` from https://github.com/cloudflare/security-audit-skill using the skill-installer helper; installation and required workflow/reporting files verified. It is available on the next turn. No security audit was executed in this setup task and no publication/deployment occurred.

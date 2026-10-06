@@ -116,7 +116,7 @@ test('date/field/order validation and subtask ancestor rules leave saved data un
     { parentId: parent.id }, { parentId: child.id }, { parentId: grandchild.id }, { parentId: otherTask.id }, { groupId: other.group },
     { dueDate: '2026-02-29' }, { dueDate: '0000-01-01' }, { dueDate: '2026-13-01' }, { dueDate: '' },
     { title: ' '.repeat(3) }, { status: 'Whatever' }, { priority: 'Urgent' }, { position: -1 }, { position: 1.5 }, { position: 2147483647 },
-    { assigneeIds: [owner, owner] }, { assigneeIds: ['missing'] }, { notes: 'Not available' }, { boardId: other.id }
+    { assigneeIds: [owner, owner] }, { assigneeIds: ['missing'] }, { boardId: other.id }
   ]) assert.equal((await work({ action: 'updateTask', id: parent.id, revision: 1, patch })).status, 400, JSON.stringify(patch));
   assert.equal((await ok()).tasks.find(x => x.id === parent.id).revision, 1);
   await ok({ action: 'updateTask', id: child.id, revision: 1, patch: { parentId: null, dueDate: null, assigneeIds: [] } });
@@ -162,7 +162,7 @@ test('role/session revocation is rechecked after waiting for workspace lock', as
 test('same-origin bounded JSON, unsupported verbs and sensitive error responses are safe', async () => {
   const body = { action: 'createBoard', name: 'Board' };
   for (const origin of ['', 'https://attacker.example']) assert.equal((await work(body, ownerCookie, origin)).status, 403);
-  assert.equal((await work({ ...body, name: 'x'.repeat(9000) })).status, 413);
+  assert.equal((await work({ ...body, name: 'x'.repeat(512 * 1024) })).status, 413);
   const malformed = await handle(new Request(`${options.baseURL}/api/work`, { method: 'POST', headers: { origin: options.baseURL, 'content-type': 'application/json' }, body: '{' }));
   assert.equal(malformed.status, 400); assert.equal(malformed.headers.get('cache-control'), 'no-store');
   assert.equal((await handle(new Request(`${options.baseURL}/api/work`, { method: 'DELETE' }))).status, 405);
@@ -219,4 +219,131 @@ test('creation ID collisions cannot return or modify another workspace, includin
   assert.deepEqual(responses.map(x => x.status).sort(), [200, 409]);
   assert.equal((await admin.query('SELECT count(*)::int AS n FROM board WHERE id=$1', [shared])).rows[0].n, 1);
   assert.equal((await ok(undefined, outsider.cookie)).tasks[0].title, 'Outside task');
+});
+
+async function column(b, kind, configuration = {}, name = kind) {
+  const data = await ok({ action: 'createColumn', boardId: b.id, name, kind, configuration });
+  return data.columns.find(x => x.name === name && x.boardId === b.id);
+}
+const field = (column, value) => ({ columnId: column.id, revision: column.revision, value });
+
+test('all column kinds, notes and checklist persist atomically across restart and ordinary task edits', async () => {
+  const b = await board(), t = await task(b);
+  const columns = [await column(b, 'text'), await column(b, 'status', { options: ['Ready', 'Blocked'] }),
+    await column(b, 'number', { format: 'number' }), await column(b, 'number', { format: 'cost', currency: 'EUR' }, 'Budget'),
+    await column(b, 'date'), await column(b, 'link')];
+  const values = ['  Plain text\n<not html>  ', 'Ready', -12.345, 19.99, '2028-02-29', 'https://example.test/path?a=one#section'];
+  const checklist = [{ id: randomUUID(), label: 'First', done: false, position: 0 }, { id: randomUUID(), label: 'Second', done: true, position: 1 }];
+  const notes = '  Line one\n\n' + '📝'.repeat(20000) + '\n  ';
+  let data = await ok({ action: 'updateTask', id: t.id, revision: 1, patch: { notes, checklist, fields: columns.map((c, i) => field(c, values[i])) } });
+  assert.equal(data.tasks[0].notes, notes); assert.deepEqual(data.tasks[0].checklist, checklist);
+  for (let i = 0; i < columns.length; i++) assert.equal(data.tasks[0].fields.find(x => x.columnId === columns[i].id).value, values[i]);
+  await ok({ action: 'updateTask', id: t.id, revision: 2, patch: { status: 'Done' } });
+  const before = await ok();
+  await pool.end(); pool = null; await admin.end(); admin = null; await local.cluster.stop(); await local.cluster.start();
+  admin = createDatabase(local.adminUrl); pool = createDatabase(local.appUrl); auth = createAuthentication(pool, options); handle = workHttpHandler(pool, auth, options);
+  assert.deepEqual(await ok(), before);
+  data = await ok({ action: 'updateTask', id: t.id, revision: 3, patch: { notes: '', checklist: [checklist[1]], fields: [field(columns[0], null)] } });
+  assert.equal(data.tasks[0].notes, ''); assert.deepEqual(data.tasks[0].checklist, [checklist[1]]); assert.equal(data.tasks[0].fields.length, 5);
+});
+
+test('column and detail actions enforce member role, board and workspace boundaries', async () => {
+  const b = await board(), otherBoard = await board('Other board'), t = await task(b), c = await column(b, 'text'), otherColumn = await column(otherBoard, 'text');
+  const editor = await member('details-editor@example.test'), viewer = await member('details-viewer@example.test', 'viewer');
+  for (const body of [{ action: 'createColumn', boardId: b.id, name: 'Editor field', kind: 'text', configuration: {} },
+    { action: 'updateColumn', id: c.id, revision: 1, name: 'Renamed' },
+    { action: 'updateTask', id: t.id, revision: 1, patch: { notes: 'Editor notes' } }]) {
+    assert.equal((await work(body, viewer.cookie)).status, 403); assert.equal((await work(body, editor.cookie)).status, 200);
+  }
+  assert.equal((await ok(undefined, viewer.cookie)).tasks[0].notes, 'Editor notes');
+  assert.equal((await work({ action: 'updateTask', id: t.id, revision: 2, patch: { fields: [field(otherColumn, 'wrong board')] } })).status, 400);
+  const otherWorkspace = (await admin.query("INSERT INTO workspace(name) VALUES('Outside') RETURNING id")).rows[0].id;
+  const outsider = await member('details-outside@example.test', 'owner', otherWorkspace);
+  const outsideData = await ok({ action: 'createBoard', name: 'Outside' }, outsider.cookie), outsideBoard = outsideData.boards[0];
+  const outsideColumn = (await ok({ action: 'createColumn', boardId: outsideBoard.id, name: 'Private', kind: 'text', configuration: {} }, outsider.cookie)).columns[0];
+  for (const body of [{ action: 'updateColumn', id: outsideColumn.id, revision: 1, name: 'Stolen' },
+    { action: 'createColumn', boardId: outsideBoard.id, name: 'Stolen', kind: 'text', configuration: {} },
+    { action: 'updateTask', id: t.id, revision: 2, patch: { fields: [field(outsideColumn, 'Stolen')] } }]) assert.equal((await work(body)).status, 404);
+  assert.equal((await work({ action: 'createColumn', creationId: outsideColumn.id, boardId: b.id, name: 'Collision', kind: 'text', configuration: {} })).status, 409);
+  assert.equal((await ok()).columns.some(x => x.id === outsideColumn.id), false);
+  const outsideTask = (await ok({ action: 'createTask', boardId: outsideBoard.id, groupId: outsideData.groups[0].id, title: 'Private task' }, outsider.cookie)).tasks[0];
+  const privateItem = { id: randomUUID(), label: 'Private checklist', done: false, position: 0 };
+  await ok({ action: 'updateTask', id: outsideTask.id, revision: 1, patch: { checklist: [privateItem] } }, outsider.cookie);
+  assert.equal((await work({ action: 'updateTask', id: t.id, revision: 2, patch: { checklist: [privateItem] } })).status, 409);
+  assert.deepEqual((await ok(undefined, outsider.cookie)).tasks[0].checklist, [privateItem]);
+});
+
+test('column configuration validation, 20-column cap and idempotent creation preserve definitions', async () => {
+  const b = await board();
+  for (const input of [
+    { kind: 'script', configuration: {} }, { kind: 'text', configuration: { html: true } },
+    { kind: 'status', configuration: { options: [] } }, { kind: 'status', configuration: { options: ['One', ' One '] } },
+    { kind: 'status', configuration: { options: [' '] } }, { kind: 'status', configuration: { options: Array.from({ length: 21 }, (_, i) => String(i)) } },
+    { kind: 'number', configuration: { format: 'currency' } }, { kind: 'number', configuration: { format: 'cost', currency: 'BAD' } },
+    { kind: 'number', configuration: { format: 'number', currency: 'EUR' } }, { kind: 'link', configuration: { target: 'script' } }
+  ]) assert.equal((await work({ action: 'createColumn', boardId: b.id, name: 'Invalid', ...input })).status, 400);
+  const creationId = randomUUID(), body = { action: 'createColumn', boardId: b.id, name: 'Once', kind: 'text', configuration: {}, creationId };
+  const responses = await Promise.all([work(body), work(body)]); for (const response of responses) assert.equal(response.status, 200);
+  await ok({ action: 'updateColumn', id: creationId, revision: 1, name: 'Later', position: 3 });
+  assert.equal((await ok(body)).columns.find(x => x.id === creationId).name, 'Later');
+  for (let i = 1; i < 20; i++) await column(b, 'text', {}, `Column ${i}`);
+  assert.equal((await work({ ...body, creationId: randomUUID() })).status, 400);
+  assert.equal((await ok(body)).columns.length, 20);
+});
+
+test('used column definitions prevent destructive type/format/option changes and stale field writes', async () => {
+  const b = await board(), t = await task(b), status = await column(b, 'status', { options: ['One', 'Two'] }), cost = await column(b, 'number', { format: 'cost', currency: 'EUR' });
+  await ok({ action: 'updateTask', id: t.id, revision: 1, patch: { fields: [field(status, 'One'), field(cost, 10.25)] } });
+  for (const body of [
+    { id: status.id, kind: 'text', configuration: {} }, { id: status.id, configuration: { options: ['Renamed', 'Two'] } },
+    { id: cost.id, kind: 'text', configuration: {} }, { id: cost.id, configuration: { format: 'number' } },
+    { id: cost.id, configuration: { format: 'cost', currency: 'USD' } }
+  ]) assert.equal((await work({ action: 'updateColumn', revision: 1, ...body })).status, 400);
+  const changed = (await ok({ action: 'updateColumn', id: status.id, revision: 1, name: 'Progress', position: 10, configuration: { options: ['Two', 'One', 'Three'] } })).columns.find(x => x.id === status.id);
+  for (const value of ['One', null]) assert.equal((await work({ action: 'updateTask', id: t.id, revision: 2, patch: { notes: 'Must roll back', fields: [field(status, value)] } })).status, 409);
+  assert.equal((await ok()).tasks[0].notes, '');
+  await ok({ action: 'updateTask', id: t.id, revision: 2, patch: { fields: [field(changed, null), field(cost, null)] } });
+  await ok({ action: 'updateColumn', id: status.id, revision: 2, kind: 'date', configuration: {} });
+  await ok({ action: 'updateColumn', id: cost.id, revision: 1, configuration: { format: 'cost', currency: 'USD' } });
+});
+
+test('detail validation rejects malformed values and checklist identity transfer without partial updates', async () => {
+  const b = await board(), t = await task(b), other = await task(b, 'Other');
+  const textColumn = await column(b, 'text'), number = await column(b, 'number'), cost = await column(b, 'number', { format: 'cost', currency: 'GBP' }, 'Cost');
+  const date = await column(b, 'date'), link = await column(b, 'link'), status = await column(b, 'status', { options: ['Yes'] });
+  const item = { id: randomUUID(), label: 'Private item', done: false, position: 0 };
+  await ok({ action: 'updateTask', id: other.id, revision: 1, patch: { checklist: [item] } });
+  for (const patch of [
+    { notes: 'x'.repeat(50001) }, { notes: null }, { notes: '\0' },
+    { fields: [field(textColumn, 'x'.repeat(1001))] }, { fields: [field(textColumn, 123)] },
+    { fields: [field(number, '12')] }, { fields: [field(number, 1e12 + 1)] }, { fields: [field(cost, 1.005)] }, { fields: [field(cost, 1e-7)] },
+    { fields: [field(date, '2026-02-29')] }, { fields: [field(status, 'No')] },
+    ...['javascript:alert(1)', '//example.test', 'https://user:pass@example.test', 'https://example.test/\nabc', 'https://example.test/\u0085abc', 'https://example.test/\\abc', ' https://example.test', 'https://example.test/' + 'x'.repeat(2048)].map(value => ({ fields: [field(link, value)] })),
+    { fields: [field(textColumn, 'one'), field(textColumn, 'two')] }, { fields: [{ ...field(textColumn, 'one'), workspaceId: workspace }] },
+    { checklist: [{ ...item, id: randomUUID(), done: 'false' }] }, { checklist: [{ ...item, id: randomUUID(), label: '' }] }, { checklist: [{ ...item, id: randomUUID(), label: '\0' }] },
+    { checklist: [{ ...item, id: randomUUID(), position: -1 }] }, { checklist: [item, item] },
+    { checklist: Array.from({ length: 51 }, () => ({ ...item, id: randomUUID() })) }
+  ]) assert.equal((await work({ action: 'updateTask', id: t.id, revision: 1, patch: { title: 'Must not change', ...patch } })).status, 400, JSON.stringify(patch).slice(0, 100));
+  assert.equal((await work({ action: 'updateTask', id: t.id, revision: 1, patch: { checklist: [item] } })).status, 409);
+  const final = await ok(); assert.equal(final.tasks.find(x => x.id === t.id).revision, 1); assert.equal(final.tasks.find(x => x.id === t.id).title, 'Task');
+  assert.deepEqual(final.tasks.find(x => x.id === other.id).checklist, [item]);
+});
+
+test('independent workers conflict on task details and column revisions; late checklist failure rolls all fields back', async () => {
+  const b = await board(), t = await task(b), c = await column(b, 'text'); const secondPool = createDatabase(local.appUrl);
+  try {
+    const second = workHttpHandler(secondPool, createAuthentication(secondPool, options), options);
+    for (const body of [
+      { action: 'updateTask', id: t.id, revision: 1, patch: { notes: 'Won once', fields: [field(c, 'Won once')] } },
+      { action: 'updateColumn', id: c.id, revision: 1, name: 'Won once' }
+    ]) assert.deepEqual((await Promise.all([work(body), second(request(body))])).map(x => x.status).sort(), [200, 409]);
+  } finally { await secondPool.end(); }
+  await admin.query(`CREATE FUNCTION fail_details_checklist() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'private details failure'; END; $$;
+    CREATE TRIGGER test_details_checklist BEFORE INSERT ON checklist_item FOR EACH ROW EXECUTE FUNCTION fail_details_checklist()`);
+  const before = await ok();
+  try {
+    const response = await work({ action: 'updateTask', id: t.id, revision: 2, patch: { notes: 'Rolled back', fields: [field({ ...c, revision: 2 }, 'Rolled back')], checklist: [{ id: randomUUID(), label: 'Fail', done: false, position: 0 }] } });
+    assert.equal(response.status, 503); assert.doesNotMatch(await response.text(), /private details failure/);
+  } finally { await admin.query('DROP TRIGGER test_details_checklist ON checklist_item; DROP FUNCTION fail_details_checklist()'); }
+  assert.deepEqual(await ok(), before);
 });

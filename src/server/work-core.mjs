@@ -5,9 +5,9 @@ export class WorkError extends Error {
 }
 const fail = (status, message) => { throw new WorkError(status, message); };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const id = value => { if (typeof value !== 'string' || !uuid.test(value)) fail(400, 'Choose a valid item.'); return value; };
+const id = value => { if (typeof value !== 'string' || !uuid.test(value)) fail(400, 'Choose a valid item.'); return value.toLowerCase(); };
 const text = (value, max, optional = false) => {
-  if (typeof value !== 'string' || value.length > max || (!optional && !value.trim())) fail(400, `Enter text of ${optional ? '0' : '1'}–${max} characters.`);
+  if (typeof value !== 'string' || value.includes('\0') || value.length > max || (!optional && !value.trim())) fail(400, `Enter text of ${optional ? '0' : '1'}–${max} characters.`);
   return value.trim();
 };
 const integer = value => { if (!Number.isInteger(value) || value < 0 || value > 2147483646) fail(400, 'Choose a valid position.'); return value; };
@@ -49,14 +49,17 @@ async function snapshot(c, member) {
   const workspace = [member.workspace_id];
   const boards = (await c.query('SELECT id,name,description,revision FROM board WHERE workspace_id=$1 ORDER BY created_at,id', workspace)).rows;
   const groups = (await c.query('SELECT id,board_id AS "boardId",name,position,revision FROM board_group WHERE workspace_id=$1 ORDER BY position,id', workspace)).rows;
+  const columns = (await c.query('SELECT id,board_id AS "boardId",name,kind,configuration,position,revision FROM column_definition WHERE workspace_id=$1 ORDER BY position,id', workspace)).rows;
   const tasks = (await c.query(`SELECT t.id,t.board_id AS "boardId",t.group_id AS "groupId",t.parent_id AS "parentId",t.title,t.status,t.priority,
-    to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.position,t.revision,
-    ARRAY(SELECT a.user_id FROM task_assignee a WHERE a.workspace_id=t.workspace_id AND a.task_id=t.id ORDER BY a.user_id) AS "assigneeIds"
+    to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.position,t.revision,t.notes,
+    ARRAY(SELECT a.user_id FROM task_assignee a WHERE a.workspace_id=t.workspace_id AND a.task_id=t.id ORDER BY a.user_id) AS "assigneeIds",
+    coalesce((SELECT jsonb_agg(jsonb_build_object('id',i.id,'label',i.label,'done',i.done,'position',i.position) ORDER BY i.position,i.id) FROM checklist_item i WHERE i.workspace_id=t.workspace_id AND i.task_id=t.id),'[]'::jsonb) AS checklist,
+    coalesce((SELECT jsonb_agg(jsonb_build_object('columnId',v.column_id,'value',v.value) ORDER BY v.column_id) FROM task_field_value v WHERE v.workspace_id=t.workspace_id AND v.task_id=t.id),'[]'::jsonb) AS fields
     FROM task t WHERE t.workspace_id=$1 ORDER BY t.position,t.id`, workspace)).rows;
   const members = (await c.query(`SELECT u.id,u.display_name AS name,a.email,m.role FROM membership m
     JOIN app_user u ON u.id=m.user_id JOIN auth_user a ON a.id=u.auth_user_id
     WHERE m.workspace_id=$1 AND u.disabled_at IS NULL ORDER BY u.display_name,u.id`, workspace)).rows;
-  return { boards, groups, tasks, members, actor: { id: member.id, name: member.name, role: member.role } };
+  return { boards, groups, columns, tasks, members, actor: { id: member.id, name: member.name, role: member.role } };
 }
 export function readWork(pool, auth, headers) { return withMember(pool, auth, headers, false, snapshot); }
 async function row(c, table, workspace, itemId) {
@@ -70,8 +73,12 @@ async function nextPosition(c, table, workspace, board) {
   return integer(n);
 }
 async function taskValues(c, workspace, board, taskId, patch, current = {}) {
-  object(patch); keys(patch, ['title', 'groupId', 'parentId', 'status', 'priority', 'dueDate', 'position', 'assigneeIds']);
+  object(patch); keys(patch, ['title', 'groupId', 'parentId', 'status', 'priority', 'dueDate', 'position', 'assigneeIds', 'notes', 'checklist', 'fields']);
   const value = { ...current };
+  if ('notes' in patch) {
+    if (typeof patch.notes !== 'string' || patch.notes.length > 50000 || patch.notes.includes('\0')) fail(400, 'Notes must contain at most 50,000 characters.');
+    value.notes = patch.notes;
+  }
   if ('title' in patch) value.title = text(patch.title, 240);
   if ('status' in patch) value.status = choice(patch.status, ['To do', 'In progress', 'Done']);
   if ('priority' in patch) value.priority = choice(patch.priority, ['Low', 'Medium', 'High']);
@@ -110,6 +117,89 @@ async function assignments(c, workspace, task, values) {
   await c.query('DELETE FROM task_assignee WHERE workspace_id=$1 AND task_id=$2', [workspace, task]);
   for (const member of values.assigneeIds) await c.query('INSERT INTO task_assignee(workspace_id,task_id,user_id) VALUES($1,$2,$3)', [workspace, task, member]);
 }
+
+function columnValues(input) {
+  const kind = choice(input.kind, ['text', 'status', 'number', 'date', 'link']);
+  const configuration = object(input.configuration ?? {});
+  if (kind === 'status') {
+    keys(configuration, ['options']);
+    if (!Array.isArray(configuration.options) || configuration.options.length < 1 || configuration.options.length > 20) fail(400, 'Choose between 1 and 20 status options.');
+    const options = configuration.options.map(value => text(value, 80));
+    if (new Set(options).size !== options.length) fail(400, 'Status options must be distinct.');
+    return { kind, configuration: { options } };
+  }
+  if (kind === 'number') {
+    keys(configuration, ['format', 'currency']);
+    const format = choice(configuration.format ?? 'number', ['number', 'cost']);
+    if (format === 'cost') return { kind, configuration: { format, currency: choice(configuration.currency, ['EUR', 'USD', 'GBP']) } };
+    if ('currency' in configuration) fail(400, 'Currency is only available for cost columns.');
+    return { kind, configuration: { format } };
+  }
+  keys(configuration, []);
+  return { kind, configuration: {} };
+}
+function fieldValue(column, value) {
+  if (value === null) return null;
+  if (column.kind === 'number') {
+    if (typeof value !== 'number' || !Number.isFinite(value) || Math.abs(value) > 1e12) fail(400, 'Enter a finite number between −1 trillion and 1 trillion.');
+    // Work in decimal representation: floating-point rounding must not allow
+    // a real third decimal place, especially near the maximum allowed value.
+    if (column.configuration.format === 'cost') {
+      const [coefficient, exponent = '0'] = String(value).toLowerCase().split('e');
+      const decimals = (coefficient.split('.')[1]?.length ?? 0) - Number(exponent);
+      if (decimals > 2) fail(400, 'Costs can have at most two decimal places.');
+    }
+    return value;
+  }
+  if (typeof value !== 'string' || value.includes('\0')) fail(400, 'Enter a valid text value.');
+  if (column.kind === 'text') { if (value.length > 1000) fail(400, 'Text fields allow at most 1,000 characters.'); return value; }
+  if (column.kind === 'status') return choice(value, column.configuration.options ?? []);
+  if (column.kind === 'date') return date(value);
+  if (value.length > 2048 || /[\u0000-\u0020\u007f-\u009f\\]/.test(value) || !/^https?:\/\//i.test(value)) fail(400, 'Enter an absolute http or https link without spaces or credentials.');
+  let url;
+  try { url = new URL(value); } catch { fail(400, 'Enter a valid link.'); }
+  if (!['http:', 'https:'].includes(url.protocol) || !url.hostname || url.username || url.password) fail(400, 'Enter an http or https link without credentials.');
+  return value;
+}
+async function details(c, workspace, board, task, patch) {
+  if ('fields' in patch) {
+    if (!Array.isArray(patch.fields) || patch.fields.length > 20) fail(400, 'Choose up to 20 column values.');
+    const seen = new Set();
+    for (const field of patch.fields) {
+      object(field); keys(field, ['columnId', 'revision', 'value']);
+      const columnId = id(field.columnId);
+      if (seen.has(columnId)) fail(400, 'Each column value can appear only once.');
+      seen.add(columnId);
+      const column = await row(c, 'column_definition', workspace, columnId);
+      if (column.board_id !== board) fail(400, 'The column must belong to this board.');
+      checkRevision(column, field.revision);
+      const value = fieldValue(column, field.value);
+      if (value === null) await c.query('DELETE FROM task_field_value WHERE workspace_id=$1 AND task_id=$2 AND column_id=$3', [workspace, task, column.id]);
+      else await c.query(`INSERT INTO task_field_value(workspace_id,board_id,task_id,column_id,value) VALUES($1,$2,$3,$4,$5::jsonb)
+        ON CONFLICT(task_id,column_id) DO UPDATE SET value=excluded.value`, [workspace, board, task, column.id, JSON.stringify(value)]);
+    }
+  }
+  if ('checklist' in patch) {
+    if (!Array.isArray(patch.checklist) || patch.checklist.length > 50) fail(400, 'A checklist can contain up to 50 items.');
+    const seen = new Set();
+    const values = patch.checklist.map(item => {
+      object(item); keys(item, ['id', 'label', 'done', 'position']);
+      const itemId = id(item.id);
+      if (seen.has(itemId) || typeof item.done !== 'boolean') fail(400, 'Choose distinct checklist items with a valid completion state.');
+      seen.add(itemId);
+      return { id: itemId, label: text(item.label, 500), done: item.done, position: integer(item.position) };
+    });
+    const collisions = await c.query('SELECT id FROM checklist_item WHERE id=ANY($1::uuid[]) AND (workspace_id<>$2 OR task_id<>$3)', [[...seen], workspace, task]);
+    if (collisions.rowCount) fail(409, 'A checklist identifier is unavailable. Reload this task.');
+    await c.query('DELETE FROM checklist_item WHERE workspace_id=$1 AND task_id=$2', [workspace, task]);
+    for (const item of values) {
+      const result = await c.query(`INSERT INTO checklist_item(id,workspace_id,task_id,label,done,position) VALUES($1,$2,$3,$4,$5,$6)
+        ON CONFLICT(id) DO NOTHING RETURNING id`, [item.id, workspace, task, item.label, item.done, item.position]);
+      if (!result.rowCount) fail(409, 'A checklist identifier is unavailable. Reload this task.');
+    }
+  }
+}
+
 // The entity UUID is also the bounded retry key: no extra key ledger or expiry.
 // A successful retry returns current state and never replays the original fields.
 async function creation(c, table, workspace, value) {
@@ -149,6 +239,28 @@ export function manageWork(pool, auth, headers, input) {
       keys(input, ['action', 'id', 'revision', 'name', 'position']);
       const saved = await row(c, 'board_group', workspace, input.id); checkRevision(saved, input.revision);
       await c.query('UPDATE board_group SET name=$3,position=$4,revision=revision+1 WHERE workspace_id=$1 AND id=$2 AND revision=$5', [workspace, saved.id, text(input.name ?? saved.name, 120), integer(input.position ?? saved.position), saved.revision]);
+    } else if (input.action === 'createColumn') {
+      keys(input, ['action', 'boardId', 'name', 'kind', 'configuration', 'position', 'creationId']);
+      const create = await creation(c, 'column_definition', workspace, input.creationId);
+      if (create.exists) return snapshot(c, member);
+      const board = await row(c, 'board', workspace, input.boardId);
+      const count = (await c.query('SELECT count(*)::integer AS n FROM column_definition WHERE workspace_id=$1 AND board_id=$2', [workspace, board.id])).rows[0].n;
+      if (count >= 20) fail(400, 'A board can have up to 20 custom columns.');
+      const value = columnValues(input);
+      inserted((await c.query(`INSERT INTO column_definition(id,workspace_id,board_id,name,kind,configuration,position)
+        VALUES(coalesce($1::uuid,gen_random_uuid()),$2,$3,$4,$5,$6::jsonb,$7) ON CONFLICT(id) DO NOTHING RETURNING id`,
+        [create.id, workspace, board.id, text(input.name, 120), value.kind, JSON.stringify(value.configuration), integer(input.position ?? await nextPosition(c, 'column_definition', workspace, board.id))])).rows[0]);
+    } else if (input.action === 'updateColumn') {
+      keys(input, ['action', 'id', 'revision', 'name', 'kind', 'configuration', 'position']);
+      const saved = await row(c, 'column_definition', workspace, input.id); checkRevision(saved, input.revision);
+      const value = columnValues({ kind: input.kind ?? saved.kind, configuration: input.configuration ?? saved.configuration });
+      const used = (await c.query('SELECT value FROM task_field_value WHERE workspace_id=$1 AND column_id=$2', [workspace, saved.id])).rows;
+      if (used.length) {
+        if (value.kind !== saved.kind || (saved.kind === 'number' && (value.configuration.format !== (saved.configuration.format ?? 'number') || value.configuration.currency !== saved.configuration.currency))) fail(400, 'Clear this column’s saved values before changing its type or number format.');
+        if (saved.kind === 'status' && used.some(item => !value.configuration.options.includes(item.value))) fail(400, 'An option is still used by a task. Clear or change those values before removing it.');
+      }
+      await c.query(`UPDATE column_definition SET name=$3,kind=$4,configuration=$5::jsonb,position=$6,revision=revision+1
+        WHERE workspace_id=$1 AND id=$2 AND revision=$7`, [workspace, saved.id, text(input.name ?? saved.name, 120), value.kind, JSON.stringify(value.configuration), integer(input.position ?? saved.position), saved.revision]);
     } else if (input.action === 'createTask') {
       keys(input, ['action', 'boardId', 'groupId', 'title', 'parentId', 'status', 'priority', 'dueDate', 'position', 'assigneeIds', 'creationId']);
       const create = await creation(c, 'task', workspace, input.creationId);
@@ -164,9 +276,10 @@ export function manageWork(pool, auth, headers, input) {
       keys(input, ['action', 'id', 'revision', 'patch']);
       const saved = await row(c, 'task', workspace, input.id); checkRevision(saved, input.revision);
       const value = await taskValues(c, workspace, saved.board_id, saved.id, input.patch, saved);
-      await c.query(`UPDATE task SET group_id=$3,parent_id=$4,title=$5,status=$6,priority=$7,due_date=$8,position=$9,revision=revision+1,updated_at=now()
-        WHERE workspace_id=$1 AND id=$2 AND revision=$10`, [workspace, saved.id, value.group_id, value.parent_id, value.title, value.status, value.priority, value.due_date, value.position, saved.revision]);
+      await c.query(`UPDATE task SET group_id=$3,parent_id=$4,title=$5,status=$6,priority=$7,due_date=$8,position=$9,notes=$11,revision=revision+1,updated_at=now()
+        WHERE workspace_id=$1 AND id=$2 AND revision=$10`, [workspace, saved.id, value.group_id, value.parent_id, value.title, value.status, value.priority, value.due_date, value.position, saved.revision, value.notes]);
       await assignments(c, workspace, saved.id, value);
+      await details(c, workspace, saved.board_id, saved.id, input.patch);
     } else fail(400, 'Choose a valid work action.');
     return snapshot(c, member);
   });

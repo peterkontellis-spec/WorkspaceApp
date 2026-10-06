@@ -1,7 +1,7 @@
 .saved-task-editor { display: grid; gap: 20px; min-width: 0; }
 .saved-task-fields { display: grid; gap: 20px; border: 0; padding: 0; margin: 0; min-width: 0; }
 .saved-task-label { display: grid; gap: 7px; min-width: 0; color: var(--muted); font-size: .875rem; }
-.saved-task-label input { width: 100%; min-width: 0; min-height: 48px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; color: var(--text); background: var(--background); font: inherit; font-size: 1rem; }
+.saved-task-label input, .saved-task-label textarea { width: 100%; min-width: 0; min-height: 48px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; color: var(--text); background: var(--background); font: inherit; font-size: 1rem; }
 .saved-task-label select { width: 100%; min-width: 0; font-size: 1rem; }
 .saved-task-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .saved-task-grid > .date-picker:has(.date-calendar) { grid-column: 1 / -1; }
@@ -26,3 +26,20 @@
 .saved-task-facts dt { color: var(--muted); font-size: .875rem; }
 .saved-task-facts dd { margin: 0; overflow-wrap: anywhere; }
 @media (max-width: 420px) { .saved-task-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.saved-task-label textarea { resize: vertical; line-height: 1.6; }
+.saved-task-section { display: grid; gap: 14px; border-top: 1px solid var(--line); padding-top: 20px; min-width: 0; }
+.saved-task-section h3 { font-size: 1rem; margin: 0; }
+.saved-task-section p { margin: 0; }
+.saved-task-section > .button { justify-self: start; min-height: 48px; }
+.saved-task-notes { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; }
+.saved-task-checklist, .saved-task-checklist-read { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.saved-task-checklist li { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+.saved-task-checklist .button { min-height: 48px; }
+.saved-task-check { min-width: 48px; min-height: 48px; display: grid; place-items: center; cursor: pointer; }
+.saved-task-check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.saved-task-checklist-read li { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 12px; overflow-wrap: anywhere; }
+.saved-task-undo { display: grid; gap: 8px; }
+.saved-task-undo > div { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: .875rem; overflow-wrap: anywhere; }
+.saved-task-undo .button { min-height: 48px; }
+@media (max-width: 420px) { .saved-task-checklist li { grid-template-columns: 48px minmax(0, 1fr); } .saved-task-checklist li > .button { grid-column: 2; justify-self: start; } }

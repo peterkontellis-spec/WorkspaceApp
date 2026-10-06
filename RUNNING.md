@@ -2,11 +2,11 @@
 
 ## Current scope
 
-M1.2–M1.5 implement the shell, personal Home/My Day, editable grouped boards, task details and session-only Docs writing/preview. Use the same shared sample records across screens. Task status, priority, assignees and notes apply immediately; board titles/dates use explicit Save/Cancel. Board filters and collapsed groups live in the URL; unfinished task/board input stays in memory through internal navigation.
+Accounts mode now provides real sign-in, staff roles and saved boards/tasks, custom columns, notes and checklists through M2.5. Use explicit Save for persistent changes. See [SAVED_WORK.md](SAVED_WORK.md) for behavior, draft recovery and limits. Docs remain a sample.
 
-Docs use a small Markdown subset with formatting controls and a safe preview. This is not a full word processor or collaborative editor. Attachments are sample metadata only. All edits reset on refresh/tab closure, and unload warnings are not dependable (physical iPhone refresh was silent). Reset demo in the account dialog asks for confirmation before clearing session data.
+Docs use a small Markdown subset with formatting controls and a safe preview. This is not a full word processor or collaborative editor. Doc sample edits reset on refresh/tab closure, and unload warnings are not dependable (physical iPhone refresh was silent). File attachments remain a later increment.
 
-M2.1 adds a separate local PostgreSQL foundation; see [DATABASE.md](DATABASE.md) for startup and checks. M2.2 adds real accounts and protected screens; follow [AUTHENTICATION.md](AUTHENTICATION.md) for first-owner setup/recovery. Sample editing still has no enforced task roles, upload/download or durable saving. No NAS deployment exists. Sample roles are illustrative. The demo date remains 25 September 2026.
+See [DATABASE.md](DATABASE.md) for PostgreSQL startup and checks, and [AUTHENTICATION.md](AUTHENTICATION.md) for account setup/recovery. No NAS deployment exists. Explicit prototype mode retains the original M1 sample UI, illustrative roles and 25 September 2026 demo date; its edits are temporary. It is separate from the accounts preview.
 
 M1 was signed off as a sample-data prototype on 2026-10-06, including the replacement in-page calendar and phone/keyboard/zoom checks. Earlier browser-policy failures are historical; see STATUS.md for the recorded limits and current M2 progress. Build/model/HTTP checks do not substitute for browser verification.
 
@@ -14,15 +14,18 @@ M1 was signed off as a sample-data prototype on 2026-10-06, including the replac
 
 Calendar selection/Save/Cancel, keyboard month/year movement, task Clear/Escape, mobile preview/nested links/empty state, Assistant placeholder, account switching, filter/collapse history and in-page reset Cancel/Escape/confirm have direct browser evidence. See STATUS.md for exact widths and gaps; broad checklist boxes remain open where only part passed.
 
-The current local preview uses the production standalone build. After `pnpm build`, prepare and start it from this project folder:
+The current accounts preview uses a separate production build snapshot. After database/auth setup, run from this project folder:
 
 ```sh
-cp -R public .next/standalone/
-cp -R .next/static .next/standalone/.next/
-HOSTNAME=127.0.0.1 PORT=3100 node --env-file=.local/database.env --env-file=.local/auth.env .next/standalone/server.js
+pnpm build
+pnpm preview
 ```
 
-Stop this project's existing preview before starting another server on port 3100. This is a local preview, not NAS deployment. Development mode exposed a Next.js profiler timing error on a not-found route; the same route and recovery worked in production. The intermittent browser-policy block later returned and remains outside application code.
+`pnpm preview` copies the completed standalone build, static scripts and public assets to ignored `.local/preview-releases/`, reads the local database/auth configuration, and starts a detached Mac-only server at `127.0.0.1:3100`. Future builds do not change the running snapshot. Activate a new build with `pnpm preview` when users have saved their work, then refresh their tabs. Do not run builds and preview activation concurrently.
+
+The launcher uses macOS `lsof` to verify the previous process's project directory and port ownership before stopping it. It refuses to stop another service and confirms the replacement process owns the port and passes readiness before recording it. Current state: `.local/preview-server.pid`, `.local/preview-release.txt`; log: `.local/preview-server.log`. Verify process identity before manual stopping. Old snapshots remain ignored local files; this helper is not NAS service management or a backup system. Do not use the older `.local/restart-preview.py` helper or serve directly from `.next` while building.
+
+Accounts-mode boards/tasks, custom values, notes and checklists are saved; Docs remain a sample. A persistent preview owner account now exists. Preserve its boards and user edits; never reuse destructive/disposable-account cleanup routines on it. Keep credentials out of Git and project documents.
 
 ## Open the current preview
 
@@ -32,7 +35,7 @@ While the local preview server is running, open:
 
 The server binds to this Mac's loopback interface. This link is for this Mac; it is not an externally hosted address or a phone-accessible NAS deployment.
 
-## Start it again
+## Development and explicit sample mode
 
 Requirements: Node.js 20.9 or later (tested here with the bundled Node 24.19.0) and pnpm 11.25.0. The project lockfile records the installed dependency versions.
 

@@ -37,13 +37,13 @@ The narrow task repository checks membership for reads and owner/editor membersh
 
 - `app_user` → `membership` → `workspace`: explicit staff membership and role.
 - `workspace` → `board` → `board_group` → `task`: composite foreign keys prevent crossing workspace or board boundaries.
-- `task.parent_id`: same-board subtask relationship; self-parent rejected. Full cycle/move validation is required with the M2.4 mutation service.
+- `task.parent_id`: same-board subtask relationship; self-parent rejected. M2.4 validates full ancestor cycles and moves in the mutation service.
 - `task_assignee`: multiple assignees, each a member of that workspace. Membership removal removes assignments.
-- `column_definition` / `task_field_value`: per-board columns and task values; type-specific JSON validation and column-change behavior arrive in M2.5.
+- `column_definition` / `task_field_value`: per-board columns and task values; M2.5 validates types and protects populated definitions; see SAVED_WORK.md.
 - `task.notes` / `checklist_item`: notes and ordered checklist items. The second migration adds notes without losing existing records.
 - `attachment`: task ownership, uploader identity, generated UUID storage key, original name, media type, bounded byte size and pending/ready/rejected state. The initial 25 MiB ceiling is a development default; no uploads or downloads exist yet.
 
-Board/group/task/column revisions are reserved for their mutation services. Only task rename currently implements compare-and-update. Group names and completion status remain independent, matching the current prototype; any workflow change needs an explicit product decision.
+M2.4–M2.5 check board/group/task/column revisions in authenticated mutation services; task detail saves also check original column revisions. Group names and completion status remain independent, matching the current prototype; any workflow change needs an explicit product decision.
 
 ## Local startup
 
@@ -85,6 +85,6 @@ The database commands deliberately target only this project's development databa
 
 ## Remaining work and operating limits
 
-M2.2 authentication tables, operator recovery, session cookies, protected pages and request-origin checks are implemented/tested. M2.3 adds the invitation lifecycle and role-management HTTP permission matrix; see MEMBERSHIP.md. Task/search/file HTTP authorization remains required when those endpoints arrive. Wiring real board/task saves and visible error/conflict states is M2.4–M2.5. Attachment filesystem handling is M2.7. The runtime database role can read application tables; every future HTTP operation must use verified sessions and explicit authorization. This is not row-level-security isolation between database users.
+M2.2 authentication tables, operator recovery, session cookies, protected pages and request-origin checks are implemented/tested. M2.3 adds the invitation lifecycle and role-management HTTP permission matrix; see MEMBERSHIP.md. M2.4–M2.5 provide authenticated board/task/detail saves and visible error/conflict states. Search/file HTTP authorization remains required as those endpoints arrive. Attachment filesystem handling is M2.7. The runtime database role can read application tables; every future HTTP operation must use verified sessions and explicit authorization. This is not row-level-security isolation between database users.
 
 NAS PostgreSQL packaging, restricted production network/credentials, backup/restore and measured memory are M5. Do not copy the development superuser credentials into deployment. Back up through PostgreSQL-aware tooling when that procedure is implemented; copying a live data directory or pushing source code is not a database backup. No automatic retention/deletion is configured.

@@ -10,6 +10,7 @@
     "dev": "next dev --hostname 127.0.0.1 --port 3100",
     "build": "next build",
     "start": "next start --hostname 127.0.0.1 --port 3100",
+    "preview": "node scripts/preview.mjs",
     "typecheck": "tsc --noEmit",
     "check": "pnpm typecheck && pnpm test && pnpm build",
     "check:smoke": "node scripts/smoke-check.mjs",

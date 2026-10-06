@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3 and M2.4 are accepted; M2.5 custom fields and task details is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.5 are accepted; M2.6 saved task search and filters is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -198,11 +198,13 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** configurable boards and useful task interiors.
 
-- [ ] Add initial custom field types: text, status, number/cost, date, and links; define behavior when a column changes.
-- [ ] Save task notes and checklist items, including completion state.
-- [ ] Connect the task panel to stored records and show validation/save failures clearly.
+- [x] Add initial custom field types: text, status, number/cost, date, and links; define behavior when a column changes.
+- [x] Save task notes and checklist items, including completion state.
+- [x] Connect the task panel to stored records and show validation/save failures clearly.
 
 **Done when:** different boards can use different validated fields and task details remain intact after reopening.
+
+**Accepted 2026-10-06:** all field types, stored notes/checklists, original task/schema conflict protection, viewer restrictions, persistence and desktop/narrow browser checks passed. See STATUS.md for evidence and limits.
 
 ### M2.6 — Search and filters
 

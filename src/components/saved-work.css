@@ -38,3 +38,19 @@
   .saved-task-meta { text-align: right; }
   .saved-work-dialog .dialog__surface { padding: 20px; }
 }
+.saved-column-settings { margin-block: 20px; padding-block: 12px 20px; border-block: 1px solid var(--line); }
+.saved-column-settings summary { min-height: 48px; padding-block: 12px; cursor: pointer; font-weight: 500; }
+.saved-column-settings summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.saved-column-settings > p { margin-bottom: 12px; }
+.saved-column-settings ul { list-style: none; padding: 0; margin: 12px 0; }
+.saved-column-settings li { display: flex; gap: 16px; align-items: center; justify-content: space-between; border-top: 1px solid var(--line-soft); padding-block: 10px; }
+.saved-column-settings li > span { min-width: 0; overflow-wrap: anywhere; }
+.saved-column-settings strong { font-size: .9375rem; font-weight: 500; }
+.saved-column-settings small { display: block; color: var(--muted); text-transform: capitalize; }
+.saved-column-settings .button, .saved-form .button { min-height: 48px; }
+.saved-row-fields { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px 20px; padding-top: 8px; margin: 0; }
+.saved-row-fields > div { min-width: 0; }
+.saved-row-fields dt { color: var(--muted); font-size: .75rem; }
+.saved-row-fields dd { margin: 4px 0 0; font-size: .875rem; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.saved-empty-value { color: var(--muted); }
+@media (max-width: 600px) { .saved-column-settings li { flex-direction: column; align-items: stretch; gap: 4px; } }

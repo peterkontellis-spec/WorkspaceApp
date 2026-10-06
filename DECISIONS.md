@@ -70,3 +70,11 @@ A reinvited person proves their existing password rather than replacing the acco
 Authenticated Home/Boards use stored staff-workspace records; the original fixtures remain only in explicit prototype mode and sample Docs. Owner/editor task permissions are enforced on the server under the same workspace lock used for membership changes. Viewers can read. No private admin/customer access is implied.
 
 Updates retain an original revision and reject stale writes. Create forms retain a random entity UUID so an uncertain network retry cannot create duplicates; retries return the current record rather than replaying fields. Unsaved forms/task drafts are kept only in tab memory across navigation, with explicit discard and a warning on refresh where supported. No offline queue or durable draft promise. Numeric group/task order is the initial ordering UI. See SAVED_WORK.md.
+
+## 2026-10-06 — M2.5 custom fields and local preview isolation
+
+Keep each board's column definitions independent. Validate values and original column revisions alongside the task revision in one transaction. Save notes and the full checklist atomically with task fields. Protect populated definitions: permit rename/order and unused status-option changes; refuse type/number-format/currency changes while values exist. No implicit data conversion or column deletion. Limits are 20 columns, 20 status options, 50 checklist items and 50,000 note characters. Initial cost currencies are EUR/USD/GBP with at most two decimal places and no exchange-rate service.
+
+Owner/editor forms use the established dark interface, explicit Save, in-memory draft recovery and visible conflict/error states. Viewers see read-only values, notes and checklist completion. Attachments and durable Docs remain later increments.
+
+The user requested a reusable local preview login; preserve that account, boards and user edits separately from disposable QA fixtures. Serve the Mac preview from a copied build release under ignored `.local/preview-releases` so later builds cannot replace its scripts. Verify project/process/port ownership before replacement; never stop a foreign service. This does not authorize LAN/public exposure or NAS deployment.
