@@ -2,6 +2,10 @@
 
 Saved: **2026-10-06**, with browser-policy diagnostic results. This is a durable project checkpoint, not a claim that internal conversation compaction occurred. Read STATUS.md for detailed test evidence. October 5 ZIPs remain historical snapshots.
 
+## Latest interaction follow-up — 2026-10-06
+
+Post-sign-off user requests are implemented and browser-checked: shared floating multi-select assignee dropdowns; full-width Add task/title touch areas; outside-tap task dismissal with draft/focus preservation and a 24px phone gutter. Dragging out from inside does not close the panel. Narrow date/group fields remain readable. TypeScript, 23 tests, production build and 16 HTTP checks passed; desktop/360/390px interaction evidence and exact test limits are in the top STATUS.md section. No fresh physical-iPhone check is claimed. Loopback preview refreshed; hotspot remains closed. M2 remains next, not started. Unrelated planning/critique drafts remain local-only.
+
 ## M1 sign-off — 2026-10-06
 
 **M1.1–M1.6 / Stage 1 are complete as a reviewable sample-data prototype.** This current record supersedes historical pending-check notes below. It is not production readiness or a claim that every usability recommendation has been implemented. M2 has not started.

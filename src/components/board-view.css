@@ -40,16 +40,10 @@
 .board-form-actions .button { padding-inline: 12px; }
 .board-error { color: #f0b5a8; font-size: .875rem; overflow-wrap: anywhere; }
 .board-row-error { grid-column: 1 / -1; }
-.board-assignees summary { cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 4px; min-height: 48px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; font-size: .875rem; }
-.board-assignees summary::-webkit-details-marker { display: none; }
-.board-assignees summary:hover { background: var(--hover); }
-.board-assignees fieldset { padding: 8px 0 0; border: 0; margin: 0; min-width: 0; }
-.board-assignees legend { padding: 8px 0 0; font-size: .8125rem; color: var(--muted); }
-.board-assignees fieldset label { display: flex; gap: 8px; align-items: center; min-height: 44px; cursor: pointer; font-size: .8125rem; overflow-wrap: anywhere; }
-.board-assignees input[type="checkbox"] { min-height: 20px; width: 20px; padding: 0; }
 .board-overdue { color: #e5b592; font-size: .75rem; }
 .board-group-empty { color: var(--muted); padding: 16px 18px; font-size: .875rem; }
 .board-add-task { border-top: 1px solid var(--line-soft); padding: 8px 18px; }
+.board-add-trigger { width: 100%; justify-content: flex-start; min-height: 48px; }
 .board-add-task form { max-width: 520px; padding: 8px 0; }
 .board-add-message { color: var(--muted); font-size: .8125rem; }
 .board-add-message:empty { display: none; }

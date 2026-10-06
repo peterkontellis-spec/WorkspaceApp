@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react';
 import { X } from 'lucide-react';
+import { useBackdropDismiss } from './use-backdrop-dismiss';
 import Link from 'next/link';
 import { DEMO_DATE, boardFor, formatDue, members, type Member, type Status, type Task } from '@/lib/demo';
 
@@ -45,6 +46,7 @@ export function TaskRow({ task, href, onOpen }: { task: Task; href?: string; onO
 
 export function Dialog({ open, onClose, title, children, className = '' }: { open: boolean; onClose: () => void; title: string; children: ReactNode; className?: string }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const backdrop = useBackdropDismiss(onClose);
   const titleId = useId();
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -52,7 +54,7 @@ export function Dialog({ open, onClose, title, children, className = '' }: { ope
     if (open && !dialog.open) dialog.showModal();
     if (!open && dialog.open) dialog.close();
   }, [open]);
-  return <dialog ref={dialogRef} aria-labelledby={titleId} className={`dialog ${className}`} onClose={onClose} onCancel={onClose} onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+  return <dialog ref={dialogRef} aria-labelledby={titleId} className={`dialog ${className}`} onClose={onClose} onCancel={onClose} {...backdrop}>
     <div className="dialog__surface">
       <div className="dialog__heading"><h2 id={titleId}>{title}</h2><Button variant="ghost" className="icon-button" aria-label={`Close ${title.toLowerCase()}`} onClick={onClose}><X size={20} aria-hidden="true" /></Button></div>
       {children}

@@ -1,5 +1,27 @@
 # Current status
 
+## M1 interaction follow-up — 2026-10-06
+
+Implemented the user's post-sign-off interaction requests:
+- Shared assignee dropdown for board rows and task details. A native HTML popover floats above content, supports multiple checkbox selections and keeps the row height unchanged; Done, outside click and Escape dismiss it. The trigger announces current assignees. Scroll/resize listeners exist only while open and are cleaned up; no runtime dependency added.
+- Add task fills the available action row (48px high). Task title links fill their title area (at least 44px high); assignee labels are full-row checkbox targets. No parent click handler swallows adjacent controls.
+- Clicking outside a task panel closes it through the existing navigation/focus path and preserves session edits/drafts. A 24px outside gutter remains on phones. Shared dialogs use the same pointer-start/end guard: inside padding and dragging from inside to outside do not dismiss. Close buttons and Escape remain available.
+- Narrow task date/group fields use full width after the new gutter exposed cramped date wrapping at 360px.
+
+Actual checks: `pnpm check` passed TypeScript, all **23 behavioural tests** and production build; the final CSS changes passed production build/type checking. `pnpm check:smoke` passed **16/16** routes before the final CSS-only date-width adjustment; that adjustment was directly inspected in the refreshed production browser. Impeccable context/adapt/craft-floor and current Web Interface Guidelines were applied, React listener patterns reviewed, and the scoped detector returned `[]`. No broad accessibility certification is claimed.
+
+Supported in-app browser evidence (desktop 1440×900 and default desktop; emulated 390×844 and 360×800):
+- Desktop board row remained **113px** high with its assignee dropdown open. Added Robin, removed Sam, reopened by Enter, toggled Alex using Tab/Space, and dismissed by Escape with trigger focus restored. Unassigned → Casey and clicking the far edge of Casey's label worked at 390px.
+- A click 12px from the far right of the **297×48px** Add task target opened the form; submitting created the sample task. At 360px, clicking the blank right side of the **275×44px** Draft the about page link opened its panel.
+- Desktop and mobile outside clicks closed the task; focus returned to the task trigger. Checklist draft `Retain outside-close draft` survived reopening; assignee changes also remained. Inside padding stayed open, and a text-selection drag ending outside did not dismiss.
+- The dropdown works inside the modal; first Escape closes only the dropdown. Outside click dismisses both standalone dropdowns and shared account dialogs as intended. Menu stayed within 360/390px viewports, and narrow panel scrollWidth equalled clientWidth.
+- Found and fixed a scrollbar reducing the intended phone gutter: final measured x=24px at 390px. Final 360px screenshot showed the full date on one line with readable controls. Captured warnings/errors were empty. Temporary test tabs closed and viewport overrides reset.
+
+Limits: narrow tests used browser-generated pointer/keyboard input, not a new physical iPhone/software-keyboard run. Existing prior physical-phone evidence remains historical, not proof of these changes on that device. The separate critique backlog and sample-data reset limitation remain. Loopback preview refreshed (PID 50365); no hotspot/NAS/public preview was started. User browsing tabs and unrelated local planning/critique drafts were preserved.
+
+Next action: continue Q:M2 / M2.1 foundation planning from the signed-off prototype; do not silently add the wider critique redesign or future AI/email features.
+
+
 ## M1 sign-off — 2026-10-06
 
 **M1.1–M1.6 / Stage 1 are complete as a reviewable sample-data prototype.** This current record supersedes historical pending-check notes below. It is not production readiness or a claim that every usability recommendation has been implemented. M2 has not started.

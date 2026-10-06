@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from './ui';
 import { DatePicker } from './date-picker';
 import { useWorkspace } from './demo-provider';
-import { members } from '@/lib/demo';
+import { AssigneePicker } from './assignee-picker';
 import { taskGroups, taskPriorities, taskStatuses, type DemoTask } from '@/lib/demo-state';
 
 export type TaskDraft = { checklist: string; subtask: string };
@@ -21,7 +21,7 @@ export function TaskDetailsForm({ task, draft, setDraft }: { task: DemoTask; dra
       <DatePicker label="Due date" value={task.dueDate ?? ''} onChange={(value) => patch({ dueDate: value || null })} />
       <label>Group<select value={task.group} onChange={(event) => patch({ group: event.target.value as DemoTask['group'] })}>{taskGroups.map((group) => <option key={group}>{group}</option>)}</select></label>
     </div>
-    <fieldset className="task-assignees"><legend>Assignees</legend>{members.map((member) => <label key={member.id}><input type="checkbox" checked={task.assigneeIds.includes(member.id)} onChange={(event) => patch({ assigneeIds: event.target.checked ? [...task.assigneeIds, member.id] : task.assigneeIds.filter((id) => id !== member.id) })} />{member.name}</label>)}</fieldset>
+    <div className="task-assignees"><span>Assignees</span><AssigneePicker value={task.assigneeIds} taskTitle={task.title} onChange={(assigneeIds) => patch({ assigneeIds })} /></div>
     <label className="task-notes">Notes<textarea name="task-notes" rows={5} value={task.notes} onChange={(event) => patch({ notes: event.target.value })} placeholder="Add context for this task…" /></label>
     <section className="task-detail-section" aria-labelledby="task-checklist-heading">
       <h3 id="task-checklist-heading">Checklist <span className="subtle-label">{task.checklist.filter((item) => item.done).length}/{task.checklist.length}</span></h3>

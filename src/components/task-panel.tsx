@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { X } from 'lucide-react';
+import { useBackdropDismiss } from './use-backdrop-dismiss';
 import { Button } from './ui';
 import { useWorkspace } from './demo-provider';
 import { useTaskNavigation } from './task-navigation';
@@ -12,6 +13,7 @@ import { boardFor } from '@/lib/demo';
 export function TaskPanel() {
   const { tasks, documents, updateTask, drafts, setDraft } = useWorkspace();
   const { taskId, closeTask, currentHref, rememberOrigin } = useTaskNavigation();
+  const backdrop = useBackdropDismiss(closeTask);
   const task = tasks.find((item) => item.id === taskId);
   const dialog = useRef<HTMLDialogElement>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
@@ -23,7 +25,7 @@ export function TaskPanel() {
   const setTaskDraft = (patch: Partial<TaskDraft>) => {
     for (const [key, value] of Object.entries(patch)) setDraft(`${taskId}:${key}`, value || null);
   };
-  return <dialog ref={dialog} className="task-detail-dialog" aria-labelledby="task-panel-title" onCancel={(event) => { event.preventDefault(); closeTask(); }}>
+  return <dialog ref={dialog} {...backdrop} className="task-detail-dialog" aria-labelledby="task-panel-title" onCancel={(event) => { event.preventDefault(); closeTask(); }}>
     <div className="task-detail-heading"><h2 id="task-panel-title">{task?.title ?? 'Task not found'}</h2><Button variant="ghost" className="icon-button" aria-label="Close task details" onClick={closeTask}><X size={20} aria-hidden="true" /></Button></div>
     {task ? <>
       <p className="page-description">{boardFor(task.boardId)?.name}</p>

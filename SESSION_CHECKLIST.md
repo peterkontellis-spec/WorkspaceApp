@@ -118,6 +118,8 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Implementation 2026-10-05:** M1.5 connected task/Docs prototype delivered. Final build, 15 behavioural tests and 16 HTTP checks pass; browser acceptance remains pending. Source-review fixes preserve drafts, recent-document ordering and focus fallback. See STATUS.md.
 
+**Post-sign-off refinement, 2026-10-06:** assignee dropdowns, enlarged Add task/title targets and outside-tap dismissal implemented and tested on desktop and emulated 360/390px layouts. Draft/focus retention, multi-selection, keyboard behavior and menu bounds passed. See STATUS.md for checks and physical-device limits. M2 has not started.
+
 ### M1.6 — Prototype review and refinements
 
 **Deliverable:** a reviewable prototype and a short remaining-issues list.

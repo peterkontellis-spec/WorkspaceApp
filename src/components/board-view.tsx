@@ -11,6 +11,7 @@ import { useTaskNavigation } from './task-navigation';
 import { AvatarStack, Button } from './ui';
 import './board-view.css';
 import { DatePicker } from './date-picker';
+import { AssigneePicker } from './assignee-picker';
 
 function InlineEdit({ draftKey, value, label, type = 'text', onSave }: { draftKey: string; value: string; label: string; type?: 'text' | 'date'; onSave: (value: string) => string | null }) {
   const { drafts, setDraft: saveDraft } = useWorkspace();
@@ -46,10 +47,7 @@ function EditableRow({ task }: { task: DemoTask }) {
       <div className="board-task-meta"><InlineEdit draftKey={`${task.id}:title`} value={task.title} label={`Rename ${task.title}`} onSave={(title) => updateTask(task.id, { title })} />{task.documentId ? <span><FileText size={14} aria-hidden="true" />Linked Doc</span> : null}{task.subtasks.length ? <span>{task.subtasks.length} subtask{task.subtasks.length === 1 ? '' : 's'}</span> : null}</div>
     </div>
     <label className="board-cell"><span className="board-cell-label">Status<span className="sr-only"> for {task.title}</span></span><select aria-label={`Status for ${task.title}`} value={task.status} onChange={(event) => change({ status: event.target.value as DemoTask['status'] })}>{taskStatuses.map((status) => <option key={status}>{status}</option>)}</select></label>
-    <div className="board-cell board-assignees"><span className="board-cell-label" aria-hidden="true">Assignees</span><details onKeyDown={(event) => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus(); } }}>
-      <summary aria-label={`Assign people to ${task.title}`}>{task.assigneeIds.length ? <AvatarStack ids={task.assigneeIds} /> : <span>Unassigned</span>}<ChevronDown size={15} aria-hidden="true" /></summary>
-      <fieldset><legend>Assign people</legend>{members.map((member) => <label key={member.id}><input type="checkbox" checked={task.assigneeIds.includes(member.id)} onChange={(event) => change({ assigneeIds: event.target.checked ? [...task.assigneeIds, member.id] : task.assigneeIds.filter((id) => id !== member.id) })} />{member.name}</label>)}</fieldset>
-    </details></div>
+    <div className="board-cell board-assignees"><span className="board-cell-label" aria-hidden="true">Assignees</span><AssigneePicker value={task.assigneeIds} taskTitle={task.title} onChange={(assigneeIds) => change({ assigneeIds })} /></div>
     <label className="board-cell"><span className="board-cell-label">Priority<span className="sr-only"> for {task.title}</span></span><select aria-label={`Priority for ${task.title}`} value={task.priority} onChange={(event) => change({ priority: event.target.value as DemoTask['priority'] })}>{taskPriorities.map((priority) => <option key={priority}>{priority}</option>)}</select></label>
     <div className="board-cell board-date"><span className="board-cell-label">Due date</span><InlineEdit draftKey={`${task.id}:date`} type="date" value={task.dueDate ?? ''} label={`Due date for ${task.title}`} onSave={(dueDate) => updateTask(task.id, { dueDate: dueDate || null })} />{overdue ? <span className="board-overdue">Overdue</span> : null}</div>
     {error ? <p className="board-error board-row-error" role="alert">{error}</p> : null}
@@ -73,7 +71,7 @@ function AddTask({ boardId, group, filtered }: { boardId: string; group: DemoTas
       <label>New task in {group}<input ref={input} name="newTask" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="For example, review the launch brief…" autoComplete="off" aria-invalid={!!error} aria-describedby={error ? errorId : undefined} /></label>
       {error ? <p className="board-error" id={errorId} role="alert">{error}</p> : null}
       <div className="board-form-actions"><Button variant="primary" type="submit">Add task</Button><Button onClick={close}>Cancel</Button></div>
-    </form> : <button ref={trigger} type="button" className="button button--ghost" onClick={() => { setMessage(''); setTitle(''); requestAnimationFrame(() => input.current?.focus()); }}><Plus size={18} aria-hidden="true" />Add task<span className="sr-only"> in {group}</span></button>}
+    </form> : <button ref={trigger} type="button" className="button button--ghost board-add-trigger" onClick={() => { setMessage(''); setTitle(''); requestAnimationFrame(() => input.current?.focus()); }}><Plus size={18} aria-hidden="true" />Add task<span className="sr-only"> in {group}</span></button>}
     <p className="board-add-message" role="status">{message}</p>
   </div>;
 }
