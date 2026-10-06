@@ -1,6 +1,6 @@
 # Local accounts — M2.2
 
-Password accounts and server-checked sessions now protect workspace pages. Boards, tasks and Docs still use fictional in-memory records; refreshing or signing out clears sample edits. M2.3 adds invitations and team role administration; see [MEMBERSHIP.md](MEMBERSHIP.md). Real board/task persistence is M2.4. No customer portal, private admin access, MFA, email service or NAS deployment is enabled.
+Password accounts and server-checked sessions now protect workspace pages. Accounts-mode boards/tasks/details and attachments are saved; only Docs remain an in-memory sample. Invitations and staff role administration are implemented; see [MEMBERSHIP.md](MEMBERSHIP.md). The complete local foundation is accepted through M2.8; see FOUNDATION_REVIEW.md. No customer portal, private admin access, MFA, email service or NAS deployment is enabled.
 
 ## Create your first owner
 
@@ -12,12 +12,13 @@ From this project folder, with Node and pnpm on your PATH:
 
 Setup allows only the first bound workspace owner. It never gives the fictional seed accounts a password. Failed membership creation cleans up the newly created identity so setup can be retried. This staff owner has no NAS or customer-portal privileges. There is no default production login. Temporary QA accounts may exist while current browser checks are open; STATUS.md records their cleanup before first real owner setup.
 
-`pnpm dev:db` loads `.local/database.env` and `.local/auth.env`. Plain `pnpm dev` requires equivalent environment configuration; missing configuration fails closed. Use `pnpm dev:prototype` only for an explicitly anonymous sample-data preview. Never deploy prototype mode with real records.
+For attachment-enabled development, set `ATTACHMENT_ROOT="$PWD/.local/attachments"` before `pnpm dev:db`; `pnpm preview` configures it automatically. `pnpm dev:db` loads `.local/database.env` and `.local/auth.env`. Plain `pnpm dev` requires equivalent environment configuration; missing configuration fails closed. Use `pnpm dev:prototype` only for an explicitly anonymous sample-data preview. Never deploy prototype mode with real records.
 
-For the standalone production preview, copy public/static assets as in RUNNING.md, then launch with:
+For the isolated production preview, follow RUNNING.md and use:
 
 ```sh
-HOSTNAME=127.0.0.1 PORT=3100 node --env-file=.local/database.env --env-file=.local/auth.env .next/standalone/server.js
+pnpm build
+pnpm preview
 ```
 
 ## Recovery and operator actions

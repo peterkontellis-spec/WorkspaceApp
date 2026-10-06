@@ -1,6 +1,6 @@
 # Team access — M2.3
 
-Open **Team access** from the desktop sidebar, mobile navigation menu or account dialog. This manages real staff membership. Boards, tasks and Docs still contain temporary sample work; persistent task editing is M2.4. Customer folders and private admin material are separate and unavailable here.
+Open **Team access** from the desktop sidebar, mobile navigation menu or account dialog. This manages real staff membership. Boards, tasks/details and attachments are saved with server-side role checks. Docs remain a sample. Customer folders and private admin material are separate and unavailable here.
 
 ## Invite and join
 
@@ -19,10 +19,10 @@ The current preview binds to this Mac only. A `127.0.0.1` invitation will not re
 | View current team | Yes | Yes | Yes |
 | Issue/cancel invitations | Yes | No | No |
 | Change roles/remove members | Yes | No | No |
-| Read shared tasks once connected | Yes | Yes | Yes |
-| Edit shared tasks once connected | Yes | Yes | No |
+| Read shared tasks/files | Yes | Yes | Yes |
+| Edit shared tasks/upload files | Yes | Yes | No |
 
-The first three rows are implemented in M2.3, with direct-request permission checks. Task permissions must also be enforced on each future task/search/file endpoint as it is added; sample editing does not establish those permissions. Existing repository-level task read/rename tests remain separate evidence.
+All rows are implemented and checked through M2.8, including direct requests, cross-workspace isolation and role changes across task/search/file services. See FOUNDATION_REVIEW.md.
 
 Role changes and removal require confirmation. Changing a role revokes that person's sessions and outstanding recovery links. Removing someone also removes task assignments, but keeps their account and existing work. Self changes return the actor to sign-in. The last active owner cannot be demoted or removed through team management. Local operator authority remains separate; an operator can disable an account, including an owner, so operators must preserve a usable owner/recovery path.
 

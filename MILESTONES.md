@@ -40,6 +40,8 @@ Acceptance:
 - Attachments use authorized downloads and bounded uploads with safe storage identifiers.
 - Account recovery and session handling are documented and checked using the selected authentication implementation.
 
+**M2 accepted locally 2026-10-06.** See [FOUNDATION_REVIEW.md](FOUNDATION_REVIEW.md) and STATUS.md for the connected journey, complete test run, role matrix and limits. Publication/NAS readiness remains M5.
+
 ## M3 — Team workflow
 
 Deliver Table/Kanban/Calendar views, live updates, activity, in-app notifications, personal and team dashboards, My Day, manual time entries/timers, and task/board templates.

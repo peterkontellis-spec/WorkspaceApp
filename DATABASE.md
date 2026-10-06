@@ -1,6 +1,6 @@
 # M2 database foundation
 
-M2.1 adds a real local PostgreSQL development database. The browser still uses the clearly labelled M1 sample data. M2.2 now exposes protected account operations; task-editing and file APIs are not exposed yet. Use fictional data only until the later authentication, permission and workflow checks pass. Collaborative Docs persistence remains M4.
+The local PostgreSQL foundation and authenticated account, work and file APIs are implemented through M2.8. Accounts-mode work persists; explicit prototype mode and Docs retain sample behavior. FOUNDATION_REVIEW.md records acceptance. NAS deployment, backup/restore and release security validation remain open; collaborative Docs persistence remains M4.
 
 ## M2 delivery order
 
@@ -31,7 +31,7 @@ User confirmed 2026-10-06: invited staff share the workspace according to owner/
 
 This schema contains shared staff records only. It has no customer-folder grants, admin-private documents or public sharing. Do not place private admin material into a shared staff board. Future customer/admin records need a separate explicit access model, not an extra implicit privilege on staff membership.
 
-The narrow task repository checks membership for reads and owner/editor membership for renaming; it holds the membership row during the write and requires the expected revision. This is repository-level evidence only: authentication, direct HTTP authorization and the full M2 access matrix are still open. Never take `actorId` from request JSON or the sample account selector. Database credentials stay server-side.
+The narrow task repository checks membership for reads and owner/editor membership for renaming; it holds the membership row during the write and requires the expected revision. This original repository-level evidence is supplemented by verified authentication, direct HTTP authorization and the connected M2.8 access matrix. Never take `actorId` from request JSON or the sample account selector. Database credentials stay server-side.
 
 ## Data relationships
 

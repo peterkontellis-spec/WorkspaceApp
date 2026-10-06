@@ -1,5 +1,19 @@
 # Current status
 
+## M2.8 accepted — Stage 2 persistent foundation complete — 2026-10-06
+
+The connected account → invitation → task/assignment → attachment → search journey is verified. Added a permanent isolated integration regression, corrected outdated sample-only/setup documentation, and preserved the existing application/UI. [FOUNDATION_REVIEW.md](FOUNDATION_REVIEW.md) records the permission matrix, acceptance evidence and remaining boundaries.
+
+- Full sequential `pnpm test:db`: **58/58 passed**, no skips, including the new connected journey, real PostgreSQL restart, direct-request role/isolation/revocation, recovery, invitation expiry, competing writes and file handling. All test clusters stopped. Expected wrong-password rejection logging was not a suite failure.
+- `pnpm check`: TypeScript, **29/29 behavioral tests**, warning-free production build. Reused the unchanged isolated running preview; HTTP smoke **20/20 passed**. No application source, dependency or schema changes were needed.
+- Browser: owner created an invitation; existing fictional editor accepted with its current password, signed in, created a board/task, assigned itself, saved notes, uploaded a synthetic file and found the task by its notes. Refresh retained assignment/notes/attachment. Team administration remained unavailable to the editor. New-account/password creation was not repeated in the browser; prior user-assisted evidence and current API tests cover it.
+- Desktop/default, 1440×900 and 360×800 task/attachment, focus/search-return and team review passed. Scoped Impeccable/current Web Interface Guidelines/React review and detector `[]`; captured console warnings/errors empty. No new physical-device or zoom claims. No new blocking application issue found.
+- Cleanup helper's incorrect invitation-column check stopped and rolled back; corrected to `created_by`, then removed only three recorded QA identities, isolated workspace/board/task/invitation and synthetic blob. Preserved Preview Owner, BOARDTEST (two tasks) and both other preview boards/tasks. Restored user login and reset viewport.
+
+Runtime unchanged: preview PID **61784** loopback3100; database supervisor **51561** loopback55432. Verify process identity before acting. Weekly snapshot **78% used / 22% remaining**. No credits/resets, purchases, NAS/public deployment or publication audit. Private admin/customer boundaries, durable Docs, backups/restore and NAS measurements remain later gates, as detailed in the foundation review.
+
+Next: **focused UI usability review before M3.1**, following the user's question about timing. Collect their concrete observations, address navigation/task/mobile usability within the established design, then proceed to Table/Kanban/Calendar. M3 has not started. Earlier sections below are historical.
+
 ## M2.7 accepted — saved attachments and Files — 2026-10-06
 
 Owners/editors can upload task-linked PDF, PNG/JPEG and UTF-8 TXT/Markdown/CSV files up to 25 MiB. Staff members can browse Files and download authorized attachments; viewers have no upload controls. Storage is private and independent of preview build snapshots. See [FILES.md](FILES.md) for limits, configuration and recovery behavior.

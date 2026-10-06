@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.7 are accepted; M2.8 foundation verification is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. Focused UI review comes before M3.1.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -234,13 +234,15 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** a connected app ready for team workflow features.
 
-- [ ] Complete an end-to-end journey: invite → sign in → create board/task → assign → attach file → find task.
-- [ ] Review server permissions across edits, search, and files using the relevant roles.
-- [ ] Record persistence/concurrent-edit checks and remaining issues; remove sample-only assumptions from completed features.
+- [x] Complete an end-to-end journey: invite → sign in → create board/task → assign → attach file → find task.
+- [x] Review server permissions across edits, search, and files using the relevant roles.
+- [x] Record persistence/concurrent-edit checks and remaining issues; remove sample-only assumptions from completed features.
 
 **Done when:** the core journey uses real accounts and durable records with documented results.
 
-- [ ] **Stage 2 complete:** all M2 acceptance checks in MILESTONES.md have evidence.
+- [x] **Stage 2 complete:** all M2 acceptance checks in MILESTONES.md have evidence.
+
+**Accepted 2026-10-06:** full 58-test database suite, 29 behavioral tests, build, 20 HTTP checks and connected browser journey passed. See FOUNDATION_REVIEW.md and STATUS.md.
 
 ---
 

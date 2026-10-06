@@ -4,6 +4,8 @@ The AI workflow is integrated into this folder. No agent server or API setup is 
 
 Every implementation task/session now follows the required self-check loop in [AGENTS.md](AGENTS.md): run and test the app, review relevant design/UI skills, fix verified issues, confirm results, and reassess the next action. `pnpm check` and `pnpm check:smoke` cover build and HTTP checks; browser acceptance remains a separate required step. No daily automation is configured.
 
+Current foundation: M2.1–M2.8 accepted locally. See [FOUNDATION_REVIEW.md](FOUNDATION_REVIEW.md) for verified behavior and [STATUS.md](STATUS.md) for the next action.
+
 ## Your normal workflow
 
 Before each session, open [SESSION_CHECKLIST.md](SESSION_CHECKLIST.md). It breaks the five milestones into 35 increments with deliverables, completion criteria, and reusable opening/closing routines. Use STATUS.md to find the current position; the checklist is the delivery roadmap.
