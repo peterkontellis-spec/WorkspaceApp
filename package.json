@@ -27,7 +27,11 @@
     "account:revoke": "node scripts/auth/operator.mjs revoke",
     "account:disable": "node scripts/auth/operator.mjs disable",
     "format": "prettier --write src next.config.ts",
-    "format:check": "prettier --check src next.config.ts"
+    "format:check": "prettier --check src next.config.ts",
+    "test:e2e": "node scripts/e2e/run.mjs",
+    "test:e2e:setup": "node scripts/e2e/run.mjs --setup-check",
+    "test:e2e:serve": "node scripts/e2e/run.mjs --serve",
+    "check:all": "pnpm format:check && pnpm check && pnpm test:db && pnpm test:e2e"
   },
   "dependencies": {
     "better-auth": "1.7.7",
