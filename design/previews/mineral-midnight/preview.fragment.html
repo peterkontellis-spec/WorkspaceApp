@@ -1,0 +1,147 @@
+<style>
+#mineral-midnight-preview { --preview-bg:#121A25; --preview-sidebar:#172230; --preview-surface:#202D3D; --preview-raised:#263447; --preview-line:#344559; --preview-text:#EAF0F7; --preview-muted:#ACB9CA; --preview-accent:#C6B8E4; --preview-selected:#343249; --preview-button-text:#231B34; --preview-secondary:#A7C8EE; --preview-done-bg:#243E37; --preview-done-text:#AFE0C2; --preview-progress-bg:#2B3C50; --preview-progress-text:#BDD2E8; color-scheme:dark; color:var(--preview-text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:14px; line-height:1.5; background:var(--preview-bg); display:grid; grid-template-columns:190px minmax(0,1fr); border:1px solid var(--preview-line); border-radius:14px; overflow:hidden; }
+#mineral-midnight-preview[data-appearance="light"] { --preview-bg:#F4F1E9; --preview-sidebar:#E9E5D9; --preview-surface:#FFFDF8; --preview-raised:#EFEEE5; --preview-line:#D6D6C9; --preview-text:#30372F; --preview-muted:#62685C; --preview-accent:#386751; --preview-selected:#DCE7D8; --preview-button-text:#FFFFFF; --preview-secondary:#92634E; --preview-done-bg:#E1EEDD; --preview-done-text:#356345; --preview-progress-bg:#F4E8CC; --preview-progress-text:#755319; color-scheme:light; }
+#mineral-midnight-preview * { box-sizing:border-box; }
+#mineral-midnight-preview button,#mineral-midnight-preview input { font:inherit; }
+#mineral-midnight-preview button { cursor:pointer; min-height:44px; border-radius:8px; border:1px solid var(--preview-line); padding:9px 14px; color:var(--preview-text); background:var(--preview-surface); }
+#mineral-midnight-preview button:hover { background:var(--preview-raised); }
+#mineral-midnight-preview button:focus-visible,#mineral-midnight-preview input:focus-visible { outline:2px solid var(--preview-accent); outline-offset:3px; }
+#mineral-midnight-preview aside { padding:26px 14px 20px; background:var(--preview-sidebar); border-right:1px solid var(--preview-line); display:flex; flex-direction:column; gap:26px; }
+#mineral-midnight-preview .preview-identity { display:flex; align-items:center; gap:12px; padding:0 8px; }
+#mineral-midnight-preview .preview-orb { width:42px; height:42px; flex-shrink:0; border-radius:50%; background:radial-gradient(ellipse at 36% 30%,#F6E3B1 0%,#B6BD71 27%,#589577 61%,#254D42 88%); box-shadow:0 2px 18px #86A87550; }
+#mineral-midnight-preview .preview-identity strong { font-weight:600; }
+#mineral-midnight-preview small { display:block; font-size:12px; color:var(--preview-muted); }
+#mineral-midnight-preview .preview-nav { display:grid; gap:5px; }
+#mineral-midnight-preview .preview-nav div { min-height:44px; padding:11px 12px; display:flex; align-items:center; gap:11px; color:var(--preview-muted); border-radius:8px; }
+#mineral-midnight-preview .preview-nav .selected { color:var(--preview-accent); background:var(--preview-selected); }
+#mineral-midnight-preview .preview-nav svg { width:18px; height:18px; flex-shrink:0; }
+#mineral-midnight-preview .preview-nav em { font-size:11px; font-style:normal; margin-left:auto; }
+#mineral-midnight-preview .preview-side-foot { margin-top:auto; padding:12px 8px 0; border-top:1px solid var(--preview-line); color:var(--preview-muted); font-size:12px; }
+#mineral-midnight-preview .preview-body { min-width:0; }
+#mineral-midnight-preview .preview-topbar { padding:14px 24px; border-bottom:1px solid var(--preview-line); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+#mineral-midnight-preview .preview-location { color:var(--preview-muted); }
+#mineral-midnight-preview .preview-location span { color:var(--preview-text); margin-left:10px; }
+#mineral-midnight-preview .preview-appearance { display:flex; gap:4px; }
+#mineral-midnight-preview .preview-appearance button { background:transparent; border-color:transparent; }
+#mineral-midnight-preview .preview-appearance [aria-pressed="true"] { background:var(--preview-selected); color:var(--preview-accent); }
+#mineral-midnight-preview main { padding:30px 26px 28px; min-width:0; }
+#mineral-midnight-preview h2 { font-size:27px; line-height:1.25; letter-spacing:-.035em; font-weight:600; color:var(--preview-text); margin:0 0 9px; }
+#mineral-midnight-preview .preview-description { color:var(--preview-muted); margin:0; }
+#mineral-midnight-preview .preview-heading { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+#mineral-midnight-preview .preview-add { background:var(--preview-accent); border-color:var(--preview-accent); color:var(--preview-button-text); font-weight:600; }
+#mineral-midnight-preview .preview-add:hover { filter:brightness(1.08); background:var(--preview-accent); }
+#mineral-midnight-preview .preview-tabs { display:flex; gap:22px; margin-top:24px; padding-bottom:12px; border-bottom:1px solid var(--preview-line); color:var(--preview-muted); }
+#mineral-midnight-preview .preview-tabs span:first-child { color:var(--preview-accent); font-weight:600; position:relative; }
+#mineral-midnight-preview .preview-tabs span:first-child::after { content:''; position:absolute; height:2px; background:var(--preview-accent); inset:auto 0 -13px; border-radius:2px; }
+#mineral-midnight-preview .preview-group { margin-top:25px; }
+#mineral-midnight-preview .preview-group h3 { font-size:15px; font-weight:600; margin:0 0 12px; display:flex; align-items:center; gap:10px; }
+#mineral-midnight-preview .preview-group h3 small { font-weight:400; }
+#mineral-midnight-preview .preview-task-list { background:var(--preview-surface); border:1px solid var(--preview-line); border-radius:10px; overflow:hidden; }
+#mineral-midnight-preview .preview-row { display:grid; grid-template-columns:minmax(0,1fr) 112px 68px; gap:14px; padding:15px 16px; align-items:center; border-top:1px solid var(--preview-soft-line); }
+#mineral-midnight-preview .preview-row:first-child { border-top:0; }
+#mineral-midnight-preview .preview-task { min-width:0; display:flex; align-items:center; gap:10px; overflow-wrap:anywhere; }
+#mineral-midnight-preview input[type="checkbox"] { accent-color:var(--preview-success-control); width:17px; height:17px; flex-shrink:0; margin:0; }
+#mineral-midnight-preview .preview-status { font-size:13px; padding:3px 8px; border-radius:5px; background:var(--preview-raised); color:var(--preview-muted); width:fit-content; white-space:nowrap; }
+#mineral-midnight-preview .preview-status.progress { background:var(--preview-progress-bg); color:var(--preview-progress-text); }
+#mineral-midnight-preview .preview-status.done { background:var(--preview-done-bg); color:var(--preview-done-text); }
+#mineral-midnight-preview .preview-date { font-size:13px; color:var(--preview-muted); }
+#mineral-midnight-preview .preview-detail { margin-top:22px; padding-top:18px; border-top:1px solid var(--preview-line); display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+#mineral-midnight-preview .preview-detail p { margin:0; color:var(--preview-secondary); }
+#mineral-midnight-preview .preview-footer { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:28px; color:var(--preview-muted); font-size:12px; }
+#mineral-midnight-preview .preview-message { min-height:21px; color:var(--preview-muted); margin:12px 0 0; font-size:12px; }
+#mineral-midnight-preview { --preview-soft-line:#2A3748; --preview-success-control:#9BCDAE; --preview-star-tint-a:transparent; --preview-star-tint-b:transparent; }
+#mineral-midnight-preview[data-appearance="light"] { --preview-soft-line:#E8E6DC; --preview-muted:#535D50; --preview-secondary:#80543F; --preview-success-control:#356345; }
+#mineral-midnight-preview aside,#mineral-midnight-preview .preview-topbar { background-image:radial-gradient(ellipse at 0 0,var(--preview-star-tint-a),transparent 72%),radial-gradient(ellipse at 80% 0,var(--preview-star-tint-b),transparent 72%); background-size:100% 220px; background-repeat:no-repeat; }
+#mineral-midnight-preview .preview-star-controls { flex-basis:100%; display:flex; align-items:center; gap:12px; flex-wrap:wrap; border-top:1px solid var(--preview-soft-line); padding-top:10px; }
+#mineral-midnight-preview .preview-star-controls label { display:flex; align-items:center; gap:9px; flex-wrap:wrap; color:var(--preview-muted); font-size:13px; }
+#mineral-midnight-preview select { font:inherit; font-size:16px; min-height:44px; max-width:100%; border:1px solid var(--preview-line); border-radius:8px; background:var(--preview-surface); color:var(--preview-text); padding:8px; }
+#mineral-midnight-preview select:focus-visible,#mineral-midnight-preview summary:focus-visible { outline:2px solid var(--preview-accent); outline-offset:3px; }
+#mineral-midnight-preview [data-tint-toggle][aria-pressed="true"] { border-color:var(--preview-accent); }
+#mineral-midnight-preview .preview-document { margin-top:22px; padding-top:12px; border-top:1px solid var(--preview-line); }
+#mineral-midnight-preview .preview-document summary { cursor:pointer; width:fit-content; min-height:44px; display:flex; align-items:center; gap:10px; color:var(--preview-secondary); text-decoration:underline; text-underline-offset:4px; }
+#mineral-midnight-preview .preview-document summary svg { width:17px; height:17px; }
+#mineral-midnight-preview .preview-document p { margin:10px 0; max-width:65ch; }
+#mineral-midnight-preview .preview-document[open] summary { color:var(--preview-accent); }
+@media(max-width:720px) { #mineral-midnight-preview { grid-template-columns:1fr; } #mineral-midnight-preview aside { display:none; } }
+@media(max-width:440px) { #mineral-midnight-preview main { padding:24px 16px; } #mineral-midnight-preview .preview-topbar { padding:12px 16px; } #mineral-midnight-preview .preview-row { grid-template-columns:minmax(0,1fr) auto; gap:8px 12px; padding:14px 12px; } #mineral-midnight-preview .preview-task { grid-column:1/-1; } #mineral-midnight-preview .preview-status { margin-left:27px; } #mineral-midnight-preview .preview-date { text-align:right; } }
+</style>
+<div id="mineral-midnight-preview" data-appearance="dark" aria-label="Temporary workspace colour preview">
+<aside>
+<div class="preview-identity"><span class="preview-orb" aria-hidden="true"></span><div><strong>Workspace</strong><small>Colour study</small></div></div>
+<div class="preview-nav" aria-label="Sample workspace navigation">
+<div><i data-lucide="house" aria-hidden="true"></i>Home</div>
+<div class="selected"><i data-lucide="layout-grid" aria-hidden="true"></i>Boards</div>
+<div><i data-lucide="chart-no-axes-combined" aria-hidden="true"></i>Overview<em>Later</em></div>
+<div><i data-lucide="file-text" aria-hidden="true"></i>Docs</div>
+<div><i data-lucide="folder" aria-hidden="true"></i>Files</div>
+<div><i data-lucide="clock-3" aria-hidden="true"></i>Time<em>Later</em></div>
+<div><i data-lucide="bot" aria-hidden="true"></i>Assistant<em>Later</em></div>
+</div>
+<div class="preview-side-foot">Sample content · preview only</div>
+</aside>
+<div class="preview-body">
+<header class="preview-topbar"><div class="preview-location">Workspace <span>/ Boards</span></div><div class="preview-appearance" role="group" aria-label="Preview appearance"><button type="button" data-mode="light" aria-pressed="false">Light</button><button type="button" data-mode="dark" aria-pressed="true">Dark</button></div><div class="preview-star-controls"><button type="button" data-tint-toggle aria-pressed="true">Star tint: on</button><label>Star phase <select data-star-phase aria-label="Illustrative star phase"><option value="neutral">Neutral</option><option value="red">Red</option><option value="orange">Orange</option><option value="mixed" selected>Orange + green</option><option value="green">Green</option></select></label><small>Appearance test only</small></div></header>
+<main>
+<div class="preview-heading"><div><h2>Website refresh</h2><p class="preview-description">A clearer home for the next chapter.</p></div><button type="button" class="preview-add">Add task</button></div>
+<div class="preview-tabs" aria-label="Sample board views"><span>Table</span><span>Kanban</span><span>Calendar</span></div>
+<section class="preview-group"><h3>Planning <small>3 tasks</small></h3><div class="preview-task-list">
+<div class="preview-row"><label class="preview-task"><input type="checkbox" aria-label="Complete prepare launch brief"><span>Prepare launch brief</span></label><span class="preview-status progress">In progress</span><span class="preview-date">8 Oct</span></div>
+<div class="preview-row"><label class="preview-task"><input type="checkbox" aria-label="Complete review page structure"><span>Review page structure</span></label><span class="preview-status">To do</span><span class="preview-date">9 Oct</span></div>
+<div class="preview-row"><label class="preview-task"><input type="checkbox" aria-label="Complete collect brand assets"><span>Collect brand assets</span></label><span class="preview-status">To do</span><span class="preview-date">12 Oct</span></div>
+</div></section>
+<section class="preview-group"><h3>Ready <small>1 task</small></h3><div class="preview-task-list"><div class="preview-row"><label class="preview-task"><input type="checkbox" checked aria-label="Complete confirm project scope"><span>Confirm project scope</span></label><span class="preview-status done">Done</span><span class="preview-date">6 Oct</span></div></div></section>
+<details class="preview-document"><summary><i data-lucide="file-text" aria-hidden="true"></i>Launch brief</summary><p>Define the audience, agree on the page structure, and prepare the first content draft.</p><small>Sample document · preview only</small></details>
+<p class="preview-message" role="status" aria-live="polite"></p>
+<footer class="preview-footer"><span data-palette-label>Ink &amp; slate · lilac accents</span><span>Temporary preview · nothing saved</span></footer>
+</main>
+</div>
+</div>
+<script>
+const themePreviewRoot = document.getElementById('mineral-midnight-preview');
+const themePreviewState = { appearance:'dark', darkAccent:'#C6B8E4', tint:true, phase:'mixed', intensity:0.10 };
+const previewStarColors = { neutral:['#9BA9B5','#9BA9B5'],red:['#C86C63','#C86C63'],orange:['#D2A163','#D2A163'],mixed:['#D2A163','#6FAA8C'],green:['#6FAA8C','#6FAA8C'] };
+function previewTint(hex,alpha) { const rgb=[1,3,5].map(start=>parseInt(hex.slice(start,start+2),16));return `rgba(${rgb.join(',')},${alpha})`; }
+function renderThemePreview() {
+  themePreviewRoot.dataset.appearance = themePreviewState.appearance;
+  if(themePreviewState.appearance === 'dark') themePreviewRoot.style.setProperty('--preview-accent',themePreviewState.darkAccent);
+  else themePreviewRoot.style.removeProperty('--preview-accent');
+  themePreviewRoot.querySelectorAll('[data-mode]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.mode === themePreviewState.appearance)));
+  themePreviewRoot.querySelector('[data-palette-label]').textContent = themePreviewState.appearance === 'dark' ? 'Ink & slate · lilac accents' : 'Ivory & limestone · sage accents';
+  const colors=previewStarColors[themePreviewState.phase];
+  const alpha=themePreviewState.tint && themePreviewState.phase!=='neutral' ? themePreviewState.intensity*(themePreviewState.appearance==='light'?0.7:1) : 0;
+  themePreviewRoot.style.setProperty('--preview-star-tint-a',previewTint(colors[0],alpha));
+  themePreviewRoot.style.setProperty('--preview-star-tint-b',previewTint(colors[1],alpha));
+  const orb=themePreviewRoot.querySelector('.preview-orb');
+  orb.style.background=`radial-gradient(ellipse at 36% 30%,#F6E3B1 0%,${colors[0]} 24%,${colors[1]} 65%,#254D42 100%)`;
+  orb.style.boxShadow=`0 2px 18px ${previewTint(colors[1],0.28)}`;
+  const tintButton=themePreviewRoot.querySelector('[data-tint-toggle]');
+  tintButton.setAttribute('aria-pressed',String(themePreviewState.tint));tintButton.textContent=`Star tint: ${themePreviewState.tint?'on':'off'}`;
+  themePreviewRoot.querySelector('[data-star-phase]').value=themePreviewState.phase;
+}
+themePreviewRoot.querySelector('[data-tint-toggle]').addEventListener('click',()=>{themePreviewState.tint=!themePreviewState.tint;renderThemePreview();});
+themePreviewRoot.querySelector('[data-star-phase]').addEventListener('change',event=>{themePreviewState.phase=event.target.value;renderThemePreview();});
+themePreviewRoot.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click',() => { themePreviewState.appearance=button.dataset.mode;renderThemePreview(); }));
+themePreviewRoot.querySelector('.preview-add').addEventListener('click',() => {
+  const group=themePreviewRoot.querySelector('.preview-group');
+  const row=document.createElement('div');row.className='preview-row';
+  const label=document.createElement('label');label.className='preview-task';
+  const check=document.createElement('input');check.type='checkbox';check.setAttribute('aria-label','Complete new preview task');
+  const title=document.createElement('span');title.textContent='New preview task';label.append(check,title);
+  const status=document.createElement('span');status.className='preview-status';status.textContent='To do';
+  const due=document.createElement('span');due.className='preview-date';due.textContent='No date';row.append(label,status,due);
+  group.querySelector('.preview-task-list').append(row);
+  group.querySelector('h3 small').textContent=group.querySelectorAll('.preview-row').length+' tasks';
+  themePreviewRoot.querySelector('.preview-message').textContent='Sample task added here only. Your workspace is unchanged.';
+});
+themePreviewRoot.addEventListener('change',event => {
+  if(!event.target.matches('input[type="checkbox"]'))return;
+  const row=event.target.closest('.preview-row');const status=row.querySelector('.preview-status');
+  status.className='preview-status'+(event.target.checked?' done':'');status.textContent=event.target.checked?'Done':'To do';
+  themePreviewRoot.querySelector('.preview-message').textContent='Preview changed. Nothing is saved to your workspace.';
+});
+renderThemePreview();
+if(globalThis.Tweak) {
+  const previewTweak=new Tweak({container:themePreviewRoot,onChange:renderThemePreview});
+  previewTweak.addSlider(themePreviewState,'intensity',{label:'Star tint strength',min:0,max:0.14,step:0.01});
+}
+</script>

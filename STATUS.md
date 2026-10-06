@@ -1,5 +1,11 @@
 # Current status
 
+## Theme design checkpoint — preview only
+
+User requested saving the refined theme preview to Git. Added `design/previews/mineral-midnight/` with editable fragment, standalone export and scope/verification notes. It captures Mineral light, ink/slate dark with lilac accents, steel-blue progress, clearer selected view, consistent green completion, softer row dividers, more readable metadata and document disclosure. Optional illustrative star tint affects sidebar/header only. This is a saved design proposal, not theme integration or production acceptance.
+
+Verified exact fragment-copy/export parity and JavaScript syntax. Earlier source/contrast checks are documented in the preview README; rendered browser/mobile/standalone acceptance remains pending because supported browser policy verification is unavailable. No application code, live records, runtime process or dependencies changed; no full app/database rerun needed for this isolated export. Existing unrelated security-planning drafts were excluded. Next: review/adopt the design explicitly before integrating themes into the real app; existing M3.1–M3.3 acceptance gaps remain open.
+
 ## Solar flare positions vary between births — 2026-10-06
 
 User requested that the two flares stop repeating in the same areas. Each successive birth now advances around the star by approximately 137.5 degrees; each slot relocates only between lifetimes when its strength is zero. At most two arches remain visible, with the existing staggered timing, local colors and gentle drift. Pause/reduced-motion/visibility controls and application data are unchanged. No extra rendering pass or dependency.
