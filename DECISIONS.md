@@ -100,3 +100,9 @@ Use a small dependency-free client WebGL renderer with visibility/motion gating 
 User authorized progression into M3 and reduced stellar activity to one or two visible flares. Cap the shader at two loops with half-cycle staggering. Keep the star a preview, independent of task scoring.
 
 Use built-in task status for Kanban and built-in due date for Calendar. Table retains board groups; neither alternate view changes group membership. Show undated tasks separately and count dates outside the selected month. Preserve view/month/filters in URLs. Reuse the existing task editor and Save flow for status/date changes instead of introducing a second mutation path or drag-only interaction. No live subscription until M3.2. M3.1 acceptance requires supported browser evidence; passing server/helper tests alone does not close it.
+
+## 2026-10-06 — bounded automatic refresh and deferred browser checks
+
+User explicitly deferred phone preview and instructed continuation into M3.2 after recording open checks. Preserve M3.1 and M3.2 browser gates in PENDING_CHECKS.md; implementation progress is not acceptance.
+
+For the initial four-user workspace, use authorized full-snapshot polling every five seconds after completion in visible online tabs, with immediate reconnect/focus retry and bounded backoff. Reuse the existing transactional membership/session boundary; passive reads never refresh idle expiry. Avoid a broker or persistent connection service until scale requires it. Existing task revisions remain the edit-conflict authority; background updates must not overwrite drafts or clear save failures. Keep attachment lists, sample Docs and Team administration outside this polling claim. See LIVE_UPDATES.md.

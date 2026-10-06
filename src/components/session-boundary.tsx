@@ -9,7 +9,7 @@ import { Button } from './ui';
 
 export function SessionBoundary({ account, children }: { account: SignedInAccount | null; children: ReactNode }) {
   const { resetDemo } = useWorkspace();
-  const { clearDrafts } = useWork();
+  const { clearDrafts, syncState } = useWork();
   const pathname = usePathname();
   const [unavailable, setUnavailable] = useState(false);
   const [retry, setRetry] = useState(0);
@@ -42,7 +42,7 @@ export function SessionBoundary({ account, children }: { account: SignedInAccoun
     document.addEventListener('visibilitychange', verify);
     return () => { controller.abort(); document.removeEventListener('pointerdown', markActivity); document.removeEventListener('keydown', markActivity); window.clearInterval(interval); window.removeEventListener('focus', verify); window.removeEventListener('pageshow', restored); document.removeEventListener('visibilitychange', verify); };
   }, [account, pathname, resetDemo, clearDrafts, retry]);
-  return <>{unavailable ? <div className="session-connection-notice" role="alert"><p>Connection unavailable. Your unsaved input remains in this tab. Close any open panel to retry; saved changes will appear after reconnecting.</p><Button onClick={() => setRetry(value=>value+1)}>Retry connection</Button></div> : null}{children}</>;
+  return <>{unavailable && syncState !== 'offline' && syncState !== 'expired' ? <div className="session-connection-notice" role="alert"><p>Connection unavailable. Your unsaved input remains in this tab. Close any open panel to retry; saved changes will appear after reconnecting.</p><Button onClick={() => setRetry(value=>value+1)}>Retry connection</Button></div> : null}{children}</>;
 }
 
 export function SignOutButton() {

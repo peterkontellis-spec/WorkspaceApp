@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { SignedInAccount } from '@/server/auth';
 import { StellarProvider, StellarControl, StellarOrb } from './stellar-identity';
+import { WorkSyncStatus } from './work-sync-status';
 import { useWork } from './work-provider';
 import { filterWorkTasks, readWorkFilters } from '@/lib/work-filters.mjs';
 import { localToday } from '@/lib/work';
@@ -142,6 +143,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
             <Button variant="ghost" className="account-trigger" aria-label={account ? `Account: ${account.name}` : `Sample account: ${member.name}. Switch sample account`} onClick={() => setOverlay('account')}><Avatar member={account ? { ...member, name: account.name, initials: account.name.split(/\s+/).map((word) => word[0]).slice(0, 2).join('') } : member} /><ChevronDown size={15} aria-hidden="true" /></Button>
           </div>
         </header>
+        <WorkSyncStatus/>
         <main id="main-content" tabIndex={-1} className="main-content">{children}</main>
         <footer className="workspace-footer">{account && section !== 'docs' ? <span>{section === 'team' ? 'Real accounts · saved membership' : 'Saved work · local database'}</span> : <><span>{account ? 'Sample Docs · not saved' : 'Prototype · sample data'}</span><span>Demo date: 25 September 2026</span></>}</footer>
       </div>

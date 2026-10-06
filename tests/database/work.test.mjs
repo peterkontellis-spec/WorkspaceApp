@@ -377,3 +377,32 @@ test('independent workers conflict on task details and column revisions; late ch
   } finally { await admin.query('DROP TRIGGER test_details_checklist ON checklist_item; DROP FUNCTION fail_details_checklist()'); }
   assert.deepEqual(await ok(), before);
 });
+
+test('four passive clients converge after missed updates without extending idle sessions', async () => {
+  const first = await member('live-editor-1@example.test');
+  const second = await member('live-editor-2@example.test');
+  const viewer = await member('live-viewer@example.test', 'viewer');
+  const clients = [ownerCookie, first.cookie, second.cookie, viewer.cookie];
+  const b = await board('Live workspace');
+  const t = await task(b, 'Shared live task');
+  const before = await Promise.all(clients.map(cookie => ok(undefined, cookie)));
+  assert.ok(before.every(s => s.tasks.find(item => item.id === t.id).revision === 1));
+  const competing = await Promise.all([
+    work({action:'updateTask',id:t.id,revision:1,patch:{status:'In progress'}},first.cookie),
+    work({action:'updateTask',id:t.id,revision:1,patch:{status:'Done'}},second.cookie),
+  ]);
+  assert.deepEqual(competing.map(r=>r.status).sort(),[200,409]);
+  const committed = (await competing.find(r=>r.status===200).json()).tasks.find(item=>item.id===t.id);
+  // The viewer misses both writes; its next authorized full snapshot catches up.
+  const updated=await ok({action:'updateTask',id:t.id,revision:committed.revision,patch:{dueDate:'2028-02-29'}},ownerCookie);
+  const expected=updated.tasks.find(item=>item.id===t.id);
+  const sessionsBefore=(await admin.query('SELECT id,"updatedAt" FROM auth_session ORDER BY id')).rows;
+  const reconnected=await Promise.all(clients.map(cookie=>ok(undefined,cookie)));
+  assert.ok(reconnected.every(s=>JSON.stringify(s.tasks.find(item=>item.id===t.id))===JSON.stringify(expected)));
+  assert.deepEqual((await admin.query('SELECT id,"updatedAt" FROM auth_session ORDER BY id')).rows,sessionsBefore);
+  assert.equal((await work({action:'updateTask',id:t.id,revision:expected.revision,patch:{status:'To do'}},viewer.cookie)).status,403);
+  await admin.query('DELETE FROM membership WHERE workspace_id=$1 AND user_id=$2',[workspace,viewer.id]);
+  assert.equal((await work(undefined,viewer.cookie)).status,401);
+  await admin.query('UPDATE auth_session SET "updatedAt"=now()-interval \'31 minutes\' WHERE "userId"=$1',[second.id]);
+  assert.equal((await work(undefined,second.cookie)).status,401);
+});

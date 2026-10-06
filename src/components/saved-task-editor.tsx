@@ -175,6 +175,7 @@ export function SavedTaskEditor({ task, columns, groups, tasks, members, canEdit
   }
 
   return <><form ref={formRef} className="saved-task-editor" onSubmit={submit} aria-busy={pending}>
+    {task.revision !== initial.revision && !message ? <section className="saved-task-update" aria-label="Newer task version available"><p role="status">This task changed since you opened it. Your open version is preserved. Reload the saved task to see the changes.</p><Button disabled={pending} onClick={() => dirty ? setConfirmReload(true) : reload()}>Reload saved task</Button></section> : null}
     {message && <div className="saved-task-error">
       <p ref={errorRef} tabIndex={-1} role="alert" className="form-error">{message}</p>
       <Button disabled={pending} onClick={() => dirty ? setConfirmReload(true) : reload()}>Reload saved task</Button>

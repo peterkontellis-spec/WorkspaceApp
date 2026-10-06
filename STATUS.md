@@ -1,5 +1,23 @@
 # Current status
 
+## M3.2 implemented — browser acceptance pending — 2026-10-06
+
+User asked to write down pending checks, deferred the phone preview and explicitly instructed continuation. [PENDING_CHECKS.md](PENDING_CHECKS.md) now lists M3.1, M3.2, physical-phone and motion/fallback checks individually. This continuation supersedes the earlier instruction to wait before further M3 implementation; it does not sign off those checks. Network inspection found the active connection was not the previous phone hotspot. No phone/LAN listener was started, and non-loopback HTTPS authentication requirements remain intact.
+
+Implemented automatic board snapshot refresh approximately five seconds after the previous read completes, while visible/online. Hidden/offline tabs pause; focus/return/online retry immediately; transient failures back off 10/20/30 seconds. Reads are serialized and obsolete responses invalidated around saving, manual reload and unmount. Unchanged snapshots retain their data object. Background reads preserve drafts, save errors/conflicts and opening revisions. An open changed task shows a newer-version notice with deliberate reload/discard. Connection failure displays stale-data/retry guidance, retained during reconnect until verified success. Expired/revoked or changed identities clear cached saved data/drafts and stop retries; the provider is keyed to account identity.
+
+This is authorized polling, not instant push or mobile notifications. No broker, dependency, migration or new endpoint. Existing API checks every snapshot without extending idle sessions. Scope is board/group/column/task/member snapshot, not attachment lists, Team administration or sample Docs. [LIVE_UPDATES.md](LIVE_UPDATES.md) explains timing and limits.
+
+Verified:
+- `pnpm check`: TypeScript, **42/42 behavioral tests**, production build passed. Nine new deterministic coordinator tests cover serialized reads, timing/backoff, hidden/offline pause, reconnect/coalescing, manual reload, save invalidation, expiry and disposal. Final connection-notice adjustment also passed production build/typecheck.
+- Targeted isolated PostgreSQL suite **18/18 passed**, including a new four-account convergence test: competing writes yield one success/one conflict, missed updates recover in the next full snapshot, viewer writes reject, membership removal/idle expiry reject reads, and passive reads do not change session timestamps. Cluster stopped. These are API/database clients, not four interactive browsers.
+- Updated preview HTTP smoke **20/20 passed**. Preview server log contains normal startup messages. Existing user records/login preserved; no live-data QA mutation this increment.
+- Scoped Impeccable/Operate/craft, current Web Interface Guidelines and React source review completed; detector `[]`. Client state and stale-editor paths reviewed. Supported browser access was retried once for this build and again failed admin-enforced policy verification before opening a tab. No bypass used.
+
+**Acceptance remains open:** no browser proof yet for actual background React updates, four-session reconnects, draft/focus preservation, stale-editor reload, expired-session presentation, desktop/narrow notice layout or console/runtime errors. All M3.1 browser checks and physical-phone checks also remain open. Phone preview explicitly deferred. No NAS/resource, GPU/battery or publication-readiness claim.
+
+Runtime: isolated Mac-only preview **PID 66746**, port3100; database supervisor remains **51561**, loopback55432. Verify identity before acting. Latest weekly snapshot **88% used / 12% remaining**; no credits/resets, purchases or deployment. Next: complete the recorded browser acceptance when supported access is restored; next implementation block is M3.3 activity and in-app notifications. M3.1/M3.2 are implemented, neither is signed off.
+
 ## M3.1 implemented — browser acceptance pending — 2026-10-06
 
 User requested fewer flares and progression into M3. The star now has at most **two** staggered flare loops, offset by half a cycle. M3.1 adds Table / Kanban / Calendar links to authenticated boards. Table retains existing groups/custom-field rows; Kanban maps built-in status; Calendar maps built-in due date with Monday-first weeks, outside-month counts and a separate undated list. Narrow layouts use stacked Kanban and calendar agenda. All views use the same filtered records and existing role-aware task editor; change status/date and Save task. View/month/filter/task-return context stays in the URL. No new write endpoint, dependency or schema. [BOARD_VIEWS.md](BOARD_VIEWS.md) defines mapping and limits.

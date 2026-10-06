@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1 is implemented but browser acceptance remains pending; see STATUS.md.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1 and M3.2 are implemented but browser acceptance remains pending; see STATUS.md and PENDING_CHECKS.md.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -266,8 +266,8 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** shared boards that update during team use.
 
-- [ ] Send committed changes to authorized connected users.
-- [ ] Show connection problems and refresh authoritative state after reconnecting.
+- [x] Automatically refresh committed changes for authorized visible tabs using bounded polling; browser delivery check remains pending.
+- [x] Implement connection notices and authoritative refresh after reconnecting; controller tests pass, browser presentation remains pending.
 - [ ] Exercise simultaneous edits and reconnect behavior with four accounts.
 
 **Done when:** teammates see saved changes without refreshing, and missed updates are recovered.
