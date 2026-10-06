@@ -15,7 +15,7 @@ export function StellarProvider({children}: {children: ReactNode}) {
   useEffect(() => {
     const ratio=Math.max(0,Math.min(1,state.progress<60?state.progress/60:(state.progress-60)/20));
     const colors=state.progress<60?['200,108,99','210,161,99']:['210,161,99','111,170,140'];
-    const strength=!tint||state.neutral?0:mode==='light'?0.07:0.10;
+    const strength=!tint||state.neutral?0:mode==='light'?0.18:0.10;
     const root=document.documentElement;
     root.style.setProperty('--star-tint-a',`rgba(${colors[0]},${strength*(1-ratio)})`);
     root.style.setProperty('--star-tint-b',`rgba(${colors[1]},${strength*ratio})`);

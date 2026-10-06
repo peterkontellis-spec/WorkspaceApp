@@ -1,5 +1,15 @@
 # Current status
 
+## Stronger light-mode star tint — 2026-10-07
+
+User explicitly requested this narrow adjustment after the design freeze. Increased light-mode maximum tint opacity from 7% to 18%; dark remains 10%. Same colours, phase weighting, sidebar/header boundaries, neutral/off behavior and motion policy. No data or dependency changes.
+
+`pnpm check`: TypeScript, **42/42 tests** and production build passed. Updated Mac-only preview **PID 73458**, port3100; HTTP smoke **21/21 passed**. Scoped Impeccable colour/craft, React and fresh interface-guideline source review; detector `[]`. Sampled 101 progress values, both light backgrounds and 25 gradient attenuation combinations each: minimum secondary-text contrast **4.59:1**. This is a calculation, not a full accessibility audit.
+
+**Supported browser access is working again.** Actual updated Home inspected in light mode at desktop default (~1425×806) and 390×844 narrow viewport. Star controls changed 75% → 0% → 100%; tint visibly followed, text remained readable, task surfaces stayed stable, narrow navigation/header remained reachable. Reload restored light mode and the expected 75% illustrative star default. No captured browser warnings/errors. Temporary viewport reset. This focused check does not sign off previous M3 multi-account, full-theme, flare-cycle, OS-motion or physical-phone gaps.
+
+Next: await the user's external design/usability audit and review its recommendations; use restored browser access for the outstanding acceptance batch when resuming. Design freeze otherwise remains. Latest usage snapshot 97% weekly used; no credits/resets.
+
 ## Random two-to-four flares; visual direction frozen — 2026-10-07
 
 User requested random 2/3/4 flares and then an end to UI/design changes for now. Two recurring slots remain, with two optional slots enabled by a seeded per-birth random count. Decisions remain fixed for each lifetime, positions continue advancing around the limb, and smooth fades prevent count/position jumps. At most four arches; brief fade transitions can show fewer. Existing local hue, pause, hidden/offscreen suspension, reduced-motion path and 30fps/canvas caps remain unchanged. One small seed uniform, no dependency or additional rendering pass; device performance is unmeasured.

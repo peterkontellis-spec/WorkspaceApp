@@ -29,9 +29,9 @@ Updated 2026-10-07. These items are open; implementation, automated tests and se
 - [ ] Exercise actual OS reduced-motion preference.
 - [ ] Confirm graceful rendering when WebGL is unavailable or its context is lost.
 
-## Why browser acceptance is pending
+## Earlier browser access blockage
 
-The supported browser tool refused preview access because its admin-enforced policy could not be verified. It did not report an application crash. No bypass or alternate browser automation was used. Retry through the supported tool when available; record actual results in STATUS.md.
+Earlier supported browser attempts failed administrator-policy verification. Access was restored during the 2026-10-07 light-tint adjustment, without a bypass. Home light mode, star tint changes, narrow layout and reload were checked; the broader checks listed here have not yet been rerun. See STATUS.md for exact evidence.
 
 The user explicitly instructed continuation into M3.2 while phone checks wait. Earlier M3.1 gates remain open and must be resolved before Stage 3 sign-off. See SESSION_CHECKLIST.md for M3.2's separate acceptance requirements.
 

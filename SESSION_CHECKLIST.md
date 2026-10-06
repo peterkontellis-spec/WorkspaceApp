@@ -557,3 +557,9 @@ These boxes are a reusable routine. Completion of a session does not imply compl
 - [x] Typecheck, 42 behavioral tests, production build, 21 preview HTTP checks and scoped motion/source review.
 - [ ] Actual shader, random birth/fade and device performance checks remain blocked by supported browser policy verification.
 - [x] Record the user-requested design freeze; next implementation block remains M3.4, with earlier browser acceptance open.
+
+## Stronger light tint — 2026-10-07
+
+- [x] Raise light-mode tint to 18%; calculated sampled secondary-text contrast minimum 4.59:1.
+- [x] Build/typecheck, 42 tests and 21 preview HTTP checks passed.
+- [x] Supported browser access restored: Home desktop and 390×844 light-mode tint/legibility, star phase controls, reload and captured console checked. Full M3/theme/device acceptance remains separate.
