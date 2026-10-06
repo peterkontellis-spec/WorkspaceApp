@@ -2,9 +2,11 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { LayoutGrid, Plus } from 'lucide-react';
+import { LayoutGrid, Plus, MoreHorizontal, ArrowLeft } from 'lucide-react';
 import { Button, Dialog, StatusLabel } from './ui';
 import { useWork } from './work-provider';
+import { SavedQuickFields } from './saved-quick-fields';
+import { ArchiveControl } from './archive-control';
 import { SavedColumnForm, columnFormKey, type ColumnEdit } from './saved-column-form';
 import { SavedFieldValue } from './saved-field-value';
 import { SavedTaskEditor } from './saved-task-editor';
@@ -38,6 +40,7 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
   const pathname = usePathname();
   const params = useSearchParams();
   const selectedId = params.get('task');
+  const showArchived = params.get('archived') === '1';
   const boardView = readBoardView(params);
   const workspaceSearch = section === 'boards' && !boardId && params.get('view') === 'tasks';
   const filters = readWorkFilters(params);
@@ -86,8 +89,12 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
   }, [work.error, selectedId, edit]);
   const data = work.data;
   const canEdit = Boolean(data && data.actor.role !== 'viewer');
-  const board = data?.boards.find((item) => item.id === boardId);
-  const selected = data?.tasks.find((task) => task.id === selectedId);
+  const allBoards = [...(data?.boards ?? []), ...(data?.archivedBoards ?? [])];
+  const allTasks = [...(data?.tasks ?? []), ...(data?.archivedTasks ?? [])];
+  const board = allBoards.find((item) => item.id === boardId);
+  const selected = allTasks.find((task) => task.id === selectedId);
+  const activeBoard = board && !board.archivedAt;
+  const canEditBoard = canEdit && (!boardId || Boolean(activeBoard));
   function taskHref(task: WorkTask) {
     const search = new URLSearchParams(params);
     search.set('task', task.id);
@@ -129,66 +136,73 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
   }
   function tasksList(tasks: WorkTask[]) {
     return (
-      <ul className="saved-task-list">
-        {tasks.map((task) => (
-          <li key={task.id} className={task.parentId ? 'saved-task saved-task--child' : 'saved-task'}>
-            <Link
-              href={taskHref(task)}
-              scroll={false}
-              className="saved-task-title"
-              data-saved-task={task.id}
-              onClick={() => {
-                work.clearError();
-                setDirty(false);
-              }}
+      <div className="saved-table" role="table" aria-label="Tasks">
+        <div className="saved-table-head" role="row">
+          <span role="columnheader">Task</span>
+          <span role="columnheader">Status</span>
+          <span role="columnheader">Assignees</span>
+          <span role="columnheader">Due</span>
+          <span role="columnheader">Priority</span>
+        </div>
+        <ul className="saved-task-list" role="rowgroup">
+          {tasks.map((task) => (
+            <li
+              key={task.id}
+              role="row"
+              className={task.parentId ? 'saved-task saved-task--child' : 'saved-task'}
             >
-              <strong>{task.title}</strong>
-              {work.drafts[`task:${task.id}`] ? <span>Unsaved draft in this tab</span> : null}
-              <span>
-                {task.parentId
-                  ? `Subtask of ${data?.tasks.find((parent) => parent.id === task.parentId)?.title ?? 'another task'}`
-                  : data?.boards.find((item) => item.id === task.boardId)?.name}
-              </span>
-            </Link>
-            <StatusLabel status={task.status} />
-            <span className="saved-task-meta">
-              {task.priority} priority
-              <br />
-              {workDate(task.dueDate)}
-            </span>
-            <span className="saved-task-people">
-              {task.assigneeIds
-                .map((id) => data?.members.find((member) => member.id === id)?.name)
-                .filter(Boolean)
-                .join(', ') || 'Unassigned'}
-            </span>
-            {boardId && data?.columns.some((c) => c.boardId === task.boardId) ? (
-              <dl className="saved-row-fields">
-                {data.columns
-                  .filter((c) => c.boardId === task.boardId)
-                  .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
-                  .map((column) => (
-                    <div key={column.id}>
-                      <dt>{column.name}</dt>
-                      <dd>
-                        <SavedFieldValue
-                          column={column}
-                          value={task.fields.find((f) => f.columnId === column.id)?.value}
-                        />
-                      </dd>
-                    </div>
-                  ))}
-              </dl>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+              <div role="cell">
+                <Link
+                  href={taskHref(task)}
+                  scroll={false}
+                  className="saved-task-title"
+                  data-saved-task={task.id}
+                  onClick={() => {
+                    work.clearError();
+                    setDirty(false);
+                  }}
+                >
+                  <strong>{task.title}</strong>
+                  {work.drafts[`task:${task.id}`] ? <span>Unsaved draft in this tab</span> : null}
+                  <span>
+                    {task.parentId
+                      ? `Subtask of ${allTasks.find((parent) => parent.id === task.parentId)?.title ?? 'another task'}`
+                      : boardId
+                        ? ''
+                        : allBoards.find((item) => item.id === task.boardId)?.name}
+                  </span>
+                </Link>
+              </div>
+              <SavedQuickFields task={task} />
+              {boardId && data?.columns.some((c) => c.boardId === task.boardId) ? (
+                <dl className="saved-row-fields">
+                  {data.columns
+                    .filter((c) => c.boardId === task.boardId)
+                    .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+                    .map((column) => (
+                      <div key={column.id}>
+                        <dt>{column.name}</dt>
+                        <dd>
+                          <SavedFieldValue
+                            column={column}
+                            value={task.fields.find((f) => f.columnId === column.id)?.value}
+                          />
+                        </dd>
+                      </div>
+                    ))}
+                </dl>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </div>
     );
   }
   function boardsList() {
-    return data?.boards.length ? (
+    const listedBoards = showArchived ? (data?.archivedBoards ?? []) : (data?.boards ?? []);
+    return listedBoards.length ? (
       <div className="project-grid">
-        {data.boards.map((item) => (
+        {listedBoards.map((item) => (
           <Link key={item.id} className="project-card" href={`/boards/${item.id}`}>
             <div className="project-card__top">
               <LayoutGrid size={24} aria-hidden="true" />
@@ -196,14 +210,14 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
             <h2>{item.name}</h2>
             <p>{item.description || 'A shared board for your team.'}</p>
             <span className="section-count">
-              {data.tasks.filter((task) => task.boardId === item.id && !task.parentId).length} tasks
+              {allTasks.filter((task) => task.boardId === item.id && !task.parentId).length} tasks
             </span>
           </Link>
         ))}
       </div>
     ) : (
       <div className="saved-empty">
-        <h2>No boards yet</h2>
+        <h2>{showArchived ? 'No archived boards' : 'No boards yet'}</h2>
         <p>
           {canEdit
             ? 'Create your first board to start saving work for the team.'
@@ -251,7 +265,7 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
   const matchingTasks = filterWorkTasks(boardId ? boardTasks : data.tasks, filters, today);
   const viewProps = {
     tasks: matchingTasks,
-    allTasks: data.tasks,
+    allTasks,
     groups: boardGroups,
     members: data.members,
     taskHref,
@@ -281,6 +295,12 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
     <section className="saved-work">
       <div className="page-heading">
         <div>
+          {boardId && (
+            <Link href="/boards" className="saved-back">
+              <ArrowLeft size={16} aria-hidden="true" />
+              Boards
+            </Link>
+          )}
           <h1>
             {section === 'home'
               ? `Welcome back, ${data.actor.name.split(' ')[0]}.`
@@ -301,17 +321,36 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
           </p>
         </div>
         <div className="saved-actions">
-          <Button disabled={work.pending || work.loading} onClick={() => void work.refresh()}>
-            {work.loading ? 'Refreshing…' : 'Refresh'}
-          </Button>
+          <span className="saved-sync" role="status">
+            {work.pending ? 'Saving…' : work.syncState === 'current' ? 'Up to date' : 'Checking updates…'}
+          </span>
           {canEdit && !boardId && !workspaceSearch ? (
             <Button variant="primary" onClick={() => openEdit({ kind: 'board' })}>
               <Plus size={18} aria-hidden="true" />
               New board
             </Button>
           ) : null}
-          {canEdit && board ? (
-            <Button onClick={() => openEdit({ kind: 'board', board })}>Edit board</Button>
+          {board ? (
+            <>
+              <Button
+                onClick={() => {
+                  const search = new URLSearchParams(params);
+                  search.delete('task');
+                  showArchived ? search.delete('archived') : search.set('archived', '1');
+                  router.push(`${pathname}?${search}`, { scroll: false });
+                }}
+              >
+                {showArchived ? 'Active tasks' : 'Archived tasks'}
+              </Button>
+              {canEditBoard ? (
+                <Button onClick={() => openEdit({ kind: 'board', board })}>Edit board</Button>
+              ) : null}
+              {board.archivedAt && <ArchiveControl key={board.id} item={board} kind="board" />}
+            </>
+          ) : section === 'boards' ? (
+            <Link className="text-link" href={showArchived ? '/boards' : '/boards?archived=1'}>
+              {showArchived ? 'Active boards' : 'Archived boards'}
+            </Link>
           ) : null}
         </div>
       </div>
@@ -325,14 +364,33 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
             </Button>
           </p>
         ))}
-      <p className="saved-scope">
-        {canEdit
-          ? 'Use Save to keep changes. Work is shared with your team.'
-          : 'Viewer access · you can read shared work. Ask an owner for editing access.'}
-      </p>
-      <p role="status" className="saved-notice">
-        {work.pending ? 'Saving…' : work.notice}
-      </p>
+      {Object.keys(work.drafts)
+        .filter((key) => key.startsWith('quick:'))
+        .map((key) => {
+          const task = allTasks.find((item) => item.id === key.slice(6));
+          return task ? (
+            <p className="saved-draft-note" key={key}>
+              Unconfirmed quick edit for “{task.title}”.{' '}
+              <Link
+                className="text-link"
+                href={`/boards/${task.boardId}${task.archivedAt ? '?archived=1' : ''}`}
+              >
+                Review selection on board
+              </Link>
+            </p>
+          ) : null;
+        })}
+      {!canEdit && <p className="saved-scope">Viewer access · shared work is read-only.</p>}
+      {board?.archivedAt && (
+        <p className="saved-scope">
+          This board is archived. Its tasks and files are kept read-only until an owner restores it.
+        </p>
+      )}
+      {work.notice && (
+        <p role="status" className="saved-notice">
+          {work.notice}
+        </p>
+      )}
       {work.error && !selectedId && !edit ? (
         <div className="saved-feedback">
           <p ref={errorRef} tabIndex={-1} role="alert" className="auth-error">
@@ -395,131 +453,100 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
         </>
       ) : board ? (
         <>
-          <Link href="/boards" className="back-link">
-            All boards
-          </Link>
-          <nav className="saved-view-links saved-board-view-links" aria-label="Board views">
-            {(['table', 'kanban', 'calendar'] as const).map((view) => (
-              <Link
-                key={view}
-                href={boardViewHref(pathname, params, { view })}
-                scroll={false}
-                aria-current={boardView === view ? 'page' : undefined}
-              >
-                {view === 'table' ? 'Table' : view === 'kanban' ? 'Kanban' : 'Calendar'}
-              </Link>
-            ))}
-          </nav>
-          {filterControls}
-          {canEdit && boardView === 'table' ? (
-            <details className="saved-column-settings">
-              <summary>Custom columns ({boardColumns.length})</summary>
-              <p className="auth-hint">
-                Add fields for this board. Values are shown below each task and edited in task details.
-              </p>
-              {boardColumns.length ? (
-                <ul>
-                  {boardColumns.map((column) => (
-                    <li key={column.id}>
-                      <span>
-                        <strong>{column.name}</strong>
-                        <small>
-                          {column.kind === 'number' && column.configuration.format === 'cost'
-                            ? `Cost · ${column.configuration.currency}`
-                            : column.kind}
-                        </small>
-                      </span>
-                      <Button
-                        variant="ghost"
-                        onClick={() => openEdit({ kind: 'column', boardId: board.id, column })}
-                      >
-                        Edit {column.name} column
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
+          {showArchived || board.archivedAt ? (
+            <section className="saved-section">
+              <h2>Archived tasks</h2>
+              {(data.archivedTasks ?? []).some((task) => task.boardId === board.id) ? (
+                tasksList((data.archivedTasks ?? []).filter((task) => task.boardId === board.id))
               ) : (
-                <p className="page-description">No custom columns yet.</p>
+                <p>No archived tasks on this board.</p>
               )}
-              <Button
-                disabled={boardColumns.length >= 20}
-                onClick={() => openEdit({ kind: 'column', boardId: board.id })}
-              >
-                Add column
-              </Button>
-              {boardColumns.length >= 20 ? (
-                <p className="auth-hint">This board has the maximum 20 custom columns.</p>
-              ) : null}
-            </details>
-          ) : null}
-          {activeFilters && !matchingTasks.length ? (
-            <div className="saved-empty">
-              <h2>No matching tasks</h2>
-              <p>Try different words or clear your filters. Saved tasks are unchanged.</p>
-            </div>
-          ) : null}
-          {boardView === 'table' ? (
-            <>
-              {boardGroups
-                .filter((group) => !activeFilters || matchingTasks.some((task) => task.groupId === group.id))
-                .map((group) => (
-                  <section key={group.id} className="saved-group">
-                    <header className="saved-group-heading">
-                      <h2>{group.name}</h2>
-                      {canEdit ? (
-                        <Button
-                          variant="ghost"
-                          onClick={() => openEdit({ kind: 'group', boardId: board.id, group })}
-                        >
-                          Edit {group.name} group
-                        </Button>
-                      ) : null}
-                    </header>
-                    {matchingTasks.some((task) => task.groupId === group.id) ? (
-                      tasksList(matchingTasks.filter((task) => task.groupId === group.id))
-                    ) : (
-                      <p className="saved-empty-row">No tasks in this group.</p>
-                    )}
-                    {canEdit ? (
-                      <Button
-                        className="saved-add-task"
-                        variant="ghost"
-                        onClick={() => openEdit({ kind: 'task', boardId: board.id, groupId: group.id })}
-                      >
-                        <Plus size={18} aria-hidden="true" />
-                        Add task to {group.name}
-                      </Button>
-                    ) : null}
-                  </section>
-                ))}
-              {canEdit ? (
-                <Button onClick={() => openEdit({ kind: 'group', boardId: board.id })}>Add group</Button>
-              ) : null}
-            </>
+            </section>
           ) : (
             <>
-              {canEdit ? (
-                <SavedViewAddTask
-                  key={board.id}
-                  groups={boardGroups}
-                  addTask={(groupId) => openEdit({ kind: 'task', boardId: board.id, groupId })}
-                  addGroup={() => openEdit({ kind: 'group', boardId: board.id })}
-                />
+              <div className="saved-board-toolbar">
+                <nav className="saved-view-links saved-board-view-links" aria-label="Board views">
+                  {(['table', 'kanban', 'calendar'] as const).map((view) => (
+                    <Link
+                      key={view}
+                      href={boardViewHref(pathname, params, { view })}
+                      scroll={false}
+                      aria-current={boardView === view ? 'page' : undefined}
+                    >
+                      {view === 'table' ? 'Table' : view === 'kanban' ? 'Kanban' : 'Calendar'}
+                    </Link>
+                  ))}
+                </nav>
+                {filterControls}
+              </div>
+              {activeFilters && !matchingTasks.length ? (
+                <div className="saved-empty">
+                  <h2>No matching tasks</h2>
+                  <p>Try different words or clear your filters. Saved tasks are unchanged.</p>
+                </div>
               ) : null}
-              <p className="auth-hint">
-                {canEdit
-                  ? 'Open a task to change its status or due date, then Save. All views show the same saved tasks.'
-                  : 'Open a task to read its details. All views show the same saved tasks.'}
-              </p>
-              {boardView === 'kanban' ? (
-                <SavedKanbanView {...viewProps} />
+              {boardView === 'table' ? (
+                <>
+                  {boardGroups
+                    .filter(
+                      (group) => !activeFilters || matchingTasks.some((task) => task.groupId === group.id),
+                    )
+                    .map((group) => (
+                      <section key={group.id} className="saved-group">
+                        <header className="saved-group-heading">
+                          <h2>{group.name}</h2>
+                          {canEdit ? (
+                            <Button
+                              variant="ghost"
+                              aria-label={`Edit ${group.name} group`}
+                              onClick={() => openEdit({ kind: 'group', boardId: board.id, group })}
+                            >
+                              <MoreHorizontal size={18} aria-hidden="true" />
+                            </Button>
+                          ) : null}
+                        </header>
+                        {matchingTasks.some((task) => task.groupId === group.id) ? (
+                          tasksList(matchingTasks.filter((task) => task.groupId === group.id))
+                        ) : (
+                          <p className="saved-empty-row">No tasks in this group.</p>
+                        )}
+                        {canEdit ? (
+                          <Button
+                            className="saved-add-task"
+                            variant="ghost"
+                            onClick={() => openEdit({ kind: 'task', boardId: board.id, groupId: group.id })}
+                          >
+                            <Plus size={18} aria-hidden="true" />
+                            Add task to {group.name}
+                          </Button>
+                        ) : null}
+                      </section>
+                    ))}
+                  {canEdit ? (
+                    <Button onClick={() => openEdit({ kind: 'group', boardId: board.id })}>Add group</Button>
+                  ) : null}
+                </>
               ) : (
-                <SavedCalendarView
-                  {...viewProps}
-                  month={calendarMonth}
-                  today={today}
-                  monthHref={(month) => boardViewHref(pathname, params, { view: 'calendar', month })}
-                />
+                <>
+                  {canEdit ? (
+                    <SavedViewAddTask
+                      key={board.id}
+                      groups={boardGroups}
+                      addTask={(groupId) => openEdit({ kind: 'task', boardId: board.id, groupId })}
+                      addGroup={() => openEdit({ kind: 'group', boardId: board.id })}
+                    />
+                  ) : null}
+                  {boardView === 'kanban' ? (
+                    <SavedKanbanView {...viewProps} />
+                  ) : (
+                    <SavedCalendarView
+                      {...viewProps}
+                      month={calendarMonth}
+                      today={today}
+                      monthHref={(month) => boardViewHref(pathname, params, { view: 'calendar', month })}
+                    />
+                  )}
+                </>
               )}
             </>
           )}
@@ -554,7 +581,28 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
                     : 'New task'
               : 'Task details'
         }
-        className="saved-work-dialog"
+        className={`saved-work-dialog${selectedId ? ' saved-task-dialog' : ''}`}
+        footer={
+          selected && !discard ? (
+            <>
+              <div className="saved-actions">
+                {canEdit && !selected.archivedAt && !selected.boardArchived ? (
+                  <Button type="submit" form="saved-task-edit-form" variant="primary" disabled={work.pending}>
+                    {work.pending ? 'Saving…' : 'Save task'}
+                  </Button>
+                ) : null}
+                <Button disabled={work.pending} onClick={close}>
+                  {canEdit && !selected.archivedAt && !selected.boardArchived ? 'Cancel' : 'Close'}
+                </Button>
+              </div>
+              {dirty && (
+                <span className="saved-task-hint" role="status">
+                  Unsaved changes
+                </span>
+              )}
+            </>
+          ) : undefined
+        }
       >
         {discard ? (
           <div>
@@ -568,6 +616,47 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
           </div>
         ) : null}
         <div hidden={discard}>
+          {edit?.kind === 'board' && edit.board && canEdit ? (
+            <details className="saved-column-settings">
+              <summary>Custom columns ({boardColumns.length})</summary>
+              <p className="auth-hint">
+                Add fields for this board. Values are shown below each task and edited in task details.
+              </p>
+              {boardColumns.length ? (
+                <ul>
+                  {boardColumns.map((column) => (
+                    <li key={column.id}>
+                      <span>
+                        <strong>{column.name}</strong>
+                        <small>
+                          {column.kind === 'number' && column.configuration.format === 'cost'
+                            ? `Cost · ${column.configuration.currency}`
+                            : column.kind}
+                        </small>
+                      </span>
+                      <Button
+                        variant="ghost"
+                        onClick={() => openEdit({ kind: 'column', boardId: edit.board!.id, column })}
+                      >
+                        Edit {column.name} column
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="page-description">No custom columns yet.</p>
+              )}
+              <Button
+                disabled={boardColumns.length >= 20}
+                onClick={() => openEdit({ kind: 'column', boardId: edit.board!.id })}
+              >
+                Add column
+              </Button>
+              {boardColumns.length >= 20 ? (
+                <p className="auth-hint">This board has the maximum 20 custom columns.</p>
+              ) : null}
+            </details>
+          ) : null}
           {edit?.kind === 'column' ? (
             <SavedColumnForm
               key={`column-${version}`}
@@ -580,27 +669,41 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
               dirty={() => setDirty(true)}
             />
           ) : edit ? (
-            <WorkForm
-              key={`${edit.kind}-${version}`}
-              edit={edit}
-              pending={work.pending}
-              error={work.error}
-              conflict={work.conflict}
-              save={work.save}
-              close={close}
-              saved={leave}
-              dirty={() => setDirty(true)}
-            />
+            <>
+              <WorkForm
+                key={`${edit.kind}-${version}`}
+                edit={edit}
+                pending={work.pending}
+                error={work.error}
+                conflict={work.conflict}
+                save={work.save}
+                close={close}
+                saved={leave}
+                dirty={() => setDirty(true)}
+              />
+              {edit.kind === 'board' && edit.board && (
+                <ArchiveControl
+                  key={edit.board.id}
+                  item={edit.board}
+                  kind="board"
+                  blocked={dirty}
+                  onApplied={leave}
+                />
+              )}
+            </>
           ) : selected ? (
             <>
+              {(selected.archivedAt || selected.boardArchived) && (
+                <p className="auth-hint">Archived task · history and files are retained.</p>
+              )}
               <SavedTaskEditor
-                key={`${selected.id}-${version}`}
+                key={`${selected.id}-${Boolean(selected.archivedAt || selected.boardArchived)}-${version}`}
                 task={selected}
                 columns={data.columns}
                 groups={data.groups}
-                tasks={data.tasks}
+                tasks={allTasks}
                 members={data.members}
-                canEdit={canEdit}
+                canEdit={canEdit && !selected.archivedAt && !selected.boardArchived}
                 save={work.save}
                 pending={work.pending}
                 error={work.error}
@@ -609,9 +712,15 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
                 reload={() => void reloadTask()}
                 onDirtyChange={setDirty}
               />
+              <ArchiveControl
+                key={selected.id}
+                item={selected}
+                kind="task"
+                blocked={dirty && !selected.archivedAt && !selected.boardArchived}
+              />
               <section className="saved-subtasks">
                 <h3>Subtasks</h3>
-                {data.tasks
+                {allTasks
                   .filter((task) => task.parentId === selected.id)
                   .map((task) => (
                     <p key={task.id}>
@@ -626,10 +735,11 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
                         }}
                       >
                         {task.title}
+                        {task.archivedAt || task.boardArchived ? ' · Archived' : ''}
                       </Link>
                     </p>
                   ))}
-                {canEdit ? (
+                {canEdit && !selected.archivedAt && !selected.boardArchived ? (
                   <Button
                     disabled={dirty || work.pending}
                     onClick={() => {
@@ -741,6 +851,7 @@ function WorkForm({
         {edit.kind === 'task' ? 'Task title' : 'Name'}
         <input
           id="work-name"
+          data-dialog-initial-focus
           name="name"
           required
           maxLength={edit.kind === 'task' ? 240 : 120}

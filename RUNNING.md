@@ -2,9 +2,9 @@
 
 ## Current scope
 
-Accounts mode now provides real sign-in, staff roles and saved boards/tasks, custom columns, notes and checklists through M2.5, plus M2.6 saved-task search/filters and M2.7 task attachments/Files. Use explicit Save for persistent changes. See [SAVED_WORK.md](SAVED_WORK.md) for behavior, draft recovery and limits. Docs remain a sample.
+Accounts mode provides real sign-in, staff roles and saved boards/tasks, custom columns, notes/checklists, search, attachments, board views, polling, activity and in-app notifications. Corrective work adds quick field edits and reversible archive/restore. Detailed task/form changes use explicit Save; common table fields and Kanban status save immediately with pending/error feedback. See [SAVED_WORK.md](SAVED_WORK.md).
 
-Docs use a small Markdown subset with formatting controls and a safe preview. This is not a full word processor or collaborative editor. Doc sample edits reset on refresh/tab closure, and unload warnings are not dependable (physical iPhone refresh was silent). Saved task attachments are available in accounts mode; see [FILES.md](FILES.md).
+Accounts-mode Docs is a non-editable storage-pending placeholder until NAS configuration is settled. Its Markdown sample editor remains in explicit prototype mode; sample edits are temporary and are not durable or collaborative writing. Saved attachments are described in [FILES.md](FILES.md).
 
 See [DATABASE.md](DATABASE.md) for PostgreSQL startup and checks, and [AUTHENTICATION.md](AUTHENTICATION.md) for account setup/recovery. No NAS deployment exists. Explicit prototype mode retains the original M1 sample UI, illustrative roles and 25 September 2026 demo date; its edits are temporary. It is separate from the accounts preview.
 
@@ -25,7 +25,7 @@ pnpm preview
 
 The launcher uses macOS `lsof` to verify the previous process's project directory and port ownership before stopping it. It refuses to stop another service and confirms the replacement process owns the port and passes readiness before recording it. Current state: `.local/preview-server.pid`, `.local/preview-release.txt`; log: `.local/preview-server.log`. Verify process identity before manual stopping. Old snapshots remain ignored local files; this helper is not NAS service management or a backup system. Do not use the older `.local/restart-preview.py` helper or serve directly from `.next` while building.
 
-Accounts-mode boards/tasks, custom values, notes and checklists are saved; Docs remain a sample. A persistent preview owner account now exists. Preserve its boards and user edits; never reuse destructive/disposable-account cleanup routines on it. Keep credentials out of Git and project documents.
+Accounts-mode boards/tasks, custom values, notes and checklists are saved; Docs is a storage-pending placeholder. A persistent preview owner account now exists. Preserve its boards and user edits; never reuse destructive/disposable-account cleanup routines on it. Keep credentials out of Git and project documents.
 
 ## Open the current preview
 
@@ -61,22 +61,11 @@ This line is specific to this Mac. Other computers should use their normal Node 
 
 ## Check the project
 
-```sh
-pnpm typecheck
-pnpm build
-```
+Run `pnpm check` for type checking, behavior tests and the production build. Run `pnpm format:check` for source formatting, `pnpm test:db` for isolated PostgreSQL checks, and `pnpm test:e2e` for the committed isolated Chromium regression suite. `pnpm check:all` runs those checks in sequence. The browser suite requires its matching workspace-local browser installation; see [E2E_TESTING.md](E2E_TESTING.md).
 
-Both commands passed during M1.6 refinement checks. A native framework standalone build is configured to prepare for eventual self-hosting. NAS packaging, static-asset copying, service configuration, backups, and deployment are still M5 work; `.next/standalone` by itself is not a complete deployed product.
+After activating the preview, run `pnpm check:smoke`. In accounts mode provide `WORKSPACE_SMOKE_CREDENTIALS_FILE` pointing to an existing private test-login JSON file; keep it outside Git and never put passwords in command arguments. This checks HTTP responses, not rendered interaction.
 
-### Repeatable self-check commands
-
-Run `pnpm check` for TypeScript, behavioural model/Markdown/navigation tests, and the production build. With this project's server running at `127.0.0.1:3100`, run `pnpm check:smoke` in another terminal. In explicit prototype mode the smoke script runs 16 checks covering the Home redirect, sample pages, task/filter/return query routes, prototype disclosure, filtered row count, task/editor markup and four HTTP 404 responses. Accounts mode adds signed-out rejection, team, invalid-invitation and Files checks (20 total) and needs an ignored disposable credentials file; see AUTHENTICATION.md. Recovery-link rendering and clicks remain browser checks. The script exits nonzero on failure and uses no additional dependencies.
-
-These HTTP checks do not execute client JavaScript, click controls, inspect layout, or replace the browser checklist below. Do not use them as a workaround for a denied browser check. Extend the checks as routes and behavior evolve.
-
-Every task/session follows the required self-check loop in AGENTS.md: implement, inspect, run/test, review with design/UI skills, fix, confirm, reassess the next action, and record evidence. No daily or unattended automation is configured.
-
-Next.js automatic agent-instruction generation is disabled in next.config.ts so development does not append generated guidance to the existing project AGENTS.md.
+The required per-task/session loop in AGENTS.md also includes actual desktop/narrow visual and keyboard inspection, applicable design/UI reviews, correction and retesting. No daily watcher or hosted CI job is configured. Use [PENDING_CHECKS.md](PENDING_CHECKS.md) for current open acceptance; dated prototype checklists below are historical reference.
 
 ## Reusable browser regression checklist
 

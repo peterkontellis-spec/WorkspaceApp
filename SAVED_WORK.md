@@ -9,12 +9,22 @@ In accounts mode, Home and Boards use PostgreSQL records belonging to the signed
 - Add board-specific text, status, number/cost, date and link columns. Values appear below each task and are edited in its details panel. Owners/editors can manage columns; viewers can read values.
 - Save plain-text notes and checklist labels/completion alongside task details. Removing a checklist item remains a draft change with Undo until Save.
 - My Day uses the signed-in member and their local current date. Saved tasks survive refresh and server/database restart.
-- Choose Save deliberately. Browser navigation keeps unsaved task/form drafts in memory in the current tab; it does not save them to the database. Reopening a task or Resume draft restores input. Confirmed discard and sign-out clear drafts. Refresh, closing the tab and session expiry can lose unsaved input; browser unload warnings are not dependable on phones.
+- Task details and board/group forms use an explicit Save. Table status, assignees, date and priority, and Kanban status save immediately with visible pending/error feedback. Browser navigation keeps unsaved task/form drafts in memory in the current tab; it does not save them to the database. Reopening a task or Resume draft restores input. Confirmed discard and sign-out clear drafts. Refresh, closing the tab and session expiry can lose unsaved input; browser unload warnings are not dependable on phones.
 - Updates send the original revision. A conflicting save is rejected without overwriting either record or draft. Reloading a task asks before replacing unsaved input. Board/group conflicts retain the form: copy anything needed, cancel, refresh and reopen.
 - If a save times out, its outcome is uncertain. Reconnect and inspect saved work. Each create form keeps one random creation ID, so retrying that logical creation returns its existing record rather than making a duplicate. Once committed, retrying creation does not apply subsequently edited fields; open the saved item to edit it. Updates use revision checks.
-- Connection failures retain forms. Session checks continue, with a Retry connection notice; signed-out/revoked identities are redirected. No automatic offline write queue or live synchronization is claimed. Use Refresh to see another person's changes.
+- Connection failures retain forms. Session checks continue, with a Retry connection notice; signed-out/revoked identities are redirected. There is no offline write queue. Visible online tabs refresh through M3.2 polling; manual Refresh remains available.
 
-Docs are still explicitly labelled sample data, reset on refresh, and are not collaborative or access-controlled stored documents. Explicit prototype mode retains the original sample interface. Notes/checklists/custom fields and task search/filters are implemented. Task attachments and the Files library are implemented in M2.7; see [FILES.md](FILES.md) for accepted types, the 25 MiB limit and storage behavior. Durable Docs remain M4. No saved-item deletion UI is included yet.
+Accounts-mode Docs is a non-editable storage-pending placeholder until NAS configuration is settled. Explicit prototype mode retains its sample editor. Durable Docs remain M4. Task attachments and the Files library are implemented; see [FILES.md](FILES.md).
+
+## Archive and quick edits — corrective blocks
+
+Owners and editors can archive/restore tasks; only owners can archive/restore boards. Viewers remain read-only. Archive asks for confirmation, keeps a recoverable record and offers Undo plus permanent Archived tasks/Archived boards navigation. Active Home, search, views and the general Files library exclude archived work. Historical task links remain readable with attachments and activity.
+
+Archiving a task also archives its currently active descendants as one batch. Restoring it revives only that batch; earlier independent archives remain archived. Restore a parent before its child. Archiving a board freezes its work; restoring the board does not revive independently archived tasks. Board transitions invalidate old task/group/column revisions, including drafts opened before an archive/restore cycle. A remotely archived dirty task retains its draft for copying/review and cannot silently overwrite restored work. No permanent deletion or purge exists.
+
+Quick edits serialize writes and disable competing controls while saving. Failed selections remain in this tab across view navigation and offer Retry/Discard; retry retains the original revision and rejects conflicts. Finish an existing task-details draft before using quick edits. These drafts are not durable offline storage. Dates show Today or a readable calendar date, with explicit Overdue text for unfinished past-due work.
+
+The task panel keeps Save/Cancel outside its scrollable content. Main fields precede notes/checklist; group, parent, order and custom values sit in More task settings. Physical software-keyboard behavior requires its own phone check.
 
 ## Finding saved work
 
@@ -22,7 +32,7 @@ Use board Search tasks for that board, or Boards → Find tasks for the whole st
 
 Combine status, assignee (including Unassigned), priority and due date with AND. Before today / Today / After today use your local calendar date; No date means an empty due date. Date filters include any completion state unless Status is also set. Use Search or Apply filters to apply edited inputs. Clear filters resets them.
 
-Applied filters are URL parameters, restored on refresh and Back/Forward. Opening/closing a task keeps the result context. If an edit makes it stop matching, it leaves the result list and focus returns to the page. No-results copy distinguishes filtering from deleted data. Search works on the existing server-authorized workspace snapshot and updates after Save or Refresh; it does not introduce automatic live synchronization or a separate search service.
+Applied filters are URL parameters, restored on refresh and Back/Forward. Opening/closing a task keeps the result context. If an edit makes it stop matching, it leaves the result list and focus returns to the page. No-results copy distinguishes filtering from deleted data. Search works on the existing server-authorized workspace snapshot and updates after Save or Refresh; ordinary polling also refreshes results without introducing a separate search service.
 
 ## Column changes and limits
 

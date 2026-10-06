@@ -1,5 +1,12 @@
 export type WorkRole = 'owner' | 'editor' | 'viewer';
-export type WorkBoard = { id: string; name: string; description: string; revision: number };
+export type WorkBoard = {
+  id: string;
+  name: string;
+  description: string;
+  revision: number;
+  archivedAt?: string | null;
+  archivedBy?: string | null;
+};
 export type WorkGroup = { id: string; boardId: string; name: string; position: number; revision: number };
 export type WorkColumn = {
   id: string;
@@ -13,6 +20,10 @@ export type WorkColumn = {
 export type WorkChecklistItem = { id: string; label: string; done: boolean; position: number };
 export type WorkFieldValue = { columnId: string; value: string | number };
 export type WorkTask = {
+  archivedAt?: string | null;
+  archivedBy?: string | null;
+  archiveBatchId?: string | null;
+  boardArchived?: boolean;
   id: string;
   boardId: string;
   groupId: string;
@@ -30,6 +41,8 @@ export type WorkTask = {
 };
 export type WorkMember = { id: string; name: string; email: string; role: WorkRole };
 export type WorkSnapshot = {
+  archivedBoards: WorkBoard[];
+  archivedTasks: WorkTask[];
   boards: WorkBoard[];
   columns: WorkColumn[];
   groups: WorkGroup[];
@@ -44,8 +57,11 @@ export function localToday() {
 }
 export function workDate(value: string | null) {
   return value
-    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeZone: 'UTC' }).format(
-        new Date(`${value}T12:00:00Z`),
-      )
+    ? new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      }).format(new Date(`${value}T12:00:00Z`))
     : 'No date';
 }

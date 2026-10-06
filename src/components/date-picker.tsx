@@ -17,16 +17,20 @@ export function DatePicker({
   onChange,
   triggerRef,
   baseDate = DEMO_DATE,
+  initiallyOpen = false,
+  onDismiss,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   triggerRef?: Ref<HTMLButtonElement>;
   baseDate?: string;
+  initiallyOpen?: boolean;
+  onDismiss?: () => void;
 }) {
   const id = useId();
   const root = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   const [cursor, setCursor] = useState(value || baseDate);
   const [focusDay, setFocusDay] = useState(false);
   const selected = calendarDate(value);
@@ -39,6 +43,7 @@ export function DatePicker({
   function close() {
     setOpen(false);
     root.current?.querySelector<HTMLButtonElement>('.date-picker-trigger')?.focus({ preventScroll: true });
+    onDismiss?.();
   }
   function choose(date: string) {
     onChange(date);

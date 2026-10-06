@@ -49,7 +49,7 @@ export function SavedWorkFilters({
       <form onSubmit={submit} role="search" aria-label="Find saved tasks">
         <div className="saved-search-line">
           <label className="auth-field">
-            Search tasks
+            <span>Search tasks</span>
             <input
               type="search"
               name="q"

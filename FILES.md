@@ -39,3 +39,7 @@ node --test --test-concurrency=1 tests/database/files.test.mjs
 ```
 
 STATUS.md records actual server, browser, restart and design checks. Focused source review here does not replace the required Cloudflare pre-publication audit or establish NAS performance.
+
+## Archived work
+
+Task/board archive preserves attachment bytes and metadata. Current authorized members can still list/download attachments through historical task details, while the general active Files library excludes them. Archived tasks reject new uploads. Upload completion rechecks that both task and board remain active and that the task revision still matches the upload's opening revision; an intervening change rejects the upload safely and requests a retry. Archive/restore is not attachment deletion, backup or a purge policy.

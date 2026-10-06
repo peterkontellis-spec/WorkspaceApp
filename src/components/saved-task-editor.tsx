@@ -127,7 +127,9 @@ export function SavedTaskEditor({
     excludedParents.add(current);
     queue.push(...(childIds.get(current) ?? []));
   }
-  const possibleParents = boardTasks.filter((item) => !excludedParents.has(item.id));
+  const possibleParents = boardTasks.filter(
+    (item) => !excludedParents.has(item.id) && !item.archivedAt && !item.boardArchived,
+  );
 
   useEffect(() => {
     if (message) errorRef.current?.focus();
@@ -201,6 +203,7 @@ export function SavedTaskEditor({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending || confirmReload) return;
     if (!canEdit || pending) return;
     if (!draft.title.trim()) {
       setLocalError('Enter a task title.');
@@ -280,7 +283,115 @@ export function SavedTaskEditor({
     return (
       <div className="saved-task-editor">
         <p className="saved-task-view-title">{task.title}</p>
-        <p className="detail-empty">You have viewing access. Ask an owner or editor to make changes.</p>
+        {message && (
+          <div className="saved-task-error">
+            <p ref={errorRef} tabIndex={-1} role="alert" className="form-error">
+              {message}
+            </p>
+            <Button disabled={pending} onClick={() => void work.refresh()}>
+              Refresh saved work
+            </Button>
+          </div>
+        )}
+        <p className="detail-empty">
+          {task.archivedAt || task.boardArchived
+            ? 'This task is archived. Restore it before making changes.'
+            : 'You have viewing access. Ask an owner or editor to make changes.'}
+        </p>
+        {dirty && (
+          <details className="saved-task-section" open>
+            <summary>Retained unsaved draft</summary>
+            <p className="saved-task-hint">
+              Your unsaved input is kept in this tab and shown below for copying. It has not been saved. After
+              restoration or renewed editing access, review the latest saved version before making changes.
+              Reloading the editor replaces this draft; copy anything you need first.
+            </p>
+            <dl className="saved-task-facts">
+              <div>
+                <dt>Draft title</dt>
+                <dd>{draft.title || 'Untitled'}</dd>
+              </div>
+              <div>
+                <dt>Draft status</dt>
+                <dd>{draft.status}</dd>
+              </div>
+              <div>
+                <dt>Draft priority</dt>
+                <dd>{draft.priority}</dd>
+              </div>
+              <div>
+                <dt>Draft due date</dt>
+                <dd>
+                  {draft.dueDate ? dateFormat.format(new Date(`${draft.dueDate}T00:00:00Z`)) : 'No date'}
+                </dd>
+              </div>
+              <div>
+                <dt>Draft assignees</dt>
+                <dd>
+                  {draft.assigneeIds
+                    .map(
+                      (memberId) => members.find((member) => member.id === memberId)?.name ?? 'Former member',
+                    )
+                    .join(', ') || 'Unassigned'}
+                </dd>
+              </div>
+              <div>
+                <dt>Draft group</dt>
+                <dd>{groups.find((group) => group.id === draft.groupId)?.name ?? 'Unavailable group'}</dd>
+              </div>
+              <div>
+                <dt>Draft parent task</dt>
+                <dd>
+                  {draft.parentId
+                    ? (tasks.find((item) => item.id === draft.parentId)?.title ?? 'Unavailable task')
+                    : 'None'}
+                </dd>
+              </div>
+              <div>
+                <dt>Draft order</dt>
+                <dd>{draft.position}</dd>
+              </div>
+            </dl>
+            <h3>Draft notes</h3>
+            <p className="saved-task-notes">{draft.notes || 'No draft notes.'}</p>
+            <h3>Draft checklist</h3>
+            {draft.checklist.length ? (
+              <ul className="saved-task-checklist-read">
+                {draft.checklist.map((item) => (
+                  <li key={item.id}>
+                    <span>{item.done ? 'Done' : 'To do'}</span>
+                    <span>{item.label || 'Empty checklist item'}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No draft checklist items.</p>
+            )}
+            {draft.removedChecklist.length > 0 && (
+              <>
+                <h3>Items removed in this draft</h3>
+                <ul>
+                  {draft.removedChecklist.map((item) => (
+                    <li key={item.id}>{item.label || 'Empty checklist item'}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {initial.columns.length > 0 && (
+              <>
+                <h3>Draft custom fields</h3>
+                <dl className="saved-task-facts">
+                  {initial.columns.map((column) => (
+                    <div key={column.id}>
+                      <dt>{column.name}</dt>
+                      <dd>{draft.fields[column.id] || 'Empty'}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </>
+            )}
+          </details>
+        )}
         <dl className="saved-task-facts">
           <div>
             <dt>Status</dt>
@@ -363,12 +474,21 @@ export function SavedTaskEditor({
 
   return (
     <>
-      <form ref={formRef} className="saved-task-editor" onSubmit={submit} aria-busy={pending}>
+      <form
+        id="saved-task-edit-form"
+        ref={formRef}
+        className="saved-task-editor"
+        onSubmit={submit}
+        aria-busy={pending}
+      >
         {task.revision !== initial.revision && !message ? (
           <section className="saved-task-update" aria-label="Newer task version available">
             <p role="status">
               This task changed since you opened it. Your open version is preserved. Reload the saved task to
               see the changes.
+              {dirty
+                ? ' Copy any unsaved input you need first; reloading replaces this draft. Review the latest version before saving again.'
+                : ''}
             </p>
             <Button disabled={pending} onClick={() => (dirty ? setConfirmReload(true) : reload())}>
               Reload saved task
@@ -406,6 +526,7 @@ export function SavedTaskEditor({
             Title
             <input
               name="task-title"
+              data-dialog-initial-focus
               autoComplete="off"
               required
               maxLength={240}
@@ -444,83 +565,17 @@ export function SavedTaskEditor({
               baseDate={localToday()}
               onChange={(dueDate) => patch({ dueDate: dueDate || null })}
             />
-            <label className="saved-task-label">
-              Group
-              <select
-                name="task-group"
-                value={draft.groupId}
-                onChange={(event) => patch({ groupId: event.target.value })}
-              >
-                {boardGroups.map((group) => (
-                  <option key={group.id} value={group.id}>
-                    {group.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div className="saved-task-assignees">
+              <span>Assignees</span>
+              <AssigneePicker
+                people={members}
+                disabled={pending || confirmReload}
+                value={draft.assigneeIds}
+                taskTitle={draft.title || 'this task'}
+                onChange={(assigneeIds) => patch({ assigneeIds })}
+              />
+            </div>
           </div>
-          <div className="saved-task-assignees">
-            <span>Assignees</span>
-            <AssigneePicker
-              people={members}
-              disabled={pending || confirmReload}
-              value={draft.assigneeIds}
-              taskTitle={draft.title || 'this task'}
-              onChange={(assigneeIds) => patch({ assigneeIds })}
-            />
-          </div>
-          <label className="saved-task-label">
-            Parent task
-            <select
-              name="task-parent"
-              value={draft.parentId ?? ''}
-              onChange={(event) => patch({ parentId: event.target.value || null })}
-            >
-              <option value="">None — standalone task</option>
-              {possibleParents.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
-            <span className="saved-task-hint">Choose a parent to make this a subtask.</span>
-          </label>
-          <label className="saved-task-label">
-            Order in group
-            <input
-              name="task-position"
-              type="number"
-              inputMode="numeric"
-              autoComplete="off"
-              min={0}
-              max={2147483646}
-              step={1}
-              required
-              value={draft.position}
-              aria-describedby={`${id}-order-hint`}
-              onChange={(event) => patch({ position: event.target.value })}
-            />
-            <span id={`${id}-order-hint`} className="saved-task-hint">
-              Lower numbers appear first in the group.
-            </span>
-          </label>
-          <section className="saved-task-section" aria-labelledby={`${id}-columns`}>
-            <h3 id={`${id}-columns`}>Columns</h3>
-            {initial.columns.length ? (
-              <div className="saved-task-grid">
-                {initial.columns.map((column) => (
-                  <CustomField
-                    key={column.id}
-                    column={column}
-                    value={draft.fields[column.id] ?? ''}
-                    change={(value) => patch({ fields: { ...draft.fields, [column.id]: value } })}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="detail-empty">Add custom columns from the board.</p>
-            )}
-          </section>
           <section className="saved-task-section" aria-labelledby={`${id}-notes`}>
             <h3 id={`${id}-notes`}>Notes</h3>
             <label className="saved-task-label">
@@ -595,18 +650,79 @@ export function SavedTaskEditor({
               </div>
             )}
           </section>
+          <details className="saved-task-more">
+            <summary>More task settings</summary>
+            <div className="saved-task-fields">
+              {' '}
+              <label className="saved-task-label">
+                Group
+                <select
+                  name="task-group"
+                  value={draft.groupId}
+                  onChange={(event) => patch({ groupId: event.target.value })}
+                >
+                  {boardGroups.map((group) => (
+                    <option key={group.id} value={group.id}>
+                      {group.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="saved-task-label">
+                Parent task
+                <select
+                  name="task-parent"
+                  value={draft.parentId ?? ''}
+                  onChange={(event) => patch({ parentId: event.target.value || null })}
+                >
+                  <option value="">None — standalone task</option>
+                  {possibleParents.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
+                <span className="saved-task-hint">Choose a parent to make this a subtask.</span>
+              </label>
+              <label className="saved-task-label">
+                Order in group
+                <input
+                  name="task-position"
+                  type="number"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  min={0}
+                  max={2147483646}
+                  step={1}
+                  required
+                  value={draft.position}
+                  aria-describedby={`${id}-order-hint`}
+                  onChange={(event) => patch({ position: event.target.value })}
+                />
+                <span id={`${id}-order-hint`} className="saved-task-hint">
+                  Lower numbers appear first in the group.
+                </span>
+              </label>
+              <section className="saved-task-section" aria-labelledby={`${id}-columns`}>
+                <h3 id={`${id}-columns`}>Columns</h3>
+                {initial.columns.length ? (
+                  <div className="saved-task-grid">
+                    {initial.columns.map((column) => (
+                      <CustomField
+                        key={column.id}
+                        column={column}
+                        value={draft.fields[column.id] ?? ''}
+                        change={(value) => patch({ fields: { ...draft.fields, [column.id]: value } })}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="detail-empty">Add custom columns from the board.</p>
+                )}
+              </section>
+            </div>
+          </details>
         </fieldset>
-        <div className="saved-task-actions">
-          <Button type="submit" variant="primary" disabled={pending || confirmReload}>
-            {pending ? 'Saving…' : 'Save task'}
-          </Button>
-          <Button disabled={pending} variant="ghost" onClick={close}>
-            Cancel
-          </Button>
-        </div>
-        <p className="saved-task-hint" aria-live="polite">
-          {dirty ? 'Unsaved changes' : 'Changes are saved when you choose Save task.'}
-        </p>
       </form>
       <SavedTaskAttachments taskId={task.id} canEdit={canEdit} blocked={dirty || pending || confirmReload} />
       <TaskActivity taskId={task.id} />

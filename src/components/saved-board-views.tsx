@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Button, StatusLabel } from './ui';
+import { SavedQuickFields, TaskDue } from './saved-quick-fields';
 import { calendarTasks, groupTasksByStatus, shiftCalendarMonth } from '@/lib/work-views.mjs';
 import { workDate, type WorkGroup, type WorkMember, type WorkTask } from '@/lib/work';
 import './saved-board-views.css';
@@ -24,32 +25,35 @@ function TaskCard({ task, compact = false, ...props }: ViewProps & { task: WorkT
     .filter(Boolean)
     .join(', ');
   return (
-    <Link
-      href={props.taskHref(task)}
-      scroll={false}
-      className={`saved-view-task${compact ? ' saved-view-task--compact' : ''}`}
-      data-saved-task={task.id}
-      onClick={props.openTask}
-    >
-      <strong>{task.title}</strong>
-      {task.parentId ? (
-        <span className="saved-view-task__context">Subtask of {parent?.title ?? 'another task'}</span>
-      ) : null}
-      {props.drafts[`task:${task.id}`] ? (
-        <span className="saved-view-task__draft">Unsaved draft in this tab</span>
-      ) : null}
-      {compact ? (
-        <StatusLabel status={task.status} />
-      ) : (
-        <>
-          <span className="saved-view-task__context">{group?.name}</span>
-          <span>
-            {workDate(task.dueDate)} · {task.priority} priority
-          </span>
-          <span>{people || 'Unassigned'}</span>
-        </>
-      )}
-    </Link>
+    <div className={`saved-view-card${compact ? ' saved-view-card--compact' : ''}`}>
+      <Link
+        href={props.taskHref(task)}
+        scroll={false}
+        className={`saved-view-task${compact ? ' saved-view-task--compact' : ''}`}
+        data-saved-task={task.id}
+        onClick={props.openTask}
+      >
+        <strong>{task.title}</strong>
+        {task.parentId ? (
+          <span className="saved-view-task__context">Subtask of {parent?.title ?? 'another task'}</span>
+        ) : null}
+        {props.drafts[`task:${task.id}`] ? (
+          <span className="saved-view-task__draft">Unsaved draft in this tab</span>
+        ) : null}
+        {compact ? (
+          <StatusLabel status={task.status} />
+        ) : (
+          <>
+            <span className="saved-view-task__context">{group?.name}</span>
+            <span>
+              <TaskDue task={task} /> · {task.priority} priority
+            </span>
+            <span>{people || 'Unassigned'}</span>
+          </>
+        )}
+      </Link>
+      {compact ? <TaskDue task={task} /> : <SavedQuickFields task={task} statusOnly />}
+    </div>
   );
 }
 export function SavedViewAddTask({

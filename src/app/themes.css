@@ -116,9 +116,7 @@ html[data-star-tint='off'] .topbar {
   font-size: 0.8125rem;
 }
 .saved-board-view-links [aria-current='page'] {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 8px;
+  text-decoration: none;
 }
 .saved-task-check input,
 .detail-item-list input[type='checkbox'] {

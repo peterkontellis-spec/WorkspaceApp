@@ -211,7 +211,12 @@ export function WorkspaceShell({
   const searchItems = [
     { name: 'Home', detail: 'Your personal workspace', href: '/home', kind: 'Page' },
     { name: 'Boards', detail: 'Your team’s projects', href: '/boards', kind: 'Page' },
-    { name: 'Docs', detail: 'Shared writing', href: '/docs', kind: 'Page' },
+    {
+      name: 'Docs',
+      detail: account ? 'Planned · storage not connected' : 'Sample writing',
+      href: '/docs',
+      kind: 'Page',
+    },
     ...(account
       ? [
           { name: 'Notifications', detail: 'Your task updates', href: '/notifications', kind: 'Page' },
@@ -225,7 +230,7 @@ export function WorkspaceShell({
       href: `/boards/${board.id}`,
       kind: 'Board',
     })),
-    ...documents.map((doc) => ({
+    ...(account ? [] : documents).map((doc) => ({
       name: doc.title,
       detail: 'Sample document · not saved',
       href: `/docs/${doc.id}`,
@@ -234,14 +239,12 @@ export function WorkspaceShell({
   ]
     .filter((item) => `${item.name} ${item.detail}`.toLowerCase().includes(query.trim().toLowerCase()))
     .concat(
-      taskMatches
-        .slice(0, 8)
-        .map((task) => ({
-          name: task.title,
-          detail: savedWork?.boards.find((board) => board.id === task.boardId)?.name ?? 'Saved task',
-          href: `${taskSearchHref}&task=${encodeURIComponent(task.id)}`,
-          kind: 'Task',
-        })),
+      taskMatches.slice(0, 8).map((task) => ({
+        name: task.title,
+        detail: savedWork?.boards.find((board) => board.id === task.boardId)?.name ?? 'Saved task',
+        href: `${taskSearchHref}&task=${encodeURIComponent(task.id)}`,
+        kind: 'Task',
+      })),
     );
 
   return (
@@ -370,8 +373,8 @@ export function WorkspaceShell({
                 </span>
               ) : (
                 <>
-                  <span>{account ? 'Sample Docs · not saved' : 'Prototype · sample data'}</span>
-                  <span>Demo date: 25 September 2026</span>
+                  <span>{account ? 'Docs draft · storage not connected' : 'Prototype · sample data'}</span>
+                  {!account && <span>Demo date: 25 September 2026</span>}
                 </>
               )}
             </footer>
@@ -495,7 +498,7 @@ export function WorkspaceShell({
           ) : null}
           <p className="dialog-note">
             {account
-              ? 'Search includes saved task titles and notes. Docs are still samples.'
+              ? 'Search includes saved task titles and notes. Docs storage is not connected yet.'
               : 'Search covers sample pages, boards, and document titles. Task search comes later.'}
           </p>
         </Dialog>
@@ -555,7 +558,7 @@ export function WorkspaceShell({
             </>
           ) : (
             <p className="dialog-note">
-              Boards and tasks use your real role. Docs are still an unsaved sample.
+              Boards and tasks use your real role. Docs storage is not connected yet.
             </p>
           )}
         </Dialog>

@@ -76,7 +76,7 @@ for (const [path, heading] of checkedPages) {
     const html = await response.text();
     const h1 = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<!--[\s\S]*?-->/g, '');
     assert.equal(h1, heading, 'Expected page heading in server-rendered HTML');
-    assert.ok(html.includes(cookie ? (path.startsWith('/docs') ? 'Sample Docs · not saved' : 'Saved work · local database') : 'Prototype · sample data'), 'Missing accurate persistence disclosure');
+    assert.ok(html.includes(cookie ? (path.startsWith('/docs') ? 'Docs draft · storage not connected' : 'Saved work · local database') : 'Prototype · sample data'), 'Missing accurate persistence disclosure');
     assert.ok(html.includes('id="main-content"'), 'Missing main landmark target');
     assert.ok(html.includes('Assistant — Later'), 'Missing planned assistant navigation');
     if (path.includes('task=t1')) {
@@ -87,7 +87,8 @@ for (const [path, heading] of checkedPages) {
       const rows = html.match(/<li class="board-task(?: |")/g) ?? [];
       assert.equal(rows.length, path.includes('q=launch') ? 1 : 6, 'Board filters must affect rendered task rows');
     }
-    if (path.startsWith('/docs/')) {
+    if (cookie && path.startsWith('/docs')) { assert.ok(html.includes('Document storage is not connected yet.')); assert.doesNotMatch(html, /<textarea/, 'Deferred Docs must not accept unsaved writing'); }
+    if (!cookie && path.startsWith('/docs/')) {
       assert.match(html, /<textarea[^>]*id="document-body"/, 'Missing document writing surface');
       if (!cookie && path.includes('returnTo=')) assert.match(html, /<a[^>]*href="\/boards\/website-refresh\?task=t1"[^>]*>[\s\S]*?Back to task<\/a>/, 'Missing contextual return link');
     }

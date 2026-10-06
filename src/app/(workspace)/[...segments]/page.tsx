@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { requireAccount } from '@/server/auth';
 import { notFound } from 'next/navigation';
 import { NotificationsPage } from '@/components/work-updates';
@@ -23,5 +24,18 @@ export default async function Page({ params }: { params: Promise<{ segments: str
   const validBoard = segments.length === 2 && section === 'boards' && boards.some((board) => board.id === id);
   const validDoc = segments.length === 2 && section === 'docs' && documents.some((doc) => doc.id === id);
   if (!validRoot && !validBoard && !validDoc) notFound();
+  if (account && section === 'docs')
+    return (
+      <section className="empty-page">
+        <h1>{id ? documents.find((doc) => doc.id === id)?.title : 'Docs'}</h1>
+        <p>
+          Document storage is not connected yet. Saved writing will be added after the NAS setup is settled.
+        </p>
+        <p>This area is a draft of the planned Docs feature. Task notes already save in your workspace.</p>
+        <Link className="text-link" href="/boards">
+          Back to boards
+        </Link>
+      </section>
+    );
   return <WorkspacePage section={section as 'home' | 'boards' | 'docs'} id={id} />;
 }

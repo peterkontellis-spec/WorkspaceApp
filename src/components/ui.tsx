@@ -116,12 +116,14 @@ export function Dialog({
   title,
   children,
   className = '',
+  footer,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   children: ReactNode;
   className?: string;
+  footer?: ReactNode;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const backdrop = useBackdropDismiss(onClose);
@@ -129,8 +131,28 @@ export function Dialog({
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      dialog.querySelector<HTMLElement>('[data-dialog-initial-focus]')?.focus({ preventScroll: true });
+    }
     if (!open && dialog.open) dialog.close();
+  }, [open]);
+  useEffect(() => {
+    if (!open) return;
+    const viewport = window.visualViewport;
+    const resize = () => {
+      if (viewport && viewport.scale === 1) {
+        dialogRef.current?.style.setProperty('--dialog-height', `${viewport.height}px`);
+        dialogRef.current?.style.setProperty('--dialog-top', `${viewport.offsetTop}px`);
+      }
+    };
+    resize();
+    viewport?.addEventListener('resize', resize);
+    viewport?.addEventListener('scroll', resize);
+    return () => {
+      viewport?.removeEventListener('resize', resize);
+      viewport?.removeEventListener('scroll', resize);
+    };
   }, [open]);
   return (
     <dialog
@@ -158,7 +180,8 @@ export function Dialog({
             <X size={20} aria-hidden="true" />
           </Button>
         </div>
-        {children}
+        <div className="dialog__content">{children}</div>
+        {footer ? <div className="dialog__footer">{footer}</div> : null}
       </div>
     </dialog>
   );

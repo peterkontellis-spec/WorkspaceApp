@@ -159,3 +159,13 @@ Proposed behavior: Archive removes work from active views/search/My Day without 
 User direction for Docs: draft the intended behavior and retain a note until NAS configuration is settled; no durable Docs implementation brought forward. Proposed interim boundary: normal authenticated Docs shows a clear “Document storage is not connected yet” explanation and no editable sample masquerading as saved work; preserve the writing prototype separately. Exact navigation/placeholder treatment remains a proposal, not a shipped change. Future durable Docs needs permissions, save/conflict handling, refresh/restart tests and recoverable drafts; simultaneous collaborative editing remains later. Do not replace the phone tab with a duplicate destination.
 
 Done when: chosen permissions, archive/undo/restore, parent/board behavior, search/view exclusions, historical links, attachments and concurrent edits have database and browser evidence; Docs behavior matches the user's choice and cannot imply sample text is durably saved. No irreversible purge or deployment in these blocks.
+
+## 2026-10-07 — Corrective behavior implemented
+
+The user authorized implementation of the three scoped corrective blocks. Task archive/restore uses owner/editor permissions; whole-board archive/restore is owner-only. Active descendants share an archive batch; restoring it excludes previously independent archives. Board transitions invalidate existing revisions and keep historical records/files accessible to current authorized staff. There is no permanent purge.
+
+Common table fields and Kanban status save immediately with serialized requests. Failed selections retain their original revision and remain recoverable in this tab; no retry silently rebases onto a teammate's changes. Details/forms remain explicit Save. The right-side/full-screen task panel keeps its actions outside scrolling content.
+
+Accounts-mode Docs now shows a non-editable storage-pending explanation; the sample editor remains only in explicit prototype mode. Durable local Docs, permissions, save/recovery and collaboration remain later work after NAS configuration is settled. This does not choose NAS deployment or document retention.
+
+Pinned formatting and isolated browser tooling support repeatable local checks. Fixture servers/databases/files and generated credentials stay under ignored .local paths. No hosted CI job or paid service has been enabled; local repeatability is the implemented boundary. See E2E_TESTING.md and PENDING_CHECKS.md for evidence and residual acceptance gaps.

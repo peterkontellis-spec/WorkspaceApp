@@ -1,28 +1,27 @@
 # Workspace app — how to work on this project
 
-The AI workflow is integrated into this folder. No agent server or API setup is required to use it in this chat. M1.2–M1.5 are implemented locally, with browser acceptance still pending. See [RUNNING.md](RUNNING.md) to open or restart it.
+A local workspace app for four collaborators. M1's prototype and M2's saved-data foundation are accepted locally. M3.1–M3.3 add saved board views, polling, activity and in-app notifications; see [STATUS.md](STATUS.md) for current verification and [PENDING_CHECKS.md](PENDING_CHECKS.md) for the remaining acceptance work.
 
-Every implementation task/session now follows the required self-check loop in [AGENTS.md](AGENTS.md): run and test the app, review relevant design/UI skills, fix verified issues, confirm results, and reassess the next action. `pnpm check` and `pnpm check:smoke` cover build and HTTP checks; browser acceptance remains a separate required step. No daily automation is configured.
+## Run and verify
 
-Current foundation: M2.1–M2.8 accepted locally. See [FOUNDATION_REVIEW.md](FOUNDATION_REVIEW.md) for verified behavior and [STATUS.md](STATUS.md) for the next action.
+Use the configured Node/pnpm runtime. [RUNNING.md](RUNNING.md) explains local database/account setup and the private preview. `pnpm preview` runs a copied production build at http://127.0.0.1:3100 and preserves existing application data.
 
-## Your normal workflow
+- `pnpm check`: type checking, behavior tests and a production build.
+- `pnpm check:smoke`: HTTP checks against the running preview; use the private credential-file configuration in RUNNING.md.
+- `pnpm test:db`: isolated PostgreSQL behavior, authorization and recovery tests.
+- `pnpm test:e2e`: isolated browser regression suite against the latest production build. Setup and coverage: [E2E_TESTING.md](E2E_TESTING.md).
+- `pnpm format:check`: source formatting check. `pnpm check:all` runs formatting, build/behavior, database and browser suites in sequence.
 
-Before each session, open [SESSION_CHECKLIST.md](SESSION_CHECKLIST.md). It breaks the five milestones into 35 increments with deliverables, completion criteria, and reusable opening/closing routines. Use STATUS.md to find the current position; the checklist is the delivery roadmap.
+Automated browser checks complement manual visual, keyboard and physical-phone inspection. They do not establish NAS performance or publication readiness. No hosted CI service or daily automation is configured.
 
-1. Start or continue a chat with access to this workspace-app folder. In Codex, working from this directory allows its AGENTS.md to be discovered; in an existing or hosted chat, explicitly ask the assistant to read it.
-2. State the result you want. You can simply ask: “Use the workspace-app workflow and implement the next task in the current milestone.” For the first prototype, provide design direction or use the starter below.
-3. The main assistant reads current status, selects a bounded task, implements it, delegates useful independent work, and checks the result. You do not need to manage each specialist separately.
-4. Review the actual preview or delivered artifact. Give concrete feedback; the assistant fixes it and updates the status and decisions.
-5. Resume with “Continue the workspace app from STATUS.md.” For a different chat, use HANDOFF.md and provide the latest project files.
+## Continue work
 
-## Start the first prototype
+1. Read [AGENTS.md](AGENTS.md), [STATUS.md](STATUS.md) and the relevant increment in [SESSION_CHECKLIST.md](SESSION_CHECKLIST.md).
+2. Implement one bounded result, preserving user data, permissions, drafts and revision checks.
+3. Run the required per-task self-check loop, fix verified failures and record exactly what passed or remains open.
+4. Save a Git checkpoint; exclude credentials, database files, attachments and private test artifacts.
 
-M1.1 is recorded in [DESIGN_SPEC.md](DESIGN_SPEC.md). The chosen direction is dark with subtle accents, equal desktop/phone focus, and larger controls. M1.2–M1.5 are implemented; complete their pending browser checks before calling these increments complete. Use STATUS.md for one increment at a time, or use this broader prompt when you want the whole M1 prototype:
-
-> Use the workspace-app workflow and DESIGN_SPEC.md. Continue M1 using the selected dark design with subtle accents, equal desktop/phone focus, and larger controls. Build a local, reviewable prototype of the shell, Home, grouped task board, task detail panel, and Docs screen using sample data. Make the main navigation and demonstrated interactions work. Use subagents where independent work helps, verify desktop and narrow layouts, and update STATUS.md with the preview, checks, and next action. Keep sample behavior clearly distinguished from server persistence. Do not deploy to my NAS yet.
-
-Add any further visual references or changes to the existing design direction when starting the next increment.
+The approved Mineral light / Midnight dark themes and star are the visual baseline. Accounts-mode Docs is a storage-pending placeholder; durable collaborative Docs remains later work after NAS configuration is settled. Prototype mode retains its sample editor.
 
 ## Where information lives
 
@@ -31,7 +30,7 @@ Add any further visual references or changes to the existing design direction wh
 | [BRIEF.md](BRIEF.md) | Goal, scope, constraints, and current delivery target |
 | [PLANNING.md](PLANNING.md) | Existing detailed requirements and proposed architecture |
 | [DESIGN_SPEC.md](DESIGN_SPEC.md) | M1.1 screen map, selected design direction, and prototype interaction brief |
-| [RUNNING.md](RUNNING.md) | Start the local prototype, source guide, and pending browser checks |
+| [RUNNING.md](RUNNING.md) | Start the local preview and inspect its source |
 | [MILESTONES.md](MILESTONES.md) | Five delivery stages and acceptance checks |
 | [SESSION_CHECKLIST.md](SESSION_CHECKLIST.md) | Before-session routine and 35 small delivery increments |
 | [STATUS.md](STATUS.md) | Current progress, evidence, and next action |

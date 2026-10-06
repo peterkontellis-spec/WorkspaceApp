@@ -1,5 +1,17 @@
 # Current status
 
+## Corrective blocks implemented and core journeys verified — 2026-10-07
+
+Implemented the approved review corrections: compact board controls and aligned quick-edit fields; desktop task side panel/full-screen narrow panel with pinned Save/Cancel; readable due/overdue states; reversible task/board archive with owner/editor task and owner-only board permissions; and a non-editable Docs placeholder pending NAS setup. Preserve the approved themes/star. Failed quick edits and remotely archived dirty drafts remain recoverable, with original revisions protected from silent overwrite.
+
+Verification: formatting check, TypeScript, **42/42 behavior tests**, production build, **75/75 isolated database tests**, **21/21 updated-preview HTTP checks**, and **16/16 isolated Chromium browser scenarios** passed. Final browser evidence: `.local/e2e/run-CTVeGu` (1.3 minutes, exit 0, owned app/database stopped). A failing run also returned exit 1 after cleanup. Tests cover four-account polling, viewer restrictions, stale drafts/offline recovery, notifications/read state, idle expiry, quick edits, archive/Undo/restore and desktop/narrow keyboard layout. Fixed the reproduced quick-date bug where Close calendar left its outer popup visible, then retested. Test-only locator/navigation timing failures were corrected without weakening app assertions.
+
+Manual supported-browser inspection at desktop ~1165×814 and narrow 390×844 confirmed board density, light/dark readability, task actions visible while scrolling, quick-date Close/focus return, task Escape/focus return and the honest Docs boundary; captured warnings/errors were empty. Scoped Impeccable, current interface-guideline and React review applied; detector returned no findings. Temporary viewport reset and review tab closed. This is not physical iPhone/software-keyboard or comprehensive contrast/device acceptance.
+
+Additive migration 007 preserved fingerprints of existing preview records apart from new archive fields. Browser fixtures used separate generated accounts/database/files and loopback ports; no saved preview task was edited for QA. Current private preview: http://127.0.0.1:3100/home, **PID 77223**; identify it before restarting. No NAS/public access, hosted CI, credit/reset use or purchases. Latest account snapshot: **13% weekly used**.
+
+Remaining: PENDING_CHECKS.md maps detailed view/filter/month, revocation/list recovery, archived attachment/historical-link browser checks, full theme/zoom/motion coverage and deferred physical-phone checks. M3.1–M3.3 have substantial verified coverage, not unconditional stage sign-off. Next bounded action: complete the remaining desktop browser matrix before M3.4 dashboards; schedule physical-phone work only when the user is ready. Durable Docs stays deferred until NAS configuration is settled.
+
 ## Corrective block 1 — formatting checkpoint — 2026-10-07
 
 Installed pinned development-only Prettier 3.9.9 and Playwright Test 1.63.0; formatted application source/configuration without intended behavior changes. Added `pnpm format` and `pnpm format:check`. TypeScript, 42 behavioral tests and production build passed; the refreshed isolated preview passed 21 HTTP smoke checks. No data/schema change. Repeatable browser harness is in progress, not yet acceptance evidence. Next: isolated browser verification and the scoped usability/archive corrections.
