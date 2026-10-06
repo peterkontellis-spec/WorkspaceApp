@@ -1,5 +1,13 @@
 # Current status
 
+## M2.3 acceptance complete — 2026-10-06
+
+The user confirmed invitee signup/login works. Supported browser inspection confirmed the real viewer sees a read-only roster, no invitation/role/removal controls, and a clear instruction to ask an owner. Owner UI changed the disposable viewer to editor with confirmation and immediately showed the saved role. Removing the last owner was rejected with a focused error; removing the other member succeeded. Captured warnings/errors were empty. Combined with prior desktop/narrow and automated evidence below, M2.3 is accepted for staff membership.
+
+The user observed sample board/Docs editing looks unrestricted. This is the disclosed sample-only behavior, not a membership-management bypass. M2.4 will replace account-mode Home/Boards with database-backed work and enforce viewer read-only controls and server writes. Docs remain sample-only until M4; private admin/customer access remains separate.
+
+Disposed of exactly the recorded QA owner/invitee identities, invitation records and empty workspace using validation guards. Preserved seed records and unrelated drafts. No real accounts existed before those tests; first-owner setup is again available. No app code changed to close M2.3, so prior build/30 database groups/23 unit tests/19 HTTP evidence was retained rather than redundantly rerun. Preview still loopback3100, no spend/reset/deployment. Next: **M2.4 durable boards/groups/tasks**, now authorized by the user's continuation.
+
 ## M2.3 — Implemented; final invitation browser check pending — 2026-10-06
 
 Implemented owner-issued email-bound invitation links, saved team roster, owner/editor/viewer membership controls, cancellation, role changes and removal. Links are hashed, valid for 24 hours, one-use, and reserve a place in a maximum four-person team. Owner mutations recheck live identity and workspace membership under a database lock. Last-owner demotion/removal is blocked. Role changes/removal revoke sessions; removal preserves identity/work and clears assignments. Demoting/removing an owner cancels their unused invitations, and acceptance rejects operator-disabled issuers. Removed people can rejoin with their existing password. Verified operator recovery supports an active unassigned identity only with a valid invitation from an active owner; recovery never restores membership. See [MEMBERSHIP.md](MEMBERSHIP.md).

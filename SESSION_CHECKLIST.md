@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3 is implemented; final user-assisted browser checks are pending.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3 is accepted; M2.4 persistent boards/tasks is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -178,11 +178,11 @@ You do not need to finish one increment per session. Some will take several sess
 
 - [x] Implement expiring invitations and membership management; owner-generated invitation links are the initial proposal.
 - [x] Define permitted actions for each role and enforce them on the server.
-- [ ] Check expired/reused invitations, direct unauthorized requests, and access after a membership change.
+- [x] Check expired/reused invitations, direct unauthorized requests, and access after a membership change.
 
 **Done when:** the right people can join and role restrictions work beyond the visible interface.
 
-**Progress 2026-10-06:** backend permission/invitation tests pass (30 database groups across final targeted/regression runs), 23 unit tests, build and 19 HTTP checks pass. Desktop/narrow invitation creation/cancellation checked. User must submit the disposable new-password/join form; viewer and remaining member-change UI confirmation follow. M2.3 acceptance stays open; see STATUS.md and MEMBERSHIP.md.
+**Progress 2026-10-06:** backend permission/invitation tests pass (30 database groups across final targeted/regression runs), 23 unit tests, build and 19 HTTP checks pass. Desktop/narrow invitation creation/cancellation checked. User confirmed join/login; viewer read-only roster, owner role/removal, last-owner rejection and empty console checks passed. Disposable QA accounts cleaned up. M2.3 accepted; see STATUS.md and MEMBERSHIP.md.
 
 ### M2.4 — Persistent boards, groups, and tasks
 

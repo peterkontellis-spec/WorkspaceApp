@@ -2,7 +2,11 @@
 
 Saved: **2026-10-06**, with browser-policy diagnostic results. This is a durable project checkpoint, not a claim that internal conversation compaction occurred. Read STATUS.md for detailed test evidence. October 5 ZIPs remain historical snapshots.
 
-## Current M2.3 progress checkpoint — 2026-10-06
+## Current M2.3 acceptance — 2026-10-06
+
+M2.3 is accepted. User confirmed invitee join/login; browser confirmed viewer read-only membership, owner role/removal actions, last-owner rejection and no captured console warnings/errors. QA accounts/invitations and empty workspace were removed precisely. Prior check counts remain valid. User authorized next step after observing unrestricted sample editing: M2.4 will connect real Home/Boards and enforce viewer task permissions; sample Docs remain M4. See current STATUS.md.
+
+## Earlier M2.3 progress checkpoint — 2026-10-06
 
 **M2.3 implemented; browser acceptance pending.** Invitations, team roles, removal/rejoin and operator recovery for reinvited identities are implemented. Thirty database groups across final regression/targeted runs, 23 unit tests, production build and 19 HTTP checks passed. Desktop/narrow invitation creation, copying, cancellation and cancelled-link rejection passed. New-password entry was handed to the user per browser policy; do not claim the join succeeded until confirmed. STATUS.md gives the exact remaining steps, temporary QA cleanup and runtime state. MEMBERSHIP.md documents operation and limits. Keep M2.4 separate until this gate closes.
 
