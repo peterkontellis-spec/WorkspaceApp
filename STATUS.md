@@ -2,6 +2,17 @@
 
 Updated: 2026-10-06 — sign-off checks active; history-scroll regression fixed and verified.
 
+## M1 closing checklist — current
+
+This section supersedes older pending-state notes below. The user confirmed on their physical iPhone in Firefox that the corrected bottom navigation disappears completely with the keyboard and returns correctly when dismissed ("Both are perfect"). Home/navigation, Docs typing/scrolling/Preview, and this keyboard fix now have user-observed phone evidence. Source checkpoint: **8a3ed51**.
+
+Only the following acceptance checks remain:
+1. Physical-phone board/task journey: date selection, opening the linked Doc, returning and closing the task. The corresponding emulated narrow and desktop paths already passed; one device journey is still needed.
+2. Remaining desktop keyboard traversal and 200% zoom/reflow checks across the main controls/dialogs.
+3. User-observed refresh/close behavior with disposable text. Record browser support and limitations; do not promise reliable mobile unload warnings or durable saving in the prototype.
+
+After those checks, reconcile M1 checkboxes and stop the temporary hotspot preview. The listener at 172.20.10.2:3101 was still active at this update; automatic 30-minute shutdown remains configured. Historical development-only profiler error and intermittent browser-policy verification remain known environment issues, not new feature requests or evidence that production navigation is failing. Security-planning drafts are a separate repository/handoff item. Do not mark Stage 1 complete yet.
+
 ## Delivery state
 
 The user authorised M1.2 through M1.6, with checkpoints, work confined to this project workspace, no credits/resets and no deployment. The existing dark/subtle design is preserved. Data is fictional and in memory: edits and drafts survive internal navigation, then reset on refresh/tab closure. No real authentication, database, uploads or collaborative editing exists.
@@ -168,7 +179,7 @@ Physical **iPhone / Firefox** feedback: Home and bottom navigation load; Docs ty
 
 Implemented keyboard-aware bottom navigation using focused text-entry state and VisualViewport height normalized for pinch zoom. The navigation is fully hidden (including hit targets/accessibility tree) while the keyboard occludes the narrow viewport, and returns when the visible height recovers even if the input retains focus. Regular text focus with a hardware keyboard and browser toolbar changes should not hide navigation. One shell-level listener set is cleaned up on unmount; existing layout spacing remains to avoid a page jump.
 
-Validation: TypeScript, **23 behavioral tests**, production build and **16/16 HTTP checks** passed. New tests distinguish keyboard opening/dismissal, hardware focus, toolbar height, short windows and pinch zoom. Impeccable detector returned `[]`; scoped React and interface review checked listener cleanup, semantic hidden state and preserving navigation without a software keyboard. Supported browser at 390 × 844 confirmed editor focus leaves navigation visible without a software keyboard; desktop 1440 × 900 remained unchanged and no warnings/errors were captured. Viewport override restored. **Actual keyboard hide/restore on the iPhone is awaiting user confirmation after refresh.**
+Validation: TypeScript, **23 behavioral tests**, production build and **16/16 HTTP checks** passed. New tests distinguish keyboard opening/dismissal, hardware focus, toolbar height, short windows and pinch zoom. Impeccable detector returned `[]`; scoped React and interface review checked listener cleanup, semantic hidden state and preserving navigation without a software keyboard. Supported browser at 390 × 844 confirmed editor focus leaves navigation visible without a software keyboard; desktop 1440 × 900 remained unchanged and no warnings/errors were captured. Viewport override restored. **Actual keyboard hide/restore on the iPhone was subsequently confirmed by the user; see the current closing checklist.**
 
 Both previews restarted with this build: loopback PID 48688; hotspot supervisor 48689 / server 48690, same 172.20.10.2:3101 with a renewed maximum 30-minute lifetime. No network scope broadened. First next action is the pending user phone retest, then continue calendar/task return and warning checks; stop the hotspot preview after testing. M1.6 is still open.
 
