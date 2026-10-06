@@ -1,5 +1,13 @@
 # Current status
 
+## Appearance integrated into the running app — 2026-10-07
+
+User explicitly approved moving the theme proposal into the real app. Added Mineral light (ivory/limestone/sage) and ink/slate dark with lilac actions, steel-blue progress, green completion, softer row separators, selected-view underline and clearer document links. Header sun/moon button switches modes; Account → Appearance also controls optional faint star tint in sidebar/header. Choices persist on this browser; default is dark with tint enabled. The star remains an illustrative preview, not task scoring. Semantic task/status colours stay stable. No dependency, database, role or account changes.
+
+Checks: `pnpm check` passed TypeScript, **42/42 behavioral tests** and production build. Final theme-colour restoration and metadata-selector fixes passed build/typecheck. Activated isolated Mac-only preview **PID 71177**, port3100; HTTP smoke **21/21 passed** and startup log is normal. Scoped Impeccable, current Web Interface Guidelines and React source review completed; detector `[]`. Reviewed labelled controls, native colour scheme, blocked-storage fallback, initial theme restoration and reduced-motion tint handling. These are source/server checks, not browser interaction evidence.
+
+Supported browser opening again failed because the administrator policy could not be verified. No bypass used. Actual light/dark switching, refresh persistence, contrast/layout, tint, keyboard/focus and console checks remain open in PENDING_CHECKS.md; theme integration is not visually signed off. Existing M3 and phone acceptance gaps remain open. Preview URL: http://127.0.0.1:3100/home. Next: complete the recorded theme/browser acceptance batch when supported access returns, before expanding scope. Latest usage snapshot **96% weekly used / 4% remaining**; stop after this checkpoint, with no credits/resets or publication.
+
 ## Theme design checkpoint — preview only
 
 User requested saving the refined theme preview to Git. Added `design/previews/mineral-midnight/` with editable fragment, standalone export and scope/verification notes. It captures Mineral light, ink/slate dark with lilac accents, steel-blue progress, clearer selected view, consistent green completion, softer row dividers, more readable metadata and document disclosure. Optional illustrative star tint affects sidebar/header only. This is a saved design proposal, not theme integration or production acceptance.

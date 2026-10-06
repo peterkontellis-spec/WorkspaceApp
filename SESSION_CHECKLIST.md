@@ -543,3 +543,10 @@ These boxes are a reusable routine. Completion of a session does not imply compl
 
 - [x] Vary each solar flare birth position while retaining the two-flare limit; build/tests/HTTP and source review passed (2026-10-06).
 - [ ] Visually confirm changing flare locations and fade continuity; supported browser access remains blocked.
+
+## Appearance integration — 2026-10-07
+
+- [x] Integrate approved themes and optional star tint with browser-local preferences.
+- [x] Source/design/interface/React review, 42 behavioral tests, production build/typecheck and 21 updated-preview HTTP checks.
+- [ ] Supported desktop/narrow browser and theme persistence/focus/contrast checks; browser policy verification blocked opening. See PENDING_CHECKS.md.
+- [ ] Physical phone checks remain deferred.

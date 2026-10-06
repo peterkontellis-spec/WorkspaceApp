@@ -1,7 +1,7 @@
 .saved-board-view-links { flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
 .saved-view-add { display: flex; align-items: end; gap: 12px; margin: 20px 0; }
 .saved-view-add label { display: grid; gap: 6px; color: var(--muted); font-size: .875rem; max-width: 320px; min-width: 0; }
-.saved-view-add select { min-height: 48px; max-width: 100%; min-width: 0; padding: 10px; border: 1px solid #56616e; border-radius: 9px; background: var(--surface); color: var(--text); font: inherit; }
+.saved-view-add select { min-height: 48px; max-width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--control-border); border-radius: 9px; background: var(--surface); color: var(--text); font: inherit; }
 .saved-view-add .button { min-height: 48px; flex-shrink: 0; }
 .saved-kanban { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 22px; }
 .saved-kanban-column { min-width: 0; border-top: 2px solid var(--line); }

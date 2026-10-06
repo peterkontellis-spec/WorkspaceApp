@@ -10,7 +10,7 @@
 .team-person span, .team-role-name { color: var(--muted); font-size: .875rem; }
 .team-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
 .team-actions .auth-link { margin: 0; }
-.team-role select { width: 100%; min-height: 48px; background: var(--surface); color: var(--text); border: 1px solid #56616e; border-radius: 9px; padding: 10px 32px 10px 12px; font: inherit; }
+.team-role select { width: 100%; min-height: 48px; background: var(--surface); color: var(--text); border: 1px solid var(--control-border); border-radius: 9px; padding: 10px 32px 10px 12px; font: inherit; }
 .team-role select:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .team-invite-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 230px); gap: 18px; margin-top: 24px; }
 .team-invite-form > button { justify-self: start; grid-column: 1 / -1; }

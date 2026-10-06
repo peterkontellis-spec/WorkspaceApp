@@ -37,7 +37,7 @@
 .saved-task-checklist li { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 8px; align-items: start; }
 .saved-task-checklist .button { min-height: 48px; }
 .saved-task-check { min-width: 48px; min-height: 48px; display: grid; place-items: center; cursor: pointer; }
-.saved-task-check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.saved-task-check input { width: 20px; height: 20px; accent-color: var(--success-control); }
 .saved-task-checklist-read li { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 12px; overflow-wrap: anywhere; }
 .saved-task-undo { display: grid; gap: 8px; }
 .saved-task-undo > div { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: .875rem; overflow-wrap: anywhere; }

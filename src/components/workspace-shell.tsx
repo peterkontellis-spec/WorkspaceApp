@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { SignedInAccount } from '@/server/auth';
 import { StellarProvider, StellarControl, StellarOrb } from './stellar-identity';
+import { ThemeToggle, AppearanceSettings } from './theme-provider';
 import { NotificationsLink } from './work-updates';
 import { WorkSyncStatus } from './work-sync-status';
 import { useWork } from './work-provider';
@@ -140,7 +141,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
           </div>
           <div className="topbar__actions">
             <Button variant="ghost" className="search-trigger" aria-label="Find a page, board, task, or document" onClick={() => { setQuery(''); setOverlay('search'); }}><Search size={19} aria-hidden="true" /><span>Go to…</span><kbd>⌘ K</kbd></Button>
-            {account ? <NotificationsLink/> : null}
+            <ThemeToggle/>{account ? <NotificationsLink/> : null}
             <span className="topbar__separator" />
             <Button variant="ghost" className="account-trigger" aria-label={account ? `Account: ${account.name}` : `Sample account: ${member.name}. Switch sample account`} onClick={() => setOverlay('account')}><Avatar member={account ? { ...member, name: account.name, initials: account.name.split(/\s+/).map((word) => word[0]).slice(0, 2).join('') } : member} /><ChevronDown size={15} aria-hidden="true" /></Button>
           </div>
@@ -178,6 +179,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
     </Dialog>
 
     <Dialog open={overlay === 'account'} onClose={() => closeOverlay('account')} title={account ? 'Your account' : 'Sample accounts'}>
+      <AppearanceSettings/>
       {account ? <div className="account-identity"><strong>{account.name}</strong><p>{account.email}</p><p>{account.role} · staff workspace</p><Link href="/team" className="auth-link" onClick={close}>Team access</Link><SignOutButton /><p className="dialog-note">Signing out clears this tab’s unsaved input and sample edits.</p></div> : null}
       {!account ? <>
       <p className="dialog-intro">Preview sample work as someone on the fictional team.</p>

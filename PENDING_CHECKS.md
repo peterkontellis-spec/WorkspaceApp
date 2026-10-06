@@ -1,6 +1,6 @@
 # Pending acceptance checks
 
-Updated 2026-10-06. These items are open; implementation, automated tests and server checks do not mark them passed. Phone preview is deferred at the user's request. No hotspot listener was started.
+Updated 2026-10-07. These items are open; implementation, automated tests and server checks do not mark them passed. Phone preview is deferred at the user's request. No hotspot listener was started.
 
 ## M3.1 — saved board views
 
@@ -59,3 +59,14 @@ The user explicitly instructed continuation into M3.2 while phone checks wait. E
 - [ ] Desktop and narrow: bell, list, task links, read-state buttons and Activity panel remain readable/reachable; keyboard focus and task close/return work; check captured runtime/console errors.
 
 No M3.3 browser checks passed this session: the supported tool again refused policy verification before opening the Notifications page. Physical phone checks remain deferred.
+
+## Appearance integration — browser acceptance pending
+
+- [ ] Switch dark → light → dark using the header and Account controls; check pressed state and accessible names.
+- [ ] Reload and navigate through Home, Boards/Table/Kanban/Calendar, Docs, Files, Notifications, Team and account forms; confirm saved appearance and no theme flash/hydration errors.
+- [ ] Toggle star tint off/on, move through preview phases and neutral mode; confirm only sidebar/header tint changes and statuses remain legible.
+- [ ] Desktop/narrow and 200% zoom: header actions, account dialog, forms and task metadata stay readable and reachable without overflow.
+- [ ] Keyboard focus, Escape/focus return, reduced motion and contrast in both themes; inspect runtime/console errors.
+- [ ] Verify preference persistence when storage is available and usable switching when storage is blocked.
+
+The 2026-10-07 build and 21 HTTP checks passed; supported browser creation was denied at administrator-policy verification. No visual sign-off inferred.

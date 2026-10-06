@@ -4,12 +4,23 @@ import { createContext, useContext, useEffect, useId, useRef, useState, type CSS
 import { ChevronDown } from 'lucide-react';
 import { createStellarRenderer } from '@/lib/stellar-renderer';
 import './stellar-identity.css';
+import { useTheme } from './theme-provider';
 
 type StarState = { progress: number; neutral: boolean; animate: boolean };
 const initial: StarState = { progress: 75, neutral: false, animate: true };
 const StarContext = createContext<{state: StarState; update: (patch: Partial<StarState>) => void}>({state: initial, update: () => {}});
 export function StellarProvider({children}: {children: ReactNode}) {
   const [state,setState] = useState(initial);
+  const { mode, tint } = useTheme();
+  useEffect(() => {
+    const ratio=Math.max(0,Math.min(1,state.progress<60?state.progress/60:(state.progress-60)/20));
+    const colors=state.progress<60?['200,108,99','210,161,99']:['210,161,99','111,170,140'];
+    const strength=!tint||state.neutral?0:mode==='light'?0.07:0.10;
+    const root=document.documentElement;
+    root.style.setProperty('--star-tint-a',`rgba(${colors[0]},${strength*(1-ratio)})`);
+    root.style.setProperty('--star-tint-b',`rgba(${colors[1]},${strength*ratio})`);
+    return ()=>{root.style.removeProperty('--star-tint-a');root.style.removeProperty('--star-tint-b');};
+  },[mode,tint,state.progress,state.neutral]);
   return <StarContext.Provider value={{state,update:patch=>setState(current=>({...current,...patch}))}}>{children}</StarContext.Provider>;
 }
 

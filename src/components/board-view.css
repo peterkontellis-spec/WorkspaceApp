@@ -1,7 +1,7 @@
 .editable-board { container-type: inline-size; min-width: 0; }
-.editable-board input { width: 100%; min-height: 48px; border: 1px solid #495461; border-radius: 8px; padding: 10px 12px; background: var(--surface); color: var(--text); caret-color: var(--accent); }
+.editable-board input { width: 100%; min-height: 48px; border: 1px solid var(--control-border); border-radius: 8px; padding: 10px 12px; background: var(--surface); color: var(--text); caret-color: var(--accent); }
 .editable-board input::placeholder { color: var(--muted); }
-.editable-board ::selection { color: var(--text); background: #395461; }
+.editable-board ::selection { color: var(--text); background: var(--selection); }
 .board-views { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; border-bottom: 1px solid var(--line); padding-bottom: 12px; color: var(--muted); font-size: .875rem; }
 .board-views > span { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
 .board-views .board-active-view { color: var(--accent); font-weight: 600; }
@@ -38,9 +38,9 @@
 .board-edit-form input { font-size: 1rem; }
 .board-form-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .board-form-actions .button { padding-inline: 12px; }
-.board-error { color: #f0b5a8; font-size: .875rem; overflow-wrap: anywhere; }
+.board-error { color: var(--danger); font-size: .875rem; overflow-wrap: anywhere; }
 .board-row-error { grid-column: 1 / -1; }
-.board-overdue { color: #e5b592; font-size: .75rem; }
+.board-overdue { color: var(--warning); font-size: .75rem; }
 .board-group-empty { color: var(--muted); padding: 16px 18px; font-size: .875rem; }
 .board-add-task { border-top: 1px solid var(--line-soft); padding: 8px 18px; }
 .board-add-trigger { width: 100%; justify-content: flex-start; min-height: 48px; }

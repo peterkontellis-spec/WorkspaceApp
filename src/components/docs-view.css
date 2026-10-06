@@ -1,7 +1,7 @@
 .docs-editor { max-width: 960px; overflow: visible; }
 .docs-editor__top { position: sticky; top: 0; z-index: 2; background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; scroll-margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
 .docs-mode { display: flex; gap: 8px; }
-.docs-mode .button[aria-pressed="true"] { background: var(--accent-bg); border-color: #54717a; color: var(--accent); }
+.docs-mode .button[aria-pressed="true"] { background: var(--accent-bg); border-color: var(--control-border); color: var(--accent); }
 .docs-editor__status { color: var(--muted); font-size: .8125rem; }
 .docs-toolbar { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); padding: 8px 16px; }
 .docs-toolbar .button { padding-inline: 12px; }
@@ -15,7 +15,7 @@
 .docs-link-form label { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: .875rem; }
 .docs-link-form input { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--background); color: var(--text); font-size: 1rem; }
 .docs-link-form input::placeholder { color: var(--muted); }
-.docs-link-error { color: #edbfac; font-size: .875rem; grid-column: 1 / -1; }
+.docs-link-error { color: var(--danger); font-size: .875rem; grid-column: 1 / -1; }
 .docs-link-actions { display: flex; flex-wrap: wrap; gap: 8px; grid-column: 1 / -1; }
 .docs-preview { min-height: 440px; padding: 32px; }
 .docs-prose { max-width: 70ch; margin: 0 auto; overflow-wrap: anywhere; line-height: 1.8; }

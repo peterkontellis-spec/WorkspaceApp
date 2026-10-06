@@ -9,7 +9,7 @@
 .saved-filter-options summary { cursor: pointer; min-height: 48px; padding-block: 12px; width: fit-content; }
 .saved-filter-options summary:focus-visible, .saved-view-links a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .saved-filter-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; margin-block: 8px 14px; }
-.saved-filter-grid select { width: 100%; min-height: 48px; padding: 10px; border: 1px solid #56616e; border-radius: 9px; background: var(--surface); color: var(--text); font: inherit; }
+.saved-filter-grid select { width: 100%; min-height: 48px; padding: 10px; border: 1px solid var(--control-border); border-radius: 9px; background: var(--surface); color: var(--text); font: inherit; }
 .saved-filter-options > .button { margin-top: 12px; }
 .saved-filter-result { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 8px; color: var(--muted); font-size: .875rem; }
 .saved-filter-result p:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
@@ -40,7 +40,7 @@
 .saved-empty-row { padding: 22px 20px; color: var(--muted); }
 .saved-add-task { width: 100%; justify-content: flex-start; min-height: 48px; border-radius: 0; }
 .saved-form { display: grid; gap: 20px; }
-.saved-form textarea { width: 100%; min-height: 96px; resize: vertical; border: 1px solid #56616e; border-radius: 9px; padding: 12px; background: var(--surface); color: var(--text); font: inherit; }
+.saved-form textarea { width: 100%; min-height: 96px; resize: vertical; border: 1px solid var(--control-border); border-radius: 9px; padding: 12px; background: var(--surface); color: var(--text); font: inherit; }
 .saved-form textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .saved-work-dialog { max-width: 640px; width: calc(100% - 48px); }
 .saved-subtasks { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 20px; }

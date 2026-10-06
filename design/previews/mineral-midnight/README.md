@@ -25,3 +25,7 @@ The saved source matches the reviewed temporary fragment exactly, the export con
 The source detector's sole warning concerned the intentional orb glow. Supported browser inspection remains blocked by administrator-policy verification; rendered desktop/mobile appearance, focus, standalone runtime and actual device behaviour remain pending. No full app build or database regression was rerun for this isolated export. No application source, saved records, server process, dependencies or deployment configuration changed.
 
 Future adoption requires integrating theme tokens throughout the real app and completing its existing design, browser, mobile and self-check gates. Keep the source's broader M3 acceptance checks separate from this design proposal.
+
+## Adoption update — 2026-10-07
+
+The user subsequently approved integration into the running app. Application themes now live in `src/app/themes.css` with the header toggle and Account appearance controls. This directory remains the original isolated design reference. Automated build/server checks passed; integrated browser/phone acceptance remains pending in the project records.
