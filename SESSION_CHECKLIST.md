@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3 is accepted; M2.4 persistent boards/tasks is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3 and M2.4 are accepted; M2.5 custom fields and task details is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -188,9 +188,9 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** real project boards and task editing.
 
-- [ ] Save boards, groups, tasks, ordering, and standard task fields.
-- [ ] Support multiple assignees and subtasks using real workspace members.
-- [ ] Validate inputs and detect conflicting edits rather than silently overwriting another user's changes.
+- [x] Save boards, groups, tasks, ordering, and standard task fields.
+- [x] Support multiple assignees and subtasks using real workspace members.
+- [x] Validate inputs and detect conflicting edits rather than silently overwriting another user's changes.
 
 **Done when:** edits survive refresh/restart, and competing updates produce a defined result.
 

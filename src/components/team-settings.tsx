@@ -69,7 +69,7 @@ export function TeamSettings() {
   return <section className="team-page" aria-busy={pending}>
     <h1>Team access</h1>
     <p className="auth-copy">Manage the real people who can enter your staff workspace.</p>
-    <p className="team-scope">Accounts and membership are saved. Boards, tasks and Docs still use temporary sample data.</p>
+    <p className="team-scope">Accounts, membership, boards and tasks are saved. Docs remain a sample.</p>
     {error ? <div className="team-feedback"><p ref={errorRef} tabIndex={-1} className="auth-error" role="alert">{error}</p><div className="team-actions"><Button onClick={() => setAttempt(value => value + 1)} disabled={pending}>Retry</Button><Link href="/sign-in" className="auth-link">Sign in</Link></div></div> : null}
     <p className="team-notice" role="status">{notice}</p>
     {!team && !error ? <p role="status">Loading team…</p> : null}
@@ -81,7 +81,7 @@ export function TeamSettings() {
           {team.canManage ? <div className="team-actions"><label className="team-role"><span className="sr-only">Role for {person.name}</span><select value={person.role} disabled={pending} onChange={event => setChange({ action: 'role', id: person.id, label: person.name, role: event.target.value as Role })}>{Object.entries(roleNames).map(([value, name]) => <option key={value} value={value}>{name}</option>)}</select></label><Button variant="ghost" disabled={pending} aria-label={`Remove ${person.name}`} onClick={() => setChange({ action: 'remove', id: person.id, label: person.name })}>Remove</Button></div> : <span className="team-role-name">{roleNames[person.role]}</span>}
         </li>)}</ul>
       </section>
-      <section className="team-section" aria-labelledby="role-heading"><h2 id="role-heading">What roles allow</h2><p className="auth-copy">Owners manage membership. Owners and editors can edit shared work when real task saving is connected; viewers can read it. Sample editing does not demonstrate these task permissions.</p><p className="auth-copy">Staff access does not grant access to private admin material or customer folders. The workspace must keep at least one owner.</p></section>
+      <section className="team-section" aria-labelledby="role-heading"><h2 id="role-heading">What roles allow</h2><p className="auth-copy">Owners manage membership. Owners and editors can edit saved boards and tasks; viewers can read them. Docs are still a sample.</p><p className="auth-copy">Staff access does not grant access to private admin material or customer folders. The workspace must keep at least one owner.</p></section>
       {team.canManage ? <>
         <section className="team-section" aria-labelledby="invite-heading"><h2 id="invite-heading">Invite a teammate</h2><p className="auth-copy">Each link is for one email address and expires after 24 hours. No email is sent. Pending invitations reserve a place in the four-person team.</p>
           <form className="team-invite-form" onSubmit={invite}>

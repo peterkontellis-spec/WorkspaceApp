@@ -52,13 +52,23 @@ if (cookie) await check('signed-out account and workspace requests are denied', 
   assert.ok(!(await page.text()).includes('Prepare launch brief'));
 });
 
+await check('account forms fail safely before scripts load', async () => {
+  for (const path of ['/sign-in', '/reset-password?token=qa-invalid-token']) {
+    const html = await (await fetch(origin + path)).text();
+    assert.match(html, /<form[^>]*method="post"/i);
+    assert.match(html, /<button[^>]*type="submit"[^>]*disabled=""/i);
+    assert.ok(html.includes('JavaScript is required'));
+  }
+});
+
 await check('root redirects to Home', async () => {
   const response = await request('/');
   assert.ok([307, 308].includes(response.status), `Expected redirect, got ${response.status}`);
   assert.equal(new URL(response.headers.get('location'), origin).pathname, '/home');
 });
 
-for (const [path, heading] of pages) {
+const checkedPages = cookie ? pages.filter(([path]) => !path.includes('/boards/') && path !== '/home?task=t1').map(([path, heading]) => [path, path === '/home' ? 'Your workspace' : heading]) : pages;
+for (const [path, heading] of checkedPages) {
   await check(path, async () => {
     const response = await request(path);
     assert.equal(response.status, 200);
@@ -66,7 +76,7 @@ for (const [path, heading] of pages) {
     const html = await response.text();
     const h1 = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<!--[\s\S]*?-->/g, '');
     assert.equal(h1, heading, 'Expected page heading in server-rendered HTML');
-    assert.ok(html.includes('Prototype · sample data'), 'Missing prototype disclosure');
+    assert.ok(html.includes(cookie ? (path.startsWith('/docs') ? 'Sample Docs · not saved' : 'Saved work · local database') : 'Prototype · sample data'), 'Missing accurate persistence disclosure');
     assert.ok(html.includes('id="main-content"'), 'Missing main landmark target');
     assert.ok(html.includes('Assistant — Later'), 'Missing planned assistant navigation');
     if (path.includes('task=t1')) {
@@ -79,7 +89,7 @@ for (const [path, heading] of pages) {
     }
     if (path.startsWith('/docs/')) {
       assert.match(html, /<textarea[^>]*id="document-body"/, 'Missing document writing surface');
-      if (path.includes('returnTo=')) assert.match(html, /<a[^>]*href="\/boards\/website-refresh\?task=t1"[^>]*>[\s\S]*?Back to task<\/a>/, 'Missing contextual return link');
+      if (!cookie && path.includes('returnTo=')) assert.match(html, /<a[^>]*href="\/boards\/website-refresh\?task=t1"[^>]*>[\s\S]*?Back to task<\/a>/, 'Missing contextual return link');
     }
     if (path === '/home?task=t1') {
       assert.ok(html.includes('task-panel-title'), 'Missing selected-task detail');
@@ -100,6 +110,18 @@ for (const path of unknownPages) {
 
 
 if (cookie) {
+  await check('work API returns only the authenticated workspace', async () => {
+    const response = await request('/api/work'); assert.equal(response.status, 200);
+    const data = await response.json(); assert.ok(data.actor.id); assert.ok(Array.isArray(data.boards)); assert.ok(Array.isArray(data.tasks));
+    assert.equal((await fetch(`${origin}/api/work`)).status, 401);
+    assert.match(response.headers.get('cache-control'), /no-store/);
+  });
+  await check('sample board URLs do not masquerade as saved boards', async () => {
+    assert.equal((await request('/boards/website-refresh')).status, 404);
+  });
+  await check('database readiness is available without exposing records', async () => {
+    const response = await fetch(`${origin}/api/health`); assert.equal(response.status, 200); assert.deepEqual(await response.json(), { status: 'ready' });
+  });
   await check('team page is protected and available to a signed-in account', async () => {
     const response = await request('/team');
     assert.equal(response.status, 200);

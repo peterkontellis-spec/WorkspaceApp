@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { SignedInAccount } from '@/server/auth';
+import { useWork } from './work-provider';
 import { SignOutButton } from './session-boundary';
 import './auth.css';
 import { usePathname } from 'next/navigation';
@@ -43,6 +44,7 @@ function Brand() {
 
 export function WorkspaceShell({ children, account }: { children: ReactNode; account: SignedInAccount | null }) {
   const { resetDemo } = useWorkspace();
+  const { data: savedWork } = useWork();
   const pathname = usePathname();
   const [member, setMember] = useState(members[0]);
   const [overlay, setOverlay] = useState<'navigation' | 'search' | 'account' | 'reset' | null>(null);
@@ -106,8 +108,8 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
     { name: 'Boards', detail: 'Your team’s projects', href: '/boards', kind: 'Page' },
     { name: 'Docs', detail: 'Shared writing', href: '/docs', kind: 'Page' },
     ...(account ? [{ name: 'Team access', detail: 'Real members and invitations', href: '/team', kind: 'Page' }] : []),
-    ...boards.map((board) => ({ name: board.name, detail: board.description, href: `/boards/${board.id}`, kind: 'Board' })),
-    ...documents.map((doc) => ({ name: doc.title, detail: 'Sample document', href: `/docs/${doc.id}`, kind: 'Doc' })),
+    ...(account ? savedWork?.boards ?? [] : boards).map((board) => ({ name: board.name, detail: board.description, href: `/boards/${board.id}`, kind: 'Board' })),
+    ...documents.map((doc) => ({ name: doc.title, detail: 'Sample document · not saved', href: `/docs/${doc.id}`, kind: 'Doc' })),
   ].filter((item) => `${item.name} ${item.detail}`.toLowerCase().includes(query.trim().toLowerCase()));
 
   return <DemoContext.Provider value={{ member }}>
@@ -118,10 +120,10 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
         <p className="nav-heading">WORKSPACE</p>
         <Navigation />
         <div className="sidebar__bottom">
-          <div className="team-summary"><AvatarStack ids={members.map((person) => person.id)} /><span>Your team<span>4 sample collaborators</span></span></div>
+          <div className="team-summary">{account ? <span>Your team<span>{savedWork ? `${savedWork.members.length} workspace members` : 'Staff workspace'}</span></span> : <><AvatarStack ids={members.map((person) => person.id)} /><span>Your team<span>4 sample collaborators</span></span></>}</div>
           {account ? <Link href="/team" onClick={close} className={`nav-item ${section === 'team' ? 'nav-item--active' : ''}`} aria-current={section === 'team' ? 'page' : undefined}><Users size={20} aria-hidden="true" /><span>Team access</span></Link> : null}
           <div className="nav-item nav-item--later"><Settings2 size={20} aria-hidden="true" /><span>Settings</span><span className="later-label">Later</span></div>
-          <div className="prototype-mark"><span aria-hidden="true" />Prototype · sample data</div>
+          <div className="prototype-mark"><span aria-hidden="true" />{account ? 'Local workspace' : 'Prototype · sample data'}</div>
         </div>
       </aside>
 
@@ -138,7 +140,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
           </div>
         </header>
         <main id="main-content" tabIndex={-1} className="main-content">{children}</main>
-        <footer className="workspace-footer">{section === 'team' ? <span>Real accounts · saved membership</span> : <><span>Prototype · sample data</span><span>Demo date: 25 September 2026</span></>}</footer>
+        <footer className="workspace-footer">{account && section !== 'docs' ? <span>{section === 'team' ? 'Real accounts · saved membership' : 'Saved work · local database'}</span> : <><span>{account ? 'Sample Docs · not saved' : 'Prototype · sample data'}</span><span>Demo date: 25 September 2026</span></>}</footer>
       </div>
 
       <nav className="bottom-nav" hidden={keyboardOpen} aria-label="Primary mobile navigation">
@@ -163,14 +165,16 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
       <div role="status" className="sr-only">{searchItems.length} results</div>
       <ul className="search-results">{searchItems.map((item) => <li key={item.href}><Link href={item.href} onClick={close}><span className="search-result__icon">{item.kind === 'Doc' ? <FileText size={19} aria-hidden="true" /> : <LayoutGrid size={19} aria-hidden="true" />}</span><span><strong>{item.name}</strong><span className="search-result__detail">{item.detail}</span></span><span className="search-result__kind">{item.kind}</span><ArrowUpRight size={16} aria-hidden="true" /></Link></li>)}</ul>
       {searchItems.length === 0 && <div className="search-empty"><p>No matching pages or projects.</p><Button onClick={() => setQuery('')}>Clear search</Button></div>}
-      <p className="dialog-note">Search covers sample pages, boards, and document titles. Task search comes later.</p>
+      <p className="dialog-note">{account ? 'Find pages, saved boards and sample Docs. Task search comes later.' : 'Search covers sample pages, boards, and document titles. Task search comes later.'}</p>
     </Dialog>
 
     <Dialog open={overlay === 'account'} onClose={() => closeOverlay('account')} title={account ? 'Your account' : 'Sample accounts'}>
-      {account ? <div className="account-identity"><strong>{account.name}</strong><p>{account.email}</p><p>{account.role} · staff workspace</p><Link href="/team" className="auth-link" onClick={close}>Team access</Link><SignOutButton /><p className="dialog-note">Signing out clears this tab’s sample edits.</p></div> : null}
+      {account ? <div className="account-identity"><strong>{account.name}</strong><p>{account.email}</p><p>{account.role} · staff workspace</p><Link href="/team" className="auth-link" onClick={close}>Team access</Link><SignOutButton /><p className="dialog-note">Signing out clears this tab’s unsaved input and sample edits.</p></div> : null}
+      {!account ? <>
       <p className="dialog-intro">Preview sample work as someone on the fictional team.</p>
       <div className="account-options">{members.map((person) => <button key={person.id} type="button" className={`account-option ${person.id === member.id ? 'account-option--selected' : ''}`} aria-pressed={person.id === member.id} onClick={() => { setMember(person); close(); }}><Avatar member={person} /><span><strong>{person.name}</strong><span>{person.role} · sample account</span></span>{person.id === member.id ? <Check size={19} aria-hidden="true" /> : <ChevronsUpDown size={17} aria-hidden="true" />}</button>)}</div>
       <p className="dialog-note">{account ? 'These sample views do not change your signed-in account or permissions. Sample edits reset on refresh.' : 'Sample-only mode: no sign-in. Accounts and edits reset on refresh.'}</p><Button onClick={() => setOverlay('reset')}>Reset demo</Button>
+      </> : <p className="dialog-note">Boards and tasks use your real role. Docs are still an unsaved sample.</p>}
     </Dialog>
     <Dialog open={overlay === 'reset'} onClose={() => closeOverlay('reset')} title="Reset demo?">
       <p className="dialog-intro">Reset all sample tasks, documents and unfinished input? This clears this session’s edits and restores the original sample data.</p>

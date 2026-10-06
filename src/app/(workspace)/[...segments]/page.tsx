@@ -1,12 +1,15 @@
 import { requireAccount } from '@/server/auth';
 import { notFound } from 'next/navigation';
+import { SavedWorkPage } from '@/components/saved-work-page';
 import { WorkspacePage } from '@/components/workspace-pages';
 import { boards, documents } from '@/lib/demo';
 
 export default async function Page({ params }: { params: Promise<{ segments: string[] }> }) {
-  await requireAccount();
+  const account = await requireAccount();
   const { segments } = await params;
   const [section, id] = segments;
+  if (account && (section === 'home' || section === 'boards') && (segments.length === 1 || (section === 'boards' && segments.length === 2 && /^[0-9a-f-]{36}$/i.test(id)))) return <SavedWorkPage section={section} boardId={id} />;
+  if (account && section === 'boards') notFound();
   const validRoot = segments.length === 1 && ['home', 'boards', 'docs'].includes(section);
   const validBoard = segments.length === 2 && section === 'boards' && boards.some((board) => board.id === id);
   const validDoc = segments.length === 2 && section === 'docs' && documents.some((doc) => doc.id === id);

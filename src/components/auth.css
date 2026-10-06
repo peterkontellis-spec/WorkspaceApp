@@ -36,3 +36,6 @@
 
 .account-identity { margin-bottom: 24px; overflow-wrap: anywhere; }
 .account-identity > p { color: var(--muted); margin: 6px 0 14px; }
+
+.session-connection-notice { position: fixed; z-index: 40; top: 12px; left: 50%; transform: translateX(-50%); width: min(540px, calc(100% - 32px)); padding: 16px; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px #0005; }
+.session-connection-notice p { margin: 0 0 12px; }

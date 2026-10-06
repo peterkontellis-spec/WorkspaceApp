@@ -54,7 +54,7 @@ export function Dialog({ open, onClose, title, children, className = '' }: { ope
     if (open && !dialog.open) dialog.showModal();
     if (!open && dialog.open) dialog.close();
   }, [open]);
-  return <dialog ref={dialogRef} aria-labelledby={titleId} className={`dialog ${className}`} onClose={onClose} onCancel={onClose} {...backdrop}>
+  return <dialog ref={dialogRef} aria-labelledby={titleId} className={`dialog ${className}`} onClose={() => { if (open) onClose(); }} onCancel={(event) => { event.preventDefault(); onClose(); }} {...backdrop}>
     <div className="dialog__surface">
       <div className="dialog__heading"><h2 id={titleId}>{title}</h2><Button variant="ghost" className="icon-button" aria-label={`Close ${title.toLowerCase()}`} onClick={onClose}><X size={20} aria-hidden="true" /></Button></div>
       {children}

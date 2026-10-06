@@ -6,13 +6,14 @@ import { members } from '@/lib/demo';
 import { AvatarStack } from './ui';
 
 /** A native light-dismiss popover keeps multiple selection out of row layout. */
-export function AssigneePicker({ value, onChange, taskTitle }: { value: readonly string[]; onChange: (ids: string[]) => void; taskTitle: string }) {
+export function AssigneePicker({ value, onChange, taskTitle, people, disabled = false }: { value: readonly string[]; onChange: (ids: string[]) => void; taskTitle: string; people?: { id: string; name: string }[]; disabled?: boolean }) {
+  const available = people ?? members;
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<CSSProperties>({});
-  const names = members.filter((member) => value.includes(member.id)).map((member) => member.name).join(', ') || 'Unassigned';
+  const names = available.filter((member) => value.includes(member.id)).map((member) => member.name).join(', ') || 'Unassigned';
 
   function positionMenu() {
     const rect = trigger.current?.getBoundingClientRect();
@@ -36,12 +37,12 @@ export function AssigneePicker({ value, onChange, taskTitle }: { value: readonly
   }, [open]);
 
   return <div className="assignee-picker">
-    <button ref={trigger} type="button" className="assignee-trigger" popoverTarget={id} aria-label={`Assign people to ${taskTitle}. ${names}`} onClick={positionMenu}>
-      {value.length ? <AvatarStack ids={value} /> : <span>Unassigned</span>}<ChevronDown size={16} aria-hidden="true" />
+    <button ref={trigger} type="button" className="assignee-trigger" disabled={disabled} popoverTarget={id} aria-label={`Assign people to ${taskTitle}. ${names}`} onClick={positionMenu}>
+      {people ? <span>{names}</span> : value.length ? <AvatarStack ids={value} /> : <span>Unassigned</span>}<ChevronDown size={16} aria-hidden="true" />
     </button>
     <div ref={menu} id={id} popover="auto" className="assignee-menu" style={position} onToggle={(event) => setOpen(event.newState === 'open')}>
-      <fieldset><legend>Assignees</legend>{members.map((member) => <label key={member.id}>
-        <input type="checkbox" name="assignees" value={member.id} checked={value.includes(member.id)} onChange={(event) => onChange(event.target.checked ? [...value, member.id] : value.filter((id) => id !== member.id))} />
+      <fieldset><legend>Assignees</legend>{available.map((member) => <label key={member.id}>
+        <input type="checkbox" disabled={disabled} name="assignees" value={member.id} checked={value.includes(member.id)} onChange={(event) => onChange(event.target.checked ? [...value, member.id] : value.filter((id) => id !== member.id))} />
         <span>{member.name}</span>
       </label>)}</fieldset>
       <button type="button" className="button button--ghost assignee-done" popoverTarget={id} popoverTargetAction="hide">Done</button>

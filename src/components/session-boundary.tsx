@@ -4,12 +4,15 @@ import { usePathname } from 'next/navigation';
 import { flushSync } from 'react-dom';
 import type { SignedInAccount } from '@/server/auth';
 import { useWorkspace } from './demo-provider';
+import { useWork } from './work-provider';
 import { Button } from './ui';
 
 export function SessionBoundary({ account, children }: { account: SignedInAccount | null; children: ReactNode }) {
   const { resetDemo } = useWorkspace();
+  const { clearDrafts } = useWork();
   const pathname = usePathname();
   const [unavailable, setUnavailable] = useState(false);
+  const [retry, setRetry] = useState(0);
   useEffect(() => {
     if (!account) return;
     const controller = new AbortController();
@@ -23,7 +26,7 @@ export function SessionBoundary({ account, children }: { account: SignedInAccoun
         const response = await fetch('/api/account', { method: activity ? 'POST' : 'GET', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]) });
         activity = false;
         if (response.status === 401 || (response.ok && (await response.json()).account.id !== account.id)) {
-          flushSync(() => resetDemo());
+          flushSync(() => { resetDemo(); clearDrafts(); });
           window.location.replace('/sign-in');
         } else setUnavailable(!response.ok);
       } catch { if (!controller.signal.aborted) setUnavailable(true); }
@@ -38,13 +41,13 @@ export function SessionBoundary({ account, children }: { account: SignedInAccoun
     window.addEventListener('pageshow', restored);
     document.addEventListener('visibilitychange', verify);
     return () => { controller.abort(); document.removeEventListener('pointerdown', markActivity); document.removeEventListener('keydown', markActivity); window.clearInterval(interval); window.removeEventListener('focus', verify); window.removeEventListener('pageshow', restored); document.removeEventListener('visibilitychange', verify); };
-  }, [account, pathname, resetDemo]);
-  if (unavailable) return <main className="auth-page"><div className="auth-card"><h1>Connection unavailable</h1><p className="auth-copy" role="alert">We cannot verify your session right now. Your sample edits remain in this tab. Reconnecting will restore the view.</p><Button onClick={() => window.location.reload()}>Reload and clear sample edits</Button></div></main>;
-  return children;
+  }, [account, pathname, resetDemo, clearDrafts, retry]);
+  return <>{unavailable ? <div className="session-connection-notice" role="alert"><p>Connection unavailable. Your unsaved input remains in this tab. Close any open panel to retry; saved changes will appear after reconnecting.</p><Button onClick={() => setRetry(value=>value+1)}>Retry connection</Button></div> : null}{children}</>;
 }
 
 export function SignOutButton() {
   const { resetDemo } = useWorkspace();
+  const { clearDrafts } = useWork();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   async function signOut() {
@@ -52,7 +55,7 @@ export function SignOutButton() {
     try {
       const response = await fetch('/api/auth/sign-out', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', signal: AbortSignal.timeout(15_000) });
       if (!response.ok) throw new Error();
-      flushSync(() => resetDemo());
+      flushSync(() => { resetDemo(); clearDrafts(); });
       window.location.replace('/sign-in');
     } catch { setError('Could not sign out. Check your connection and try again.'); setPending(false); }
   }

@@ -15,6 +15,8 @@ export function AuthForm({ mode, token }: AuthFormProps) {
   const confirmRef = useRef<HTMLInputElement>(null);
   const submittingRef = useRef(false);
   const [pending, setPending] = useState(false);
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
   const [visible, setVisible] = useState(false);
   const [error, setError] = useState('');
   const [mismatch, setMismatch] = useState(false);
@@ -101,7 +103,8 @@ export function AuthForm({ mode, token }: AuthFormProps) {
       </div> : <>
         <h1 className="auth-heading">{reset ? 'Set a new password' : 'Sign in'}</h1>
         <p className="auth-copy">{reset ? 'Choose a password you do not use elsewhere.' : 'Use your workspace account to continue.'}</p>
-        <form className="auth-form" onSubmit={submit} aria-busy={pending}>
+        <noscript><p role="alert">JavaScript is required to use account services. Enable it and reload this page.</p></noscript>
+        <form method="post" className="auth-form" onSubmit={submit} aria-busy={pending}>
           {!reset ? <div className="auth-field">
             <label htmlFor={`${id}-email`}>Email</label>
             <input id={`${id}-email`} name="email" type="email" autoComplete="username" inputMode="email" autoCapitalize="none" spellCheck={false} maxLength={254} required readOnly={pending} />
@@ -120,13 +123,13 @@ export function AuthForm({ mode, token }: AuthFormProps) {
             {mismatch ? <p id={`${id}-mismatch`} className="auth-error" role="alert">Passwords do not match. Enter the same password in both fields.</p> : null}
           </div> : null}
           {error ? <p ref={errorRef} tabIndex={-1} className="auth-error" role="alert">{error}</p> : null}
-          <Button type="submit" variant="primary" className="auth-submit" disabled={pending}>{pending ? <LoaderCircle className="auth-spinner" size={18} aria-hidden="true" /> : null}{pending ? (reset ? 'Updating password…' : 'Signing in…') : (reset ? 'Update password' : 'Sign in')}</Button>
+          <Button type="submit" variant="primary" className="auth-submit" disabled={pending || !ready}>{pending ? <LoaderCircle className="auth-spinner" size={18} aria-hidden="true" /> : null}{pending ? (reset ? 'Updating password…' : 'Signing in…') : (reset ? 'Update password' : 'Sign in')}</Button>
           <span className="sr-only" role="status">{pending ? (reset ? 'Updating password' : 'Signing in') : ''}</span>
         </form>
         <Link href="/recover" className="auth-link">{reset ? 'Need a new reset link?' : 'Forgot your password?'}</Link>
         {reset ? <Link href="/sign-in" className="auth-link">Back to sign in</Link> : null}
       </>}
-      <p className="auth-preview-note">Accounts are real. Boards, tasks and Docs still use sample data; their edits are not saved after refresh.</p>
+      <p className="auth-preview-note">Accounts, boards and tasks are saved. Docs remain a sample; their edits reset after refresh.</p>
     </div>
   </main>;
 }

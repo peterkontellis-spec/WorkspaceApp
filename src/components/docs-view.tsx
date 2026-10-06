@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useWork } from './work-provider';
 import { useSearchParams } from 'next/navigation';
 import { useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowUpRight, Bold, FileText, Heading2, Italic, Link2, List } from 'lucide-react';
@@ -15,7 +16,8 @@ import { MarkdownPreview } from './markdown-preview';
 function DocumentEditor({ id }: { id: string }) {
   const { documents, updateDocument } = useWorkspace();
   const params = useSearchParams();
-  const returnTo = safeReturnPath(params.get('returnTo'));
+  const { enabled: savedWork } = useWork();
+  const returnTo = savedWork ? null : safeReturnPath(params.get('returnTo'));
   const doc = documents.find((document) => document.id === id);
   const [mode, setMode] = useState<'write' | 'preview'>('write');
   const [linkOpen, setLinkOpen] = useState(false);

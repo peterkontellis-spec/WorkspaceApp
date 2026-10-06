@@ -11,11 +11,11 @@ const monthLabel = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'nume
 const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 // An in-page calendar avoids native date-popup crashes in the embedded browser.
-export function DatePicker({ label, value, onChange, triggerRef }: { label: string; value: string; onChange: (value: string) => void; triggerRef?: Ref<HTMLButtonElement> }) {
+export function DatePicker({ label, value, onChange, triggerRef, baseDate = DEMO_DATE }: { label: string; value: string; onChange: (value: string) => void; triggerRef?: Ref<HTMLButtonElement>; baseDate?: string }) {
   const id = useId();
   const root = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const [cursor, setCursor] = useState(value || DEMO_DATE);
+  const [cursor, setCursor] = useState(value || baseDate);
   const [focusDay, setFocusDay] = useState(false);
   const selected = calendarDate(value);
   const cells = calendarCells(cursor);
@@ -41,7 +41,7 @@ export function DatePicker({ label, value, onChange, triggerRef }: { label: stri
   }}>
     <span id={`${id}-label`} className="date-picker-label">{label}</span>
     <button ref={triggerRef} type="button" className="date-picker-trigger" aria-labelledby={`${id}-label ${id}-value`} aria-expanded={open} aria-controls={`${id}-calendar`} onClick={() => {
-      if (open) close(); else { setCursor(value || DEMO_DATE); setOpen(true); setFocusDay(true); }
+      if (open) close(); else { setCursor(value || baseDate); setOpen(true); setFocusDay(true); }
     }}><span id={`${id}-value`}>{selected ? fullDate.format(selected) : 'No date'}</span><CalendarDays size={18} aria-hidden="true" /></button>
     {open && <section id={`${id}-calendar`} className="date-calendar" aria-label={`Choose ${label.toLowerCase()}`}>
       <div className="date-calendar-heading">

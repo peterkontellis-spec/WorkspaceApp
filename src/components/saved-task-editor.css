@@ -1,0 +1,28 @@
+.saved-task-editor { display: grid; gap: 20px; min-width: 0; }
+.saved-task-fields { display: grid; gap: 20px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.saved-task-label { display: grid; gap: 7px; min-width: 0; color: var(--muted); font-size: .875rem; }
+.saved-task-label input { width: 100%; min-width: 0; min-height: 48px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; color: var(--text); background: var(--background); font: inherit; font-size: 1rem; }
+.saved-task-label select { width: 100%; min-width: 0; font-size: 1rem; }
+.saved-task-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.saved-task-grid > .date-picker:has(.date-calendar) { grid-column: 1 / -1; }
+.saved-task-assignees { display: grid; gap: 7px; min-width: 0; color: var(--muted); font-size: .875rem; }
+.saved-task-assignees .assignee-trigger { min-height: 48px; }
+.saved-task-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.saved-task-actions .button, .saved-task-error .button { min-height: 48px; }
+.saved-task-hint { color: var(--muted); font-size: .8125rem; line-height: 1.6; }
+.saved-task-error, .saved-task-reload { display: grid; gap: 12px; }
+.saved-task-error .button { justify-self: start; }
+.saved-task-error p:focus, .saved-task-reload p:focus { outline: 2px solid var(--accent); outline-offset: 4px; }
+.saved-task-reload { border-block: 1px solid var(--line); padding-block: 16px; }
+.saved-task-subtasks { border-top: 1px solid var(--line); padding-top: 20px; }
+.saved-task-subtasks h3 { font-size: 1rem; margin-bottom: 12px; }
+.saved-task-subtasks ul { display: grid; gap: 12px; list-style: none; padding: 0; }
+.saved-task-subtasks li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.saved-task-subtasks li > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.saved-task-editor .dialog-note { margin: 0; }
+.saved-task-view-title { font-size: 1.125rem; font-weight: 600; overflow-wrap: anywhere; }
+.saved-task-facts { display: grid; gap: 16px; margin: 0; }
+.saved-task-facts > div { display: grid; grid-template-columns: minmax(85px, 1fr) minmax(0, 2fr); gap: 12px; }
+.saved-task-facts dt { color: var(--muted); font-size: .875rem; }
+.saved-task-facts dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 420px) { .saved-task-grid { grid-template-columns: minmax(0, 1fr); } }

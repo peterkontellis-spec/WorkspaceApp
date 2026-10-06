@@ -11,6 +11,8 @@ export function InvitationForm({ token }: { token: string }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState(false);
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
   const [complete, setComplete] = useState(false);
   const [visible, setVisible] = useState(false);
   const [mismatch, setMismatch] = useState(false);
@@ -59,18 +61,19 @@ export function InvitationForm({ token }: { token: string }) {
         <p className="auth-copy">You’re invited to {invitation.workspaceName} as {invitation.role === 'owner' ? 'an owner' : invitation.role === 'editor' ? 'an editor' : 'a viewer'}.</p>
         <p className="auth-copy"><strong>{invitation.email}</strong></p>
         <p className="auth-copy">{invitation.existingAccount ? 'Use your existing password to restore access. Your account password will stay the same.' : 'Create your account to accept this invitation. The link can only be used once.'}</p>
-        <form className="auth-form" onSubmit={submit} aria-busy={pending}>
+        <noscript><p role="alert">JavaScript is required to use account services. Enable it and reload this page.</p></noscript>
+        <form method="post" className="auth-form" onSubmit={submit} aria-busy={pending}>
           <input type="hidden" name="email" value={invitation.email} autoComplete="username" />
           {!invitation.existingAccount ? <div className="auth-field"><label htmlFor="join-name">Your name</label><input id="join-name" name="name" autoComplete="name" required maxLength={120} readOnly={pending} /></div> : null}
           <div className="auth-field"><label htmlFor="join-password">{invitation.existingAccount ? 'Current password' : 'Password'}</label><div className="auth-password"><input id="join-password" name="password" type={visible ? 'text' : 'password'} autoComplete={invitation.existingAccount ? 'current-password' : 'new-password'} minLength={invitation.existingAccount ? undefined : 12} maxLength={128} required readOnly={pending} aria-describedby={!invitation.existingAccount ? 'join-password-hint' : undefined} onInput={() => setMismatch(false)} /><Button variant="ghost" className="auth-visibility" aria-label={visible ? 'Hide password' : 'Show password'} aria-pressed={visible} onClick={() => setVisible(value => !value)}>{visible ? 'Hide' : 'Show'}</Button></div>{!invitation.existingAccount ? <p id="join-password-hint" className="auth-hint">Use 12–128 characters. A few unrelated words work well.</p> : null}</div>
           {!invitation.existingAccount ? <div className="auth-field"><label htmlFor="join-confirm">Confirm password</label><input ref={confirmRef} id="join-confirm" name="confirmPassword" type={visible ? 'text' : 'password'} autoComplete="new-password" minLength={12} maxLength={128} required readOnly={pending} aria-invalid={mismatch || undefined} aria-describedby={mismatch ? 'join-mismatch' : undefined} onInput={() => setMismatch(false)} />{mismatch ? <p id="join-mismatch" className="auth-error" role="alert">Passwords do not match. Enter the same password in both fields.</p> : null}</div> : null}
           {error ? <p ref={errorRef} className="auth-error" role="alert" tabIndex={-1}>{error}</p> : null}
-          <Button type="submit" variant="primary" className="auth-submit" disabled={pending}>{pending ? 'Joining…' : 'Join workspace'}</Button>
+          <Button type="submit" variant="primary" className="auth-submit" disabled={pending || !ready}>{pending ? 'Joining…' : 'Join workspace'}</Button>
         </form>
         {invitation.existingAccount ? <Link href="/recover" className="auth-link">Forgot your password?</Link> : null}
       </> : !loading && error ? <><p ref={errorRef} className="auth-error auth-copy" role="alert" tabIndex={-1}>{error}</p><Button onClick={() => setAttempt(value => value + 1)}>Retry</Button></> : null}
       <Link href="/sign-in" className="auth-link">Back to sign in</Link>
     </>}
-    <p className="auth-preview-note">Staff access is separate from private admin material and customer folders. Boards, tasks and Docs still use sample data.</p>
+    <p className="auth-preview-note">Staff access is separate from private admin material and customer folders. Boards and tasks are saved. Docs remain a sample.</p>
   </div></main>;
 }
