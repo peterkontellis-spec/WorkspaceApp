@@ -14,7 +14,7 @@ const cursor = (value) => {
 export async function taskActivityState(c, workspace, taskId) {
   return (
     await c.query(
-      `SELECT t.id,t.board_id,t.revision,t.title,t.status,t.priority,
+      `SELECT t.id,t.board_id,t.revision,t.title,t.status,t.priority,(t.archived_at IS NOT NULL) AS archived,
     to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.group_id AS "group",t.parent_id AS "parent",t.position,t.notes,
     ARRAY(SELECT a.user_id FROM task_assignee a WHERE a.workspace_id=t.workspace_id AND a.task_id=t.id ORDER BY a.user_id) AS assignees,
     coalesce((SELECT jsonb_agg(jsonb_build_object('id',i.id,'label',i.label,'done',i.done,'position',i.position) ORDER BY i.id) FROM checklist_item i WHERE i.workspace_id=t.workspace_id AND i.task_id=t.id),'[]'::jsonb) AS checklist,
@@ -26,6 +26,7 @@ export async function taskActivityState(c, workspace, taskId) {
 }
 export async function recordTaskActivity(c, member, before, after) {
   const fieldNames = [
+    'archived',
     'title',
     'status',
     'priority',
@@ -43,6 +44,7 @@ export async function recordTaskActivity(c, member, before, after) {
     : ['created'];
   if (!changed.length) return;
   const descriptions = changed.map((key) => {
+    if (key === 'archived') return after.archived ? 'archive state to archived' : 'archive state to active';
     if (key === 'status') return `status from ${before.status} to ${after.status}`;
     if (key === 'priority') return `priority from ${before.priority} to ${after.priority}`;
     if (key === 'dueDate') return `due date from ${before.dueDate ?? 'none'} to ${after.dueDate ?? 'none'}`;
@@ -57,7 +59,14 @@ export async function recordTaskActivity(c, member, before, after) {
       fields: 'custom fields',
     }[key];
   });
-  const summary = before ? `Changed ${descriptions.join(', ')}.` : 'Created this task.';
+  const summary =
+    changed.length === 1 && changed[0] === 'archived'
+      ? after.archived
+        ? 'Archived this task.'
+        : 'Restored this task.'
+      : before
+        ? `Changed ${descriptions.join(', ')}.`
+        : 'Created this task.';
   const activity = (
     await c.query(
       `INSERT INTO task_activity(workspace_id,task_id,revision,event,actor_id,actor_name,summary,changed_fields)
@@ -129,13 +138,11 @@ export function readUpdates(pool, auth, headers, query = {}) {
               [member.workspace_id, member.id, before],
             )
           ).rows;
-    const items = rows
-      .slice(0, 25)
-      .map((row) => ({
-        ...row,
-        createdAt: row.createdAt.toISOString(),
-        ...('readAt' in row ? { readAt: row.readAt?.toISOString() ?? null } : {}),
-      }));
+    const items = rows.slice(0, 25).map((row) => ({
+      ...row,
+      createdAt: row.createdAt.toISOString(),
+      ...('readAt' in row ? { readAt: row.readAt?.toISOString() ?? null } : {}),
+    }));
     return { items, nextCursor: rows.length > 25 ? items.at(-1).id : null };
   });
 }

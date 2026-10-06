@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { transaction } from './database.mjs';
 import { taskActivityState, recordTaskActivity } from './updates-core.mjs';
 
@@ -90,7 +91,7 @@ async function snapshot(c, member) {
   const workspace = [member.workspace_id];
   const boards = (
     await c.query(
-      'SELECT id,name,description,revision FROM board WHERE workspace_id=$1 ORDER BY created_at,id',
+      'SELECT id,name,description,revision,archived_at AS "archivedAt",archived_by AS "archivedBy" FROM board WHERE workspace_id=$1 ORDER BY created_at,id',
       workspace,
     )
   ).rows;
@@ -110,10 +111,12 @@ async function snapshot(c, member) {
     await c.query(
       `SELECT t.id,t.board_id AS "boardId",t.group_id AS "groupId",t.parent_id AS "parentId",t.title,t.status,t.priority,
     to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.position,t.revision,t.notes,
+    coalesce(t.archived_at,b.archived_at) AS "archivedAt",coalesce(t.archived_by,b.archived_by) AS "archivedBy",
+    t.archive_batch_id AS "archiveBatchId",(b.archived_at IS NOT NULL) AS "boardArchived",
     ARRAY(SELECT a.user_id FROM task_assignee a WHERE a.workspace_id=t.workspace_id AND a.task_id=t.id ORDER BY a.user_id) AS "assigneeIds",
     coalesce((SELECT jsonb_agg(jsonb_build_object('id',i.id,'label',i.label,'done',i.done,'position',i.position) ORDER BY i.position,i.id) FROM checklist_item i WHERE i.workspace_id=t.workspace_id AND i.task_id=t.id),'[]'::jsonb) AS checklist,
     coalesce((SELECT jsonb_agg(jsonb_build_object('columnId',v.column_id,'value',v.value) ORDER BY v.column_id) FROM task_field_value v WHERE v.workspace_id=t.workspace_id AND v.task_id=t.id),'[]'::jsonb) AS fields
-    FROM task t WHERE t.workspace_id=$1 ORDER BY t.position,t.id`,
+    FROM task t JOIN board b ON b.workspace_id=t.workspace_id AND b.id=t.board_id WHERE t.workspace_id=$1 ORDER BY t.position,t.id`,
       workspace,
     )
   ).rows;
@@ -132,10 +135,12 @@ async function snapshot(c, member) {
     )
   ).rows[0].n;
   return {
-    boards,
+    boards: boards.filter((item) => !item.archivedAt),
+    archivedBoards: boards.filter((item) => item.archivedAt),
     groups,
     columns,
-    tasks,
+    tasks: tasks.filter((item) => !item.archivedAt),
+    archivedTasks: tasks.filter((item) => item.archivedAt),
     members,
     unreadNotifications,
     actor: { id: member.id, name: member.name, role: member.role },
@@ -144,11 +149,15 @@ async function snapshot(c, member) {
 export function readWork(pool, auth, headers) {
   return withMember(pool, auth, headers, false, snapshot);
 }
-async function row(c, table, workspace, itemId) {
+async function row(c, table, workspace, itemId, includeArchived = false) {
   const result = (
     await c.query(`SELECT * FROM ${table} WHERE workspace_id=$1 AND id=$2`, [workspace, id(itemId)])
   ).rows[0];
   if (!result) fail(404, 'Item not found.');
+  if (!includeArchived) {
+    if (result.archived_at) fail(409, 'This item is archived. Restore it before making changes.');
+    if (result.board_id) await row(c, 'board', workspace, result.board_id);
+  }
   return result;
 }
 const checkRevision = (saved, expected) => {
@@ -378,11 +387,73 @@ const inserted = (row) => {
   if (!row) fail(409, 'This creation identifier is unavailable. Start a new item.');
   return row;
 };
+async function changeArchive(c, member, input) {
+  const workspace = member.workspace_id;
+  const isBoard = input.action.endsWith('Board');
+  const restoring = input.action.startsWith('restore');
+  if (isBoard && member.role !== 'owner') fail(403, 'Only owners can archive or restore boards.');
+  const saved = await row(c, isBoard ? 'board' : 'task', workspace, input.id, true);
+  // A stale retry must not toggle a subsequently changed item. A current-state
+  // no-op is harmless, but still requires the exact revision the caller saw.
+  checkRevision(saved, input.revision);
+  if (isBoard) {
+    if (Boolean(saved.archived_at) !== restoring) return;
+    await c.query(
+      `UPDATE board SET archived_at=CASE WHEN $3 THEN NULL ELSE now() END,
+      archived_by=CASE WHEN $3 THEN NULL ELSE $4 END,revision=revision+1 WHERE workspace_id=$1 AND id=$2`,
+      [workspace, saved.id, restoring, member.id],
+    );
+    // Invalidate pre-archive drafts even if the board is restored before a late
+    // request reaches the server. The workspace lock serializes every write.
+    for (const table of ['task', 'board_group', 'column_definition']) {
+      await c.query(`UPDATE ${table} SET revision=revision+1 WHERE workspace_id=$1 AND board_id=$2`, [
+        workspace,
+        saved.id,
+      ]);
+    }
+    await c.query(
+      `INSERT INTO board_archive_activity(workspace_id,board_id,revision,event,actor_id,actor_name)
+      VALUES($1,$2,$3,$4,$5,$6)`,
+      [workspace, saved.id, saved.revision + 1, restoring ? 'restored' : 'archived', member.id, member.name],
+    );
+    return;
+  }
+  await row(c, 'board', workspace, saved.board_id);
+  if (Boolean(saved.archived_at) !== restoring) return;
+  if (restoring && saved.parent_id) {
+    const parent = await row(c, 'task', workspace, saved.parent_id, true);
+    if (parent.archived_at) fail(409, 'Restore the parent task first.');
+  }
+  const descendants = (
+    await c.query(
+      `WITH RECURSIVE subtree AS (
+    SELECT id,parent_id,archived_at,archive_batch_id FROM task WHERE workspace_id=$1 AND id=$2
+    UNION ALL SELECT t.id,t.parent_id,t.archived_at,t.archive_batch_id FROM task t JOIN subtree s ON t.parent_id=s.id WHERE t.workspace_id=$1
+  ) SELECT id FROM subtree WHERE ${restoring ? 'archive_batch_id=$3' : 'archived_at IS NULL'}`,
+      restoring ? [workspace, saved.id, saved.archive_batch_id] : [workspace, saved.id],
+    )
+  ).rows;
+  const batch = restoring ? null : randomUUID();
+  for (const item of descendants) {
+    const before = await taskActivityState(c, workspace, item.id);
+    await c.query(
+      `UPDATE task SET archived_at=CASE WHEN $3 THEN NULL ELSE now() END,
+      archived_by=CASE WHEN $3 THEN NULL ELSE $4 END,archive_batch_id=$5,revision=revision+1,updated_at=now()
+      WHERE workspace_id=$1 AND id=$2`,
+      [workspace, item.id, restoring, member.id, batch],
+    );
+    await recordTaskActivity(c, member, before, await taskActivityState(c, workspace, item.id));
+  }
+}
+
 export function manageWork(pool, auth, headers, input) {
   return withMember(pool, auth, headers, true, async (c, member) => {
     object(input);
     const workspace = member.workspace_id;
-    if (input.action === 'createBoard') {
+    if (['archiveTask', 'restoreTask', 'archiveBoard', 'restoreBoard'].includes(input.action)) {
+      keys(input, ['action', 'id', 'revision']);
+      await changeArchive(c, member, input);
+    } else if (input.action === 'createBoard') {
       keys(input, ['action', 'name', 'description', 'creationId']);
       const create = await creation(c, 'board', workspace, input.creationId);
       if (create.exists) return snapshot(c, member);

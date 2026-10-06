@@ -46,9 +46,19 @@ async function authorized(pool, auth, headers, write, action, expectedWorkspace)
     return result;
   });
 }
-async function task(c, workspace, id) {
-  if (!(await c.query('SELECT id FROM task WHERE workspace_id=$1 AND id=$2', [workspace, id])).rowCount)
-    fail(404, 'Task not found.');
+async function task(c, workspace, id, write = false) {
+  const saved = (
+    await c.query(
+      `SELECT t.revision,t.archived_at,b.archived_at AS board_archived_at
+    FROM task t JOIN board b ON b.workspace_id=t.workspace_id AND b.id=t.board_id
+    WHERE t.workspace_id=$1 AND t.id=$2`,
+      [workspace, id],
+    )
+  ).rows[0];
+  if (!saved) fail(404, 'Task not found.');
+  if (write && (saved.archived_at || saved.board_archived_at))
+    fail(409, 'This task is archived. Restore it before uploading files.');
+  return saved;
 }
 export function listFiles(pool, auth, headers, taskId) {
   if (taskId !== null && taskId !== undefined) taskId = fileId(taskId);
@@ -57,7 +67,7 @@ export function listFiles(pool, auth, headers, taskId) {
     return {
       files: (
         await c.query(
-          `${select} WHERE a.workspace_id=$1 AND a.state='ready' AND ($2::uuid IS NULL OR a.task_id=$2) ORDER BY a.created_at DESC,a.id`,
+          `${select} WHERE a.workspace_id=$1 AND a.state='ready' AND ($2::uuid IS NULL OR a.task_id=$2) AND ($2::uuid IS NOT NULL OR (t.archived_at IS NULL AND b.archived_at IS NULL)) ORDER BY a.created_at DESC,a.id`,
           [actor.workspace_id, taskId ?? null],
         )
       ).rows,
@@ -158,10 +168,11 @@ export async function uploadFile(pool, auth, request, options, taskId, name) {
     reader,
     metadataPrepared = false;
   try {
-    const workspace = await authorized(pool, auth, request.headers, true, async (c, actor) => {
-      await task(c, actor.workspace_id, taskId);
-      return actor.workspace_id;
+    const initial = await authorized(pool, auth, request.headers, true, async (c, actor) => {
+      const saved = await task(c, actor.workspace_id, taskId, true);
+      return { workspace: actor.workspace_id, revision: saved.revision };
     });
+    const workspace = initial.workspace;
     const root = await storageRoot(options.storageRoot);
     const storageKey = randomUUID();
     temp = path.join(root.root, `${storageKey}.upload`);
@@ -240,7 +251,9 @@ export async function uploadFile(pool, auth, request, options, taskId, name) {
       true,
       async (c, actor) => {
         if (request.signal.aborted) fail(400, 'Upload interrupted.');
-        await task(c, actor.workspace_id, taskId);
+        const current = await task(c, actor.workspace_id, taskId, true);
+        if (current.revision !== initial.revision)
+          fail(409, 'This task changed during upload. Check the task and upload again.');
         const inserted = (
           await c.query(
             `INSERT INTO attachment(workspace_id,task_id,uploaded_by,storage_key,original_name,media_type,byte_size,state) VALUES($1,$2,$3,$4,$5,$6,$7,'ready') RETURNING id`,
