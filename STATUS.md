@@ -1,5 +1,13 @@
 # Current status
 
+## Solar flare animation refinement — 2026-10-06
+
+User accepted the star prototype and requested emitted solar flares in its existing shades. Added five staggered plasma arches anchored at the limb: slow expansion/fade, flowing uneven filaments, local red/orange/green hue inheritance, softened edge clipping and subdued neutral activity. Existing sphere, controls, layout, pause/reduced-motion/visibility gating and data remain unchanged. No new dependency or service. Shader work is bounded to the outer star region; actual phone GPU/battery cost remains unmeasured.
+
+Checks: `pnpm check` passed TypeScript, **29/29 tests** and production build; final shader refinement passed build/typecheck again. Final authenticated HTTP smoke **20/20**. Supported browser desktop/default and **1440×900**, mobile **390×844**: mixed 75% colours, red/green endpoints, visible flare growth/flow, pause/resume (paused pixel samples identical, animated samples different), keyboard slider, mobile full/compact star, Escape/focus return. No captured warnings/errors. One initial desktop selector was hidden after viewport reset; explicit desktop sizing resolved it. Scoped Impeccable motion/craft, fresh Web Interface Guidelines and React lifecycle review completed; detector `[]`. First visual pass showed overly thin/regular loops; one batched refinement and confirmation pass widened/textured them. No new physical-phone, OS reduced-motion or forced GPU-failure tests; existing safeguards source-reviewed. No backend/data mutation or database regression needed.
+
+Final isolated loopback preview **PID 64222**, port3100. Weekly snapshot **83% used / 17% remaining**, no credits/resets or deployment. User browsing tab preserved; refresh loads this build. Next: user reviews the flare motion, then settle progress-score meaning before connecting task data. M3 remains unstarted.
+
 ## Stellar identity preview — 2026-10-06
 
 User approved a personal star/orb in place of the top-left Workspace branding, before M3. Added a procedural textured sphere, moving corona and spatial red → orange → green phases: red at 0, orange at 60, green at 80, slightly brighter at 100; 75 shows approximately one-quarter orange and three-quarters green. Organic boundaries are illustrative, not a precise chart. Click the star to adjust the preview, choose neutral “No planned work”, or pause animation. On mobile the compact star opens navigation; full controls are inside that menu.

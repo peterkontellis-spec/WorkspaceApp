@@ -71,7 +71,6 @@ void main() {
   if (radius > 0.98) { gl_FragColor = vec4(0.0); return; }
   const float sphereRadius = 0.60;
   vec2 disc = p / sphereRadius;
-  float discRadius = length(disc);
   vec2 direction = p / max(radius, 0.0001);
   float time = u_time * 0.16;
   float outside = max(0.0, radius - sphereRadius);
@@ -84,6 +83,39 @@ void main() {
   float corona = exp(-outside / reach) * (0.08 + plume * plume * 1.20 + pow(threads, 5.0) * 0.50);
   corona *= 1.0 - smoothstep(0.86, 0.98, radius);
   vec3 coronaHue = plasmaColor(direction, plume);
+  // Staggered magnetic arches grow from two feet on the limb. Their flowing
+  // filaments inherit the local surface hue instead of becoming white sparks.
+  vec3 flareLight = vec3(0.0);
+  float flareAlpha = 0.0;
+  if (radius > sphereRadius - 0.025) {
+    for (int index = 0; index < 5; index++) {
+      float seed = float(index);
+      float phase = fract(u_time * (0.075 + seed * 0.003) + seed * 0.213);
+      float life = sin(phase * 3.141593);
+      float strength = smoothstep(0.0, 0.18, phase) * (1.0 - smoothstep(0.68, 1.0, phase));
+      float angle = seed * 2.399963 + 0.35 + sin(u_time * 0.08 + seed) * 0.10;
+      vec2 axis = vec2(cos(angle), sin(angle));
+      vec2 tangent = vec2(-axis.y, axis.x);
+      float height = 0.065 + 0.265 * pow(max(life, 0.0), 0.8);
+      float width = 0.125 + 0.035 * sin(seed * 1.7 + 1.0);
+      float altitude = dot(p, axis) - 0.578;
+      float sideways = dot(p, tangent) - altitude * sin(seed + u_time * 0.23) * 0.20;
+      vec2 arch = vec2(sideways / width, altitude / height);
+      float distanceToLoop = abs(length(arch) - 1.0) * min(width, height);
+      float turbulence = sin(altitude * 44.0 - u_time * 2.4 + seed) * 0.005;
+      distanceToLoop = max(0.0, distanceToLoop + turbulence);
+      float filament = exp(-distanceToLoop * distanceToLoop / 0.00010);
+      float glow = exp(-distanceToLoop * distanceToLoop / 0.0011);
+      float plasma = noise(vec3(p * 48.0, u_time * 0.7 + seed));
+      float flow = 0.64 + 0.36 * sin(atan(arch.y, arch.x) * 7.0 - u_time * 2.8 + seed);
+      float rooted = smoothstep(-0.015, 0.025, altitude);
+      float energy = (filament * flow * (0.55 + plasma) + glow * 0.40) * strength * rooted;
+      energy *= u_progress < 0.0 ? 0.30 : 1.0;
+      vec3 hue = plasmaColor(axis, plume);
+      flareLight += hue * energy * 1.8;
+      flareAlpha += energy * 0.8;
+    }
+  }
   float pixel = 2.0 / max(1.0, u_resolution.y);
   float body = 1.0 - smoothstep(sphereRadius - pixel, sphereRadius + pixel, radius);
   vec3 surface = vec3(0.0);
@@ -111,9 +143,12 @@ void main() {
     surface += hue * hotLimb;
     surface *= 1.0 + max(0.0, u_progress - 80.0) * 0.0035;
   }
-  float auraAlpha = clamp(corona * 0.80, 0.0, 0.80);
+  float edgeFade = 1.0 - smoothstep(0.91, 0.98, radius);
+  flareLight *= edgeFade;
+  flareAlpha *= edgeFade;
+  float auraAlpha = clamp(corona * 0.65 + flareAlpha, 0.0, 0.94);
   float alpha = body + auraAlpha * (1.0 - body);
-  vec3 aura = coronaHue * (0.84 + threads * 0.35);
+  vec3 aura = coronaHue * (0.84 + threads * 0.35) + flareLight;
   vec3 color = mix(aura, surface, body);
   color = 1.0 - exp(-color * 1.65);
   gl_FragColor = vec4(color * alpha, alpha);

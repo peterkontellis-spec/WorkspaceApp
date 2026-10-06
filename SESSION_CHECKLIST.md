@@ -537,3 +537,5 @@ These boxes are a reusable routine. Completion of a session does not imply compl
 - [x] Run typecheck, behavioral tests, production build and HTTP smoke; inspect desktop/narrow UI and affected keyboard/navigation journey.
 - [x] Apply scoped design/interface/React review; record actual evidence and limitations in STATUS.md.
 - [ ] Review appearance with the user and define real task/goal scoring before connecting data.
+
+- [x] Solar flare refinement: local-colour emission, desktop/mobile and pause checks, build/tests/smoke and scoped design review recorded in STATUS.md (2026-10-06).
