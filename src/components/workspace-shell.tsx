@@ -7,6 +7,7 @@ import { ArrowUpRight, ChartNoAxesCombined, Check, ChevronDown, ChevronsUpDown, 
 import { boards, documents, members, type Member } from '@/lib/demo';
 import { Avatar, AvatarStack, Button, Dialog, Field } from '@/components/ui';
 import { useWorkspace } from './demo-provider';
+import { isSoftwareKeyboardOpen } from '@/lib/keyboard-visibility';
 
 const DemoContext = createContext<{ member: Member }>({ member: members[0] });
 export const useDemo = () => useContext(DemoContext);
@@ -43,12 +44,47 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
   const [member, setMember] = useState(members[0]);
   const [overlay, setOverlay] = useState<'navigation' | 'search' | 'account' | 'reset' | null>(null);
   const [query, setQuery] = useState('');
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
   const section = pathname.split('/')[1];
   const currentLabel = navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ?? 'Workspace';
   const close = () => setOverlay(null);
   const closeOverlay = (name: 'navigation' | 'search' | 'account' | 'reset') => {
     setOverlay((current) => current === name ? null : current);
   };
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    let frame = 0;
+    const update = () => {
+      const active = document.activeElement;
+      const editing = active instanceof HTMLTextAreaElement ? !active.readOnly
+        : active instanceof HTMLInputElement ? !active.readOnly && ['text', 'search', 'email', 'url', 'tel', 'password', 'number'].includes(active.type)
+        : active instanceof HTMLElement && active.isContentEditable;
+      setKeyboardOpen(isSoftwareKeyboardOpen({
+        narrow: window.matchMedia('(max-width: 960px)').matches,
+        editing,
+        layoutHeight: Math.max(window.innerHeight, document.documentElement.clientHeight),
+        visibleHeight: viewport.height,
+        scale: viewport.scale,
+      }));
+    };
+    const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); };
+    viewport.addEventListener('resize', schedule);
+    viewport.addEventListener('scroll', schedule);
+    window.addEventListener('resize', schedule);
+    document.addEventListener('focusin', schedule);
+    document.addEventListener('focusout', schedule);
+    update();
+    return () => {
+      cancelAnimationFrame(frame);
+      viewport.removeEventListener('resize', schedule);
+      viewport.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      document.removeEventListener('focusin', schedule);
+      document.removeEventListener('focusout', schedule);
+    };
+  }, []);
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -100,7 +136,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
         <footer className="workspace-footer"><span>Prototype · sample data</span><span>Demo date: 25 September 2026</span></footer>
       </div>
 
-      <nav className="bottom-nav" aria-label="Primary mobile navigation">
+      <nav className="bottom-nav" hidden={keyboardOpen} aria-label="Primary mobile navigation">
         {navigation.filter((item) => 'href' in item).map((item) => {
           if (!('href' in item)) return null;
           const Icon = item.icon;

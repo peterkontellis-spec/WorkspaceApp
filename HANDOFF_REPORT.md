@@ -91,6 +91,16 @@ The user requested final checks and offered to run a physical iPhone/Firefox tes
 
 **Immediate continuation:** obtain the pending hotspot confirmation, start a narrowly bound temporary sample preview if approved, guide the user through one phone check at a time, record their device/browser/results, stop that server, and finish the remaining desktop keyboard/zoom checks before updating the final acceptance gate. M1 remains open. Do not start backend implementation while this explicit sign-off request is active.
 
+### Phone keyboard/navigation fix — 2026-10-06
+
+Physical **iPhone / Firefox** feedback: Home and bottom navigation load; Docs typing, scrolling and Preview work. The user reported that only the top portion of the bottom-navigation buttons remained visible with the software keyboard, creating accidental-tap risk. This is a verified defect, not a passed phone check.
+
+Implemented keyboard-aware bottom navigation using focused text-entry state and VisualViewport height normalized for pinch zoom. The navigation is fully hidden (including hit targets/accessibility tree) while the keyboard occludes the narrow viewport, and returns when the visible height recovers even if the input retains focus. Regular text focus with a hardware keyboard and browser toolbar changes should not hide navigation. One shell-level listener set is cleaned up on unmount; existing layout spacing remains to avoid a page jump.
+
+Validation: TypeScript, **23 behavioral tests**, production build and **16/16 HTTP checks** passed. New tests distinguish keyboard opening/dismissal, hardware focus, toolbar height, short windows and pinch zoom. Impeccable detector returned `[]`; scoped React and interface review checked listener cleanup, semantic hidden state and preserving navigation without a software keyboard. Supported browser at 390 × 844 confirmed editor focus leaves navigation visible without a software keyboard; desktop 1440 × 900 remained unchanged and no warnings/errors were captured. Viewport override restored. **Actual keyboard hide/restore on the iPhone is awaiting user confirmation after refresh.**
+
+Both previews restarted with this build: loopback PID 48688; hotspot supervisor 48689 / server 48690, same 172.20.10.2:3101 with a renewed maximum 30-minute lifetime. No network scope broadened. First next action is the pending user phone retest, then continue calendar/task return and warning checks; stop the hotspot preview after testing. M1.6 is still open.
+
 ## Continue after compaction
 
 Read this file, AGENTS.md and STATUS.md; then finish the active M1.6 sign-off and assisted phone check before starting Q:M2 / M2.1 within the user's project scope and no-spend constraints. Do not restart planning or repeat completed implementation. Consult RUNNING.md for preview commands and SESSION_CHECKLIST.md/MILESTONES.md for remaining acceptance.

@@ -217,6 +217,7 @@ kbd { font: inherit; font-size: .6875rem; border: 1px solid #333b47; border-radi
   .topbar { padding: 8px 24px; }
   .workspace-body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
   .bottom-nav { display: grid; grid-template-columns: repeat(3, 1fr); position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; background: #171c23f5; border-top: 1px solid #333b46; backdrop-filter: blur(12px); padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); }
+  .bottom-nav[hidden] { display: none; }
   .bottom-nav__item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 54px; font-size: .75rem; color: #a5afbc; border-radius: 10px; }
   .bottom-nav__item--active { background: #25363e; color: #b3e2e9; }
   .navigation-dialog { width: min(390px, calc(100vw - 24px)); margin: 12px auto auto 12px; }
