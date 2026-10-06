@@ -2,7 +2,7 @@
 
 ## Current scope
 
-Accounts mode now provides real sign-in, staff roles and saved boards/tasks, custom columns, notes and checklists through M2.5. Use explicit Save for persistent changes. See [SAVED_WORK.md](SAVED_WORK.md) for behavior, draft recovery and limits. Docs remain a sample.
+Accounts mode now provides real sign-in, staff roles and saved boards/tasks, custom columns, notes and checklists through M2.5, plus M2.6 saved-task search and filters. Use explicit Save for persistent changes. See [SAVED_WORK.md](SAVED_WORK.md) for behavior, draft recovery and limits. Docs remain a sample.
 
 Docs use a small Markdown subset with formatting controls and a safe preview. This is not a full word processor or collaborative editor. Doc sample edits reset on refresh/tab closure, and unload warnings are not dependable (physical iPhone refresh was silent). File attachments remain a later increment.
 

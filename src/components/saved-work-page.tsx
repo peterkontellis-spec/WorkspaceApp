@@ -8,6 +8,8 @@ import { useWork } from './work-provider';
 import { SavedColumnForm, columnFormKey, type ColumnEdit } from './saved-column-form';
 import { SavedFieldValue } from './saved-field-value';
 import { SavedTaskEditor } from './saved-task-editor';
+import { SavedWorkFilters } from './saved-work-filters';
+import { readWorkFilters, filterWorkTasks, hasWorkFilters, type WorkFilters } from '@/lib/work-filters.mjs';
 import { localToday, workDate, type WorkBoard, type WorkGroup, type WorkTask } from '@/lib/work';
 import './auth.css';
 import './saved-work.css';
@@ -19,6 +21,36 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
   const work = useWork();
   const router = useRouter(); const pathname = usePathname(); const params = useSearchParams();
   const selectedId = params.get('task');
+  const workspaceSearch = section === 'boards' && !boardId && params.get('view') === 'tasks';
+  const filters = readWorkFilters(params);
+  const activeFilters = hasWorkFilters(filters);
+  const filterKey = JSON.stringify(filters);
+  const previousFilters = useRef(filterKey);
+  useEffect(() => {
+    const changed = previousFilters.current !== filterKey;
+    previousFilters.current = filterKey;
+    if (changed && !selectedId) {
+      const frame = requestAnimationFrame(() => document.getElementById('saved-filter-result')?.focus({ preventScroll: true }));
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [filterKey, selectedId]);
+  const previousTask = useRef(selectedId);
+  useEffect(() => {
+    if (previousTask.current && !selectedId) {
+      const closedId = previousTask.current;
+      requestAnimationFrame(() => {
+        const trigger = [...document.querySelectorAll<HTMLAnchorElement>('[data-saved-task]')].find(link => link.dataset.savedTask === closedId);
+        (trigger ?? document.getElementById('main-content'))?.focus({ preventScroll: true });
+      });
+    }
+    previousTask.current = selectedId;
+  }, [selectedId]);
+  function applyFilters(next: WorkFilters) {
+    const search = new URLSearchParams(params);
+    for (const [key,value] of Object.entries(next)) { if (value) search.set(key,value); else search.delete(key); }
+    search.delete('task');
+    router.push(`${pathname}${search.size ? `?${search}` : ''}`,{scroll:false});
+  }
   const [edit, setEdit] = useState<Edit | null>(null);
   const [dirty, setDirty] = useState(false);
   const [discard, setDiscard] = useState(false);
@@ -41,7 +73,7 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
   async function reloadTask() { if (await work.refresh()) { if(selectedId)work.setDraft(`task:${selectedId}`,null); setDirty(false); setVersion(value=>value+1); } }
   function tasksList(tasks: WorkTask[]) {
     return <ul className="saved-task-list">{tasks.map(task=><li key={task.id} className={task.parentId ? 'saved-task saved-task--child':'saved-task'}>
-      <Link href={taskHref(task)} scroll={false} className="saved-task-title" onClick={()=>{work.clearError();setDirty(false);}}><strong>{task.title}</strong>{work.drafts[`task:${task.id}`] ? <span>Unsaved draft in this tab</span>:null}<span>{task.parentId ? `Subtask of ${data?.tasks.find(parent=>parent.id===task.parentId)?.title ?? 'another task'}` : data?.boards.find(item=>item.id===task.boardId)?.name}</span></Link>
+      <Link href={taskHref(task)} scroll={false} className="saved-task-title" data-saved-task={task.id} onClick={()=>{work.clearError();setDirty(false);}}><strong>{task.title}</strong>{work.drafts[`task:${task.id}`] ? <span>Unsaved draft in this tab</span>:null}<span>{task.parentId ? `Subtask of ${data?.tasks.find(parent=>parent.id===task.parentId)?.title ?? 'another task'}` : data?.boards.find(item=>item.id===task.boardId)?.name}</span></Link>
       <StatusLabel status={task.status} /><span className="saved-task-meta">{task.priority} priority<br/>{workDate(task.dueDate)}</span>
       <span className="saved-task-people">{task.assigneeIds.map(id=>data?.members.find(member=>member.id===id)?.name).filter(Boolean).join(', ') || 'Unassigned'}</span>
       {boardId && data?.columns.some(c=>c.boardId===task.boardId) ? <dl className="saved-row-fields">{data.columns.filter(c=>c.boardId===task.boardId).sort((a,b)=>a.position-b.position||a.id.localeCompare(b.id)).map(column=><div key={column.id}><dt>{column.name}</dt><dd><SavedFieldValue column={column} value={task.fields.find(f=>f.columnId===column.id)?.value}/></dd></div>)}</dl>:null}
@@ -56,14 +88,16 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
   const boardTasks = data.tasks.filter(task=>task.boardId===boardId).sort((a,b)=>a.position-b.position||a.id.localeCompare(b.id));
   const mine = data.tasks.filter(task=>task.assigneeIds.includes(data.actor.id)&&task.status!=='Done');
   const today=localToday();
+  const matchingTasks = filterWorkTasks(boardId ? boardTasks : data.tasks, filters, today);
+  const filterControls = <SavedWorkFilters key={JSON.stringify(filters)} filters={filters} members={data.members} count={matchingTasks.length} total={boardId ? boardTasks.length : data.tasks.length} apply={applyFilters}/>;
   const buckets=[['Overdue',mine.filter(task=>task.dueDate && task.dueDate<today)],['Today',mine.filter(task=>task.dueDate===today)],['Upcoming',mine.filter(task=>task.dueDate && task.dueDate>today)],['Without a date',mine.filter(task=>!task.dueDate)]] as const;
   return <section className="saved-work">
-    <div className="page-heading"><div><h1>{section==='home' ? `Welcome back, ${data.actor.name.split(' ')[0]}.` : boardId ? board?.name || 'Board not found' : 'Boards'}</h1><p className="page-description">{section==='home' ? 'Your assigned work and the team’s shared boards.' : boardId ? board?.description : 'Shared projects, saved in your workspace.'}</p></div><div className="saved-actions"><Button disabled={work.pending||work.loading} onClick={()=>void work.refresh()}>{work.loading?'Refreshing…':'Refresh'}</Button>{canEdit && !boardId ? <Button variant="primary" onClick={()=>openEdit({kind:'board'})}><Plus size={18} aria-hidden="true"/>New board</Button>:null}{canEdit && board ? <Button onClick={()=>openEdit({kind:'board',board})}>Edit board</Button>:null}</div></div>
+    <div className="page-heading"><div><h1>{section==='home' ? `Welcome back, ${data.actor.name.split(' ')[0]}.` : boardId ? board?.name || 'Board not found' : workspaceSearch ? 'Find tasks' : 'Boards'}</h1><p className="page-description">{section==='home' ? 'Your assigned work and the team’s shared boards.' : boardId ? board?.description : workspaceSearch ? 'Search saved titles and notes across your shared workspace.' : 'Shared projects, saved in your workspace.'}</p></div><div className="saved-actions"><Button disabled={work.pending||work.loading} onClick={()=>void work.refresh()}>{work.loading?'Refreshing…':'Refresh'}</Button>{canEdit && !boardId && !workspaceSearch ? <Button variant="primary" onClick={()=>openEdit({kind:'board'})}><Plus size={18} aria-hidden="true"/>New board</Button>:null}{canEdit && board ? <Button onClick={()=>openEdit({kind:'board',board})}>Edit board</Button>:null}</div></div>
     {Object.entries(work.drafts).filter(([key])=>key.startsWith('form:')).map(([key,value])=><p key={key} className="saved-draft-note">Unsaved {((value as FormCache).edit.kind)} input is kept in this tab. <Button variant="ghost" onClick={()=>openEdit((value as FormCache).edit)}>Resume draft</Button></p>)}
     <p className="saved-scope">{canEdit ? 'Use Save to keep changes. Work is shared with your team.' : 'Viewer access · you can read shared work. Ask an owner for editing access.'}</p>
     <p role="status" className="saved-notice">{work.pending?'Saving…':work.notice}</p>
     {work.error && !selectedId && !edit ? <div className="saved-feedback"><p ref={errorRef} tabIndex={-1} role="alert" className="auth-error">{work.error}</p><Button onClick={()=>void work.refresh()}>Reload saved work</Button></div>:null}
-    {section==='home' ? <><section className="saved-section"><h2>My Day</h2>{mine.length ? buckets.filter(([,tasks])=>tasks.length).map(([name,tasks])=><section key={name} className="saved-group"><h3>{name}</h3>{tasksList(tasks)}</section>) : <p className="page-description">No open tasks are assigned to you.</p>}</section><section className="saved-section"><h2>Shared boards</h2>{boardsList()}</section></> : !boardId ? boardsList() : board ? <><Link href="/boards" className="back-link">All boards</Link>{canEdit ? <details className="saved-column-settings"><summary>Custom columns ({boardColumns.length})</summary><p className="auth-hint">Add fields for this board. Values are shown below each task and edited in task details.</p>{boardColumns.length ? <ul>{boardColumns.map(column=><li key={column.id}><span><strong>{column.name}</strong><small>{column.kind==='number'&&column.configuration.format==='cost' ? `Cost · ${column.configuration.currency}` : column.kind}</small></span><Button variant="ghost" onClick={()=>openEdit({kind:'column',boardId:board.id,column})}>Edit {column.name} column</Button></li>)}</ul>:<p className="page-description">No custom columns yet.</p>}<Button disabled={boardColumns.length>=20} onClick={()=>openEdit({kind:'column',boardId:board.id})}>Add column</Button>{boardColumns.length>=20?<p className="auth-hint">This board has the maximum 20 custom columns.</p>:null}</details>:null}{boardGroups.map(group=><section key={group.id} className="saved-group"><header className="saved-group-heading"><h2>{group.name}</h2>{canEdit ? <Button variant="ghost" onClick={()=>openEdit({kind:'group',boardId:board.id,group})}>Edit {group.name} group</Button>:null}</header>{boardTasks.some(task=>task.groupId===group.id) ? tasksList(boardTasks.filter(task=>task.groupId===group.id)) : <p className="saved-empty-row">No tasks in this group.</p>}{canEdit ? <Button className="saved-add-task" variant="ghost" onClick={()=>openEdit({kind:'task',boardId:board.id,groupId:group.id})}><Plus size={18} aria-hidden="true"/>Add task to {group.name}</Button>:null}</section>)}{canEdit ? <Button onClick={()=>openEdit({kind:'group',boardId:board.id})}>Add group</Button>:null}</> : <p className="page-description">This board is unavailable in your workspace. <Link href="/boards" className="text-link">Back to boards</Link></p>}
+    {section==='home' ? <><section className="saved-section"><h2>My Day</h2>{mine.length ? buckets.filter(([,tasks])=>tasks.length).map(([name,tasks])=><section key={name} className="saved-group"><h3>{name}</h3>{tasksList(tasks)}</section>) : <p className="page-description">No open tasks are assigned to you.</p>}</section><section className="saved-section"><h2>Shared boards</h2>{boardsList()}</section></> : !boardId ? <><nav className="saved-view-links" aria-label="Boards and task search"><Link href="/boards" aria-current={!workspaceSearch?'page':undefined}>Boards</Link><Link href="/boards?view=tasks" aria-current={workspaceSearch?'page':undefined}>Find tasks</Link></nav>{workspaceSearch ? <>{filterControls}{matchingTasks.length ? tasksList(matchingTasks) : <div className="saved-empty"><h2>{activeFilters?'No matching tasks':'No tasks yet'}</h2><p>{activeFilters?'Try different words or clear your filters.':'Open a board to add the first task.'}</p></div>}</> : boardsList()}</> : board ? <><Link href="/boards" className="back-link">All boards</Link>{filterControls}{canEdit ? <details className="saved-column-settings"><summary>Custom columns ({boardColumns.length})</summary><p className="auth-hint">Add fields for this board. Values are shown below each task and edited in task details.</p>{boardColumns.length ? <ul>{boardColumns.map(column=><li key={column.id}><span><strong>{column.name}</strong><small>{column.kind==='number'&&column.configuration.format==='cost' ? `Cost · ${column.configuration.currency}` : column.kind}</small></span><Button variant="ghost" onClick={()=>openEdit({kind:'column',boardId:board.id,column})}>Edit {column.name} column</Button></li>)}</ul>:<p className="page-description">No custom columns yet.</p>}<Button disabled={boardColumns.length>=20} onClick={()=>openEdit({kind:'column',boardId:board.id})}>Add column</Button>{boardColumns.length>=20?<p className="auth-hint">This board has the maximum 20 custom columns.</p>:null}</details>:null}{activeFilters && !matchingTasks.length ? <div className="saved-empty"><h2>No matching tasks</h2><p>Try different words or clear your filters. Saved tasks are unchanged.</p></div> : null}{boardGroups.filter(group=>!activeFilters||matchingTasks.some(task=>task.groupId===group.id)).map(group=><section key={group.id} className="saved-group"><header className="saved-group-heading"><h2>{group.name}</h2>{canEdit ? <Button variant="ghost" onClick={()=>openEdit({kind:'group',boardId:board.id,group})}>Edit {group.name} group</Button>:null}</header>{matchingTasks.some(task=>task.groupId===group.id) ? tasksList(matchingTasks.filter(task=>task.groupId===group.id)) : <p className="saved-empty-row">No tasks in this group.</p>}{canEdit ? <Button className="saved-add-task" variant="ghost" onClick={()=>openEdit({kind:'task',boardId:board.id,groupId:group.id})}><Plus size={18} aria-hidden="true"/>Add task to {group.name}</Button>:null}</section>)}{canEdit ? <Button onClick={()=>openEdit({kind:'group',boardId:board.id})}>Add group</Button>:null}</> : <p className="page-description">This board is unavailable in your workspace. <Link href="/boards" className="text-link">Back to boards</Link></p>}
     <Dialog open={Boolean(edit||selectedId)} onClose={close} title={discard?'Discard unsaved changes?':edit ? edit.kind==='column' ? edit.column?'Edit column':'New column':edit.kind==='board' ? edit.board?'Edit board':'New board':edit.kind==='group'?edit.group?'Edit group':'New group':'New task':'Task details'} className="saved-work-dialog">
       {discard ? <div><p className="dialog-intro">Your unsaved input will be discarded. Saved work will stay unchanged.</p><div className="saved-actions"><Button onClick={()=>setDiscard(false)}>Keep editing</Button><Button onClick={leave}>Discard changes</Button></div></div>:null}
       <div hidden={discard}>

@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import type { SignedInAccount } from '@/server/auth';
 import { useWork } from './work-provider';
+import { filterWorkTasks, readWorkFilters } from '@/lib/work-filters.mjs';
+import { localToday } from '@/lib/work';
 import { SignOutButton } from './session-boundary';
 import './auth.css';
 import { usePathname } from 'next/navigation';
@@ -103,6 +105,8 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
+  const taskMatches = account && query.trim() ? filterWorkTasks(savedWork?.tasks ?? [], readWorkFilters(new URLSearchParams({q:query})), localToday()) : [];
+  const taskSearchHref = `/boards?${new URLSearchParams({view:'tasks', ...(query.trim()?{q:query.slice(0,200)}:{})})}`;
   const searchItems = [
     { name: 'Home', detail: 'Your personal workspace', href: '/home', kind: 'Page' },
     { name: 'Boards', detail: 'Your team’s projects', href: '/boards', kind: 'Page' },
@@ -110,7 +114,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
     ...(account ? [{ name: 'Team access', detail: 'Real members and invitations', href: '/team', kind: 'Page' }] : []),
     ...(account ? savedWork?.boards ?? [] : boards).map((board) => ({ name: board.name, detail: board.description, href: `/boards/${board.id}`, kind: 'Board' })),
     ...documents.map((doc) => ({ name: doc.title, detail: 'Sample document · not saved', href: `/docs/${doc.id}`, kind: 'Doc' })),
-  ].filter((item) => `${item.name} ${item.detail}`.toLowerCase().includes(query.trim().toLowerCase()));
+  ].filter((item) => `${item.name} ${item.detail}`.toLowerCase().includes(query.trim().toLowerCase())).concat(taskMatches.slice(0,8).map(task => ({name:task.title, detail:savedWork?.boards.find(board=>board.id===task.boardId)?.name ?? 'Saved task', href:`${taskSearchHref}&task=${encodeURIComponent(task.id)}`, kind:'Task'})));
 
   return <DemoContext.Provider value={{ member }}>
     <a className="skip-link" href="#main-content">Skip to content</a>
@@ -134,7 +138,7 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
             <span className="breadcrumb-root">Workspace</span><span className="breadcrumb-divider" aria-hidden="true">/</span><span className="current-page">{currentLabel}</span>
           </div>
           <div className="topbar__actions">
-            <Button variant="ghost" className="search-trigger" aria-label="Find a page, board, or document" onClick={() => { setQuery(''); setOverlay('search'); }}><Search size={19} aria-hidden="true" /><span>Go to…</span><kbd>⌘ K</kbd></Button>
+            <Button variant="ghost" className="search-trigger" aria-label="Find a page, board, task, or document" onClick={() => { setQuery(''); setOverlay('search'); }}><Search size={19} aria-hidden="true" /><span>Go to…</span><kbd>⌘ K</kbd></Button>
             <span className="topbar__separator" />
             <Button variant="ghost" className="account-trigger" aria-label={account ? `Account: ${account.name}` : `Sample account: ${member.name}. Switch sample account`} onClick={() => setOverlay('account')}><Avatar member={account ? { ...member, name: account.name, initials: account.name.split(/\s+/).map((word) => word[0]).slice(0, 2).join('') } : member} /><ChevronDown size={15} aria-hidden="true" /></Button>
           </div>
@@ -161,11 +165,12 @@ export function WorkspaceShell({ children, account }: { children: ReactNode; acc
     </Dialog>
 
     <Dialog open={overlay === 'search'} onClose={() => closeOverlay('search')} title="Go to…" className="search-dialog">
-      <div className="search-field"><Search size={20} aria-hidden="true" /><Field label="Find a page, board, or document" placeholder="Find a page, board, or document" name="workspace-search" autoComplete="off" value={query} onChange={(event) => setQuery(event.target.value)} />{query && <Button variant="ghost" className="icon-button" onClick={() => setQuery('')} aria-label="Clear search"><X size={17} aria-hidden="true" /></Button>}</div>
-      <div role="status" className="sr-only">{searchItems.length} results</div>
+      <div className="search-field"><Search size={20} aria-hidden="true" /><Field label="Find a page, board, task, or document" placeholder="Find a page, board, task, or document" name="workspace-search" maxLength={200} autoComplete="off" value={query} onChange={(event) => setQuery(event.target.value)} />{query && <Button variant="ghost" className="icon-button" onClick={() => setQuery('')} aria-label="Clear search"><X size={17} aria-hidden="true" /></Button>}</div>
+      <div role="status" className="sr-only">{searchItems.length} results shown{taskMatches.length > 8 ? `; ${taskMatches.length} task matches available through Find tasks with filters` : ''}</div>
       <ul className="search-results">{searchItems.map((item) => <li key={item.href}><Link href={item.href} onClick={close}><span className="search-result__icon">{item.kind === 'Doc' ? <FileText size={19} aria-hidden="true" /> : <LayoutGrid size={19} aria-hidden="true" />}</span><span><strong>{item.name}</strong><span className="search-result__detail">{item.detail}</span></span><span className="search-result__kind">{item.kind}</span><ArrowUpRight size={16} aria-hidden="true" /></Link></li>)}</ul>
-      {searchItems.length === 0 && <div className="search-empty"><p>No matching pages or projects.</p><Button onClick={() => setQuery('')}>Clear search</Button></div>}
-      <p className="dialog-note">{account ? 'Find pages, saved boards and sample Docs. Task search comes later.' : 'Search covers sample pages, boards, and document titles. Task search comes later.'}</p>
+      {searchItems.length === 0 && <div className="search-empty"><p>No matches found.</p><Button onClick={() => setQuery('')}>Clear search</Button></div>}
+      {account ? <Link className="auth-link" href={taskSearchHref} onClick={close}>Find tasks with filters{taskMatches.length > 8 ? ` · See all ${taskMatches.length} matches` : ''}</Link> : null}
+      <p className="dialog-note">{account ? 'Search includes saved task titles and notes. Docs are still samples.' : 'Search covers sample pages, boards, and document titles. Task search comes later.'}</p>
     </Dialog>
 
     <Dialog open={overlay === 'account'} onClose={() => closeOverlay('account')} title={account ? 'Your account' : 'Sample accounts'}>

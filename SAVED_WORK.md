@@ -1,4 +1,4 @@
-# Saved boards and task details — M2.4–M2.5
+# Saved boards and task details — M2.4–M2.6
 
 In accounts mode, Home and Boards use PostgreSQL records belonging to the signed-in staff workspace. Owners and editors can create/edit boards, groups and tasks; viewers can read them. Only owners manage invitations and membership. Customer folders and private admin material are not part of this shared staff workspace.
 
@@ -14,7 +14,15 @@ In accounts mode, Home and Boards use PostgreSQL records belonging to the signed
 - If a save times out, its outcome is uncertain. Reconnect and inspect saved work. Each create form keeps one random creation ID, so retrying that logical creation returns its existing record rather than making a duplicate. Once committed, retrying creation does not apply subsequently edited fields; open the saved item to edit it. Updates use revision checks.
 - Connection failures retain forms. Session checks continue, with a Retry connection notice; signed-out/revoked identities are redirected. No automatic offline write queue or live synchronization is claimed. Use Refresh to see another person's changes.
 
-Docs are still explicitly labelled sample data, reset on refresh, and are not collaborative or access-controlled stored documents. Explicit prototype mode retains the original sample interface. Notes/checklists/custom fields are saved in M2.5; search/filters follow in M2.6, attachments M2.7, durable Docs M4. No saved-item deletion UI is included yet.
+Docs are still explicitly labelled sample data, reset on refresh, and are not collaborative or access-controlled stored documents. Explicit prototype mode retains the original sample interface. Notes/checklists/custom fields and task search/filters are implemented. Attachments follow in M2.7, durable Docs M4. No saved-item deletion UI is included yet.
+
+## Finding saved work
+
+Use board Search tasks for that board, or Boards → Find tasks for the whole staff workspace. Go to / Cmd+K also finds tasks and links to all matches; it shows at most eight task matches in the dialog. Task search is literal, case-insensitive title/notes text, up to 200 characters. Checklist text, custom values, attachments and document contents are not searched.
+
+Combine status, assignee (including Unassigned), priority and due date with AND. Before today / Today / After today use your local calendar date; No date means an empty due date. Date filters include any completion state unless Status is also set. Use Search or Apply filters to apply edited inputs. Clear filters resets them.
+
+Applied filters are URL parameters, restored on refresh and Back/Forward. Opening/closing a task keeps the result context. If an edit makes it stop matching, it leaves the result list and focus returns to the page. No-results copy distinguishes filtering from deleted data. Search works on the existing server-authorized workspace snapshot and updates after Save or Refresh; it does not introduce automatic live synchronization or a separate search service.
 
 ## Column changes and limits
 

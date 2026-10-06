@@ -78,3 +78,9 @@ Keep each board's column definitions independent. Validate values and original c
 Owner/editor forms use the established dark interface, explicit Save, in-memory draft recovery and visible conflict/error states. Viewers see read-only values, notes and checklist completion. Attachments and durable Docs remain later increments.
 
 The user requested a reusable local preview login; preserve that account, boards and user edits separately from disposable QA fixtures. Serve the Mac preview from a copied build release under ignored `.local/preview-releases` so later builds cannot replace its scripts. Verify project/process/port ownership before replacement; never stop a foreign service. This does not authorize LAN/public exposure or NAS deployment.
+
+## 2026-10-06 — M2.6 search within authorized snapshots
+
+For the initial small staff workspace, search/filter the existing session-verified `/api/work` snapshot in the browser. Do not add a search cluster, duplicate cache or unauthenticated endpoint. This preserves the server's current workspace boundary; integration tests apply the actual filter helper to verified owner/viewer/outsider snapshots and confirm membership removal denies subsequent reads. Larger datasets will need measured pagination/query work later.
+
+Search literal case-insensitive title/notes text, capped at 200 characters. Combine status, one assignee/unassigned, priority and due-date scope with AND. Dates are before today/today/after today/no date using the local calendar day; completion is controlled separately by Status. Explicit Search/Apply writes URL parameters, Clear removes them, and result task links preserve them. Show eight task matches in Go to plus an all-results link; the full workspace result list is available from Boards → Find tasks. Draft filter input is not applied until submission.

@@ -9,6 +9,7 @@ import { createAuthentication, verifiedActor } from '../../src/server/auth-core.
 import { createFirstOwner } from '../../src/server/account-operator.mjs';
 import { authHttpHandler } from '../../src/server/auth-http.mjs';
 import { workHttpHandler } from '../../src/server/work-http.mjs';
+import { readWorkFilters, filterWorkTasks } from '../../src/lib/work-filters.mjs';
 
 let local, admin, pool, auth, handle, owner, ownerCookie, workspace;
 const options = { secret: randomBytes(48).toString('hex'), baseURL: 'http://127.0.0.1:3100' };
@@ -75,6 +76,35 @@ test('cross-workspace reads, mutations, references and submitted identity cannot
   assert.equal((await work({ action: 'createBoard', name: 'No impersonation', workspaceId: other })).status, 400);
   assert.equal((await work({ action: 'updateTask', id: t.id, revision: 1, patch: { assigneeIds: [outsider.id] } })).status, 400);
   assert.equal((await ok(undefined, outsider.cookie)).tasks[0].title, 'Outside task');
+});
+
+test('task search only filters verified owner/viewer workspace snapshots and revoked membership cannot refresh results', async () => {
+  const viewer = await member('search-viewer@example.test', 'viewer');
+  const otherWorkspace = (await admin.query("INSERT INTO workspace(name) VALUES('Search outside') RETURNING id")).rows[0].id;
+  const outsider = await member('search-outsider@example.test', 'owner', otherWorkspace);
+  const b = await board('Shared search');
+  const ours = await task(b, 'Shared launch', { assigneeIds: [owner, viewer.id], dueDate: '2028-03-01', priority: 'High' });
+  await ok({ action: 'updateTask', id: ours.id, revision: ours.revision, patch: { notes: 'Workspace-only search phrase' } });
+  await task(b, 'Unrelated');
+  const outside = await ok({ action: 'createBoard', name: 'Private outside board' }, outsider.cookie);
+  const theirs = (await ok({ action: 'createTask', boardId: outside.boards[0].id, groupId: outside.groups[0].id, title: 'Outside launch', dueDate: '2028-03-01', priority: 'High' }, outsider.cookie)).tasks[0];
+  const titleFilter = readWorkFilters(new URLSearchParams('q=launch&priority=High&due=today'));
+  const notesFilter = readWorkFilters(new URLSearchParams('q=workspace-only'));
+  for (const cookie of [ownerCookie, viewer.cookie]) {
+    const snapshot = await ok(undefined, cookie);
+    assert.deepEqual(filterWorkTasks(snapshot.tasks, titleFilter, '2028-03-01').map(task => task.id), [ours.id]);
+    assert.deepEqual(filterWorkTasks(snapshot.tasks, notesFilter, '2028-03-01').map(task => task.id), [ours.id]);
+    assert.deepEqual(filterWorkTasks(snapshot.tasks, { ...titleFilter, assignee: viewer.id }, '2028-03-01').map(task => task.id), [ours.id]);
+    assert.deepEqual(filterWorkTasks(snapshot.tasks, { ...titleFilter, assignee: outsider.id }, '2028-03-01'), []);
+  }
+  const outsideSnapshot = await ok(undefined, outsider.cookie);
+  assert.deepEqual(filterWorkTasks(outsideSnapshot.tasks, titleFilter, '2028-03-01').map(task => task.id), [theirs.id]);
+  assert.deepEqual(filterWorkTasks(outsideSnapshot.tasks, notesFilter, '2028-03-01'), []);
+  await admin.query('DELETE FROM membership WHERE workspace_id=$1 AND user_id=$2', [workspace, viewer.id]);
+  const revoked = await work(undefined, viewer.cookie);
+  assert.equal(revoked.status, 401);
+  assert.equal(revoked.headers.get('cache-control'), 'no-store');
+  assert.equal((await revoked.json()).tasks, undefined);
 });
 
 test('task data, multiple assignees, dates, groups, subtasks and order survive a real database restart', async () => {

@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.5 are accepted; M2.6 saved task search and filters is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.6 are accepted; M2.7 attachments and Files is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -210,11 +210,13 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** dependable ways to find work.
 
-- [ ] Add board and workspace task search plus status, assignee, priority, and date filters.
-- [ ] Apply access rules to results and maintain a clear route from a result to its task.
-- [ ] Check combined filters, no-result states, and changes that move a task out of the current result set.
+- [x] Add board and workspace task search plus status, assignee, priority, and date filters.
+- [x] Apply access rules to results and maintain a clear route from a result to its task.
+- [x] Check combined filters, no-result states, and changes that move a task out of the current result set.
 
 **Done when:** a collaborator can locate known tasks and cannot discover inaccessible data through search.
+
+**Accepted 2026-10-06:** board/workspace search, combined filters, access boundaries, no-match/edit transitions, URL navigation and desktop/narrow browser checks passed; see STATUS.md.
 
 ### M2.7 — Attachments and Files
 

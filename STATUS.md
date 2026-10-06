@@ -1,5 +1,23 @@
 # Current status
 
+## M2.6 accepted — saved task search and filters — 2026-10-06
+
+Board search and Boards → Find tasks now search saved task titles/notes, with combined status, assignee (including unassigned), priority and due-date filters. Top-bar Go to also returns saved tasks and a link to all matches/filters. Filters use explicit Search/Apply, persist in the URL, and survive task navigation, refresh and Back/Forward. Dates mean before/today/after the local day or no date, independently of completion. Owners/editors retain editing; viewers retain read-only task details. See [SAVED_WORK.md](SAVED_WORK.md).
+
+Actual checks:
+- Final `pnpm check`: TypeScript, **29/29 behavioral tests** and production build passed. `pnpm check:smoke`: **19/19 passed** on the refreshed preview.
+- Search helper: six groups cover literal title/notes matching, Unicode/case, query limits, combined filters, multi-assignee/unassigned/unknown IDs, date boundaries, no results, edited tasks leaving results and nonmutation/order. Affected PostgreSQL work suite **17/17 passed**, including a new verified owner/viewer/outsider snapshot isolation and removed-membership denial group; isolated cluster stopped. No new migration, dependency or search service.
+- Supported browser: searched across two disposable boards (10 title matches), reached all matches beyond the eight shown in Go to, searched notes (two matches), combined all four filters (one match), refreshed and used Back/Forward with correct restored controls/results. Board search returned only its two matching tasks. Unassigned + no date returned the expected task. Clearing filters recovered results.
+- Changed the sole matching task to Done: it left the To do result set, the no-results message appeared, the URL retained filters, and focus returned to main content. Closing an unchanged result returned focus to its task link. Search/Apply moved keyboard focus to the results count. Viewer used global search to open read-only details and could not discover BOARDTEST from the separate QA workspace.
+- Inspected desktop/default and 1440×900, plus 360×800 narrow layouts: search, collapsed/expanded filters, result rows and viewer task navigation. Filter selects were 305px wide / 48px tall; document width 345px within 360px. Captured console warnings/errors were empty. No new physical-phone/software-keyboard or 200% zoom evidence is claimed.
+- Scoped Impeccable, current Web Interface Guidelines and React review completed; detector `[]`. Independent review caught a misplaced all-results link and lost focus after filter remount; both fixed before final browser checks. An automation empty-fill did not clear a search input; normal Select All/Backspace did, and the subsequent filter result was verified. No unresolved application failure remains in this increment.
+
+Filtering uses the existing authenticated workspace snapshot; `/api/work` still verifies identity, current membership and workspace scope before data reaches the browser. It is not a new server search index or a new permission boundary. Whole-workspace snapshots remain suitable only for the initial small workspace; pagination/large-data performance is unmeasured. Search covers titles/notes, not attachments, checklist text, custom values or durable Docs.
+
+Cleanup removed exactly the separate M2.6 QA workspace, two identities, two boards and eleven tasks. Preserved the preview owner, BOARDTEST's two tasks and the two sample boards/tasks; user login restored and temporary viewport reset. Preview PID **59948** remains loopback3100; database supervisor **51561** loopback55432. Verify identities before acting. Latest weekly snapshot **71% used / 29% remaining**. No credits, resets, purchases, NAS/public deployment or publication audit.
+
+Next: **M2.7 — attachment upload/download and Files**, starting with authorized storage, safe filenames/type/size validation and role-safe retrieval. The pre-publication Cloudflare audit remains required before any external release. Earlier sections below are historical.
+
 ## M2.5 accepted; preview stability fixed — 2026-10-06
 
 User resumed development with “Proceed with next block.” Delivered per-board text, status, number/cost, date and link columns; saved task notes and ordered/completed checklists; owner/editor editing and viewer read-only details. Column rename/reorder preserves values; changing a populated column's type/number format/currency or removing an in-use status option is refused. Initial costs support EUR/USD/GBP without conversion. See [SAVED_WORK.md](SAVED_WORK.md).
