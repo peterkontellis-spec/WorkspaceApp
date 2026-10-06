@@ -88,9 +88,9 @@ void main() {
   vec3 flareLight = vec3(0.0);
   float flareAlpha = 0.0;
   if (radius > sphereRadius - 0.025) {
-    for (int index = 0; index < 5; index++) {
+    for (int index = 0; index < 2; index++) {
       float seed = float(index);
-      float phase = fract(u_time * (0.075 + seed * 0.003) + seed * 0.213);
+      float phase = fract(u_time * 0.075 + seed * 0.5);
       float life = sin(phase * 3.141593);
       float strength = smoothstep(0.0, 0.18, phase) * (1.0 - smoothstep(0.68, 1.0, phase));
       float angle = seed * 2.399963 + 0.35 + sin(u_time * 0.08 + seed) * 0.10;
