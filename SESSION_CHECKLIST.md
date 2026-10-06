@@ -438,6 +438,7 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** the intended HTTPS entry point for collaborators.
 
+- [ ] Before any publication/external release, run Cloudflare `security-audit` against the release candidate and deployment configuration; record coverage, resolve release blockers, retest fixes and revalidate subsequent changes. Incomplete verification remains pending. Repeat this gate for later changed releases.
 - [ ] Prepare the concrete domain/routing configuration and confirm authorization before enabling external access.
 - [ ] Configure the chosen route and verify login, live connections, Docs, and file transfers from outside the local network.
 - [ ] Confirm the app deployment does not expose its database or the NAS administration interface.

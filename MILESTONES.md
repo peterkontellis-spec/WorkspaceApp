@@ -71,6 +71,7 @@ Acceptance:
 - Measure memory with representative workloads against the approximate 4 GB budget and existing NAS workloads; record any shortfall before release.
 - Restore the database and attachments from a real backup into a safe test location and verify usability.
 - The database and NAS administration interface are not exposed through the app deployment.
+- Before publication/external release, complete the required Cloudflare `security-audit` review for the release candidate/configuration, resolve release blockers and record fix/retest evidence. Revalidate changes before later publication; pending validation is not a pass.
 - Document restart/update/recovery procedures and remaining limitations. User authorizes external access before enabling it.
 
 ## Per-task record

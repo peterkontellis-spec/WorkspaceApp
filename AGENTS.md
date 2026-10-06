@@ -46,6 +46,14 @@ At meaningful progress points and before a handoff, update STATUS.md with delive
 
 Prepare NAS deployment incrementally. Changing live infrastructure or granting external access requires authorization for that action; a local prototype request does not authorize deployment. Respect existing environment permissions. Do not record secrets in project documents.
 
+## Required pre-publication security audit
+
+User instruction confirmed 2026-10-06: run Cloudflare's official `security-audit` skill before any publication or external release in later stages. Installed at `/Users/peterkontellis/.codex/skills/security-audit/SKILL.md`; source: https://github.com/cloudflare/security-audit-skill. This is a codebase-audit workflow, not a choice of Cloudflare hosting or permission to change infrastructure.
+
+Before first external access, and before publishing later changed releases, audit the concrete release candidate and relevant deployment configuration using the installed skill. Record the audited commit/configuration, coverage, confirmed findings, unresolved validation and fix/retest evidence. Revalidate changes made after the audit. Do not mark publication ready while release-blocking findings or necessary security validation remain unresolved; an incomplete audit is not a pass.
+
+Keep audit artifacts in an explicitly selected ignored project path such as `.local/security-audits/run-N`, preserving the workspace-only scope. Commit only an appropriate redacted release summary, never secrets or sensitive exploit details. Follow the skill's isolation requirements; unavailable verification stays explicitly pending. Honor usage limits and the no-credit/no-reset instruction: checkpoint incomplete work before exhausting the allowance. The audit does not authorize deployment, external probing, paid services or messages to third parties. No recurring audit is scheduled; apply this gate within the release workflow.
+
 ## Git checkpoints and current handoff
 
 User authorization on 2026-10-05: implement M1.2 through M1.5, commit and push a checkpoint after each meaningful step to https://github.com/peterkontellis-spec/WorkspaceApp.git. Work only in this project workspace; do not move the project or modify unrelated files. Preserve the current design. No purchases, credits, reset redemption or NAS deployment. Check account usage at milestones and stop with a checkpoint before exhausting the allowance.

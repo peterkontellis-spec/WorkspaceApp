@@ -1,5 +1,11 @@
 # Current status
 
+## Paused; pre-publication audit required — 2026-10-06
+
+User paused development after M2.4. Resume at M2.5 only on their continuation. Installed Cloudflare's official `security-audit` skill at `/Users/peterkontellis/.codex/skills/security-audit/SKILL.md` from https://github.com/cloudflare/security-audit-skill using the skill-installer helper; installation and required workflow/reporting files verified. It is available on the next turn. No security audit was executed in this setup task and no publication/deployment occurred.
+
+AGENTS.md and the M5 release checklist now require this audit before any publication/external release, with release-candidate/configuration evidence, fixes/retests and revalidation after changes. Output stays in an explicitly selected ignored project audit directory; usage/no-spend limits still apply. Documentation checks passed; application tests were not rerun for this instruction-only change. Development remains paused.
+
 ## M2.4 accepted — saved boards/tasks and role enforcement — 2026-10-06
 
 Accounts-mode Home and Boards now use the real staff workspace. Owners/editors can create/edit boards, groups, tasks, numeric ordering, status, priority, dates, multiple real assignees and subtasks. Viewers get read-only boards/task details; the server independently rejects their writes. Team administration remains owner-only. Docs remain explicitly sample-only. See [SAVED_WORK.md](SAVED_WORK.md) for behavior and limits.
