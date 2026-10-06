@@ -32,7 +32,7 @@ Saved: **2026-10-06**, with browser-policy diagnostic results. This is a durable
 - Mobile meeting/task alerts through Web Push, with quiet hours and configurable reminders. iPhone Home Screen web apps can receive push with user permission; no App Store submission or paid developer membership is required. Delivery uses platform push infrastructure. SMS is an optional paid alternative, not enabled.
 - Local NAS helper with optional heavier-task handoff remains a future proposal. No model, external AI integration, credentials or spend configured. Benchmark local inference separately from the four-GB app design budget.
 
-## Immediate next action
+## Immediate next action (historical browser diagnosis)
 
 User explicitly requested: answer weekly-usage question, save this checkpoint, then troubleshoot the intermittent browser-policy issue now. Diagnose supported browser access and local app reachability separately. Do not change security policies, switch origins/control paths to evade denial, or claim the app can fix a host policy-verification failure.
 
@@ -48,6 +48,33 @@ With access currently restored, remaining acceptance includes refresh/close warn
 
 Pre-existing security-planning edits in BRIEF.md, DECISIONS.md and STATUS.md, plus untracked SECURITY_CHECKLIST.md, came from a parallel discussion. Preserve them. They were not included in checkpoint 397af19; do not call the entire working tree remotely backed up.
 
+## Pre-M2 reconciliation — 2026-10-06
+
+**Handoff position:** M1.2–M1.5 are implemented and the core journeys have browser evidence. M1.6/Stage 1 remain formally open for the explicit gaps below. M2 has not started. The coherent screen structure supports M2.1 architecture/data planning now; do not describe M1 as fully accepted or silently discard these checks.
+
+Additional checks in the supported in-app browser at its default **1165 × 814** viewport:
+- Filtered Website refresh to Sam, collapsed Next, opened Gather content references → Content outline → Back to task → Escape. Filter and collapsed state survived; page scroll was **436.5 px before and after**, and settled focus returned to Gather content references. No captured browser warnings/errors. This establishes one desktop return-state case, not the full device/history matrix.
+- Home's new-collaborator preview showed an explanatory empty state and a shared-boards link. Unchecking restored assigned tasks; sample boards remained present.
+- Entered temporary text in the diagnostic Launch brief, then requested refresh. The text remained; the browser exposed no JavaScript dialog and its screenshot contained no warning. The reload/close warning is **inconclusive**, not passed. Do not rely on this warning to protect real work. Only diagnostic-tab sample state was changed; the user's separate browsing tab was untouched.
+- Scoped source/UI review used Impeccable and the fetched Web Interface Guidelines for navigation, shared dialog and unload handling. Visible keyboard focus, semantic links/labels, dark tokens and modal scroll containment were present; detector returned `[]`. No new confirmed source defect in this scope; warning verification remains a gap. No global accessibility/performance score or physical-phone coverage is claimed. No application code changed, so the existing 20-test/build/16-HTTP results were retained rather than rerun.
+
+### Open register to carry into M2
+
+| Item | State and next action |
+| --- | --- |
+| Unsaved refresh/close warning | Inconclusive in the embedded browser. Perform a user-observed refresh/cancel/leave and tab-close check with disposable text; record actual dialog and retained/lost text. Warn before prompts. |
+| Responsive/keyboard coverage | Existing 360/390/1024/1440 evidence is partial. Finish screen-by-screen Home, both boards, Docs lists/editors, task panels and dialogs; verify focus/Tab/Shift+Tab and 200% zoom. Do not infer a full matrix from one screenshot. |
+| Return-state matrix | Desktop filtered/collapsed/scrolled task→Doc→task now passes. Confirm the corresponding narrow-layout and browser Back/Forward variants; prior Home and history tests remain valid but are not every combination. |
+| Physical phone/software keyboard | Untested. Requires an authorized phone-accessible test setup; current 127.0.0.1 link is only on this Mac. No LAN/NAS/public exposure was enabled. |
+| Native warning/tool behavior | Native Reset confirmation was replaced and verified in-page. Browser-owned unload warning remains separate; do not reintroduce native date picker or reset confirmation. |
+| Next.js development profiler | Negative-time `performance.measure` error on not-found route in dev remains unresolved; same production build/recovery passed. Reproduce in an isolated dev session before choosing a dependency fix. |
+| Browser policy / preview lifetime | Explicit local-site approval restored current access. Earlier intermittent verification failure remains unproven; preview is a local process, not an installed managed service. Recheck server and browser separately if it returns. |
+| Security-planning drafts | BRIEF.md, DECISIONS.md and STATUS.md contain pre-existing planning edits; SECURITY_CHECKLIST.md is untracked. Preserved locally, not included in this checkpoint. Review and checkpoint separately before a repository-only handoff. All security controls are unimplemented/unverified. |
+| M2 scope/model decision | Reconcile internal owner/editor/viewer roles with the separate proposed admin/customer-folder boundary before schema/auth decisions. Customer count and access actions are unresolved; four staff is not a measured customer capacity. |
+| Future ideas | Assistant is a disabled placeholder. NAS AI, heavy-task routing, admin email ranking and mobile push are proposals, not implemented or silently added to M2. |
+
+**Next session: Q:M2 / M2.1.** Read AGENTS.md, this section, HANDOFF_REPORT.md, BRIEF.md, DECISIONS.md and the local SECURITY_CHECKLIST.md. Choose and document the database/authentication approach against NAS constraints, define the access matrix and schema, then deliver one local save/read/restart/migration slice with tests. Preserve design and carried M1 checks; no deployment, purchases, credits or resets. Latest usage snapshot: **27% used / 73% remaining** account-wide.
+
 ## Continue after compaction
 
-Read this file, AGENTS.md and STATUS.md; then continue remaining browser acceptance checks within the user's project scope and no-spend constraints. Do not restart planning or repeat completed implementation. Consult RUNNING.md for preview commands and SESSION_CHECKLIST.md/MILESTONES.md for remaining acceptance.
+Read this file, AGENTS.md and STATUS.md; then start Q:M2 / M2.1 planning while preserving the open M1 register within the user's project scope and no-spend constraints. Do not restart planning or repeat completed implementation. Consult RUNNING.md for preview commands and SESSION_CHECKLIST.md/MILESTONES.md for remaining acceptance.

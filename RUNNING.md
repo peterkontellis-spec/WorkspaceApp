@@ -26,7 +26,7 @@ Stop this project's existing preview before starting another server on port 3100
 
 ## Open the current preview
 
-While the local development server is running, open:
+While the local preview server is running, open:
 
 [Workspace preview](http://127.0.0.1:3100/home)
 
@@ -102,6 +102,10 @@ Run these once browser inspection is available, recording actual results in STAT
 - [ ] Inspect task panel, board controls and editor at 360/390 px, medium and wide desktop. Desktop must keep board context visible; phone controls/keyboard must not hide active input.
 
 No phone hardware or phone software-keyboard behavior has been tested. STATUS.md records partial direct browser evidence; combined checklist boxes remain open until every part passes.
+
+### Current handoff note — 2026-10-06
+
+Explicit approval for browser access to `http://127.0.0.1:3100` restored supported tool access. The local standalone preview is running in its own process session, with logs at `.git/preview-server.log`; this is not an autostart service. A clean refresh passed, but a dirty-document refresh retained text without exposing an inspectable warning, so refresh/close warning behavior remains inconclusive. See the pre-M2 open register in STATUS.md before treating any broad box above as passed.
 
 ### M1.6 confirmation priorities
 

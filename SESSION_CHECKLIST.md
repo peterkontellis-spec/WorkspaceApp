@@ -71,7 +71,7 @@ You do not need to finish one increment per session. Some will take several sess
 **Deliverable:** a local, runnable frame for the app.
 
 - [x] Establish the minimal prototype project and consistent sample data after checking dependency choices.
-- [ ] Build the sidebar, top bar, account area, and navigation between demonstrated screens.
+- [x] Build the sidebar, top bar, account area, and navigation between demonstrated screens.
 - [ ] Define reusable buttons, fields, task rows, status labels, and panels with keyboard focus.
 
 **Done when:** the prototype opens locally and navigation works; unfinished areas are clearly identified.
@@ -84,9 +84,9 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** the dashboard a collaborator sees on arrival.
 
-- [ ] Show sample assigned work, today's tasks, overdue/upcoming work, and recent documents.
-- [ ] Make task and document links open the relevant prototype views.
-- [ ] Show an understandable empty state for a new collaborator.
+- [x] Show sample assigned work, today's tasks, overdue/upcoming work, and recent documents.
+- [x] Make task and document links open the relevant prototype views.
+- [x] Show an understandable empty state for a new collaborator.
 
 **Done when:** you can see what needs attention and open it without searching through boards. Data is clearly illustrative.
 
@@ -96,9 +96,9 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** a usable sample board with editable task rows.
 
-- [ ] Show groups, tasks, assignees, status, priority, and dates with a route for adding custom columns later.
-- [ ] Demonstrate adding/editing a sample task and filtering or searching the sample board.
-- [ ] Represent Table/Kanban/Calendar navigation without implying that unfinished views work.
+- [x] Show groups, tasks, assignees, status, priority, and dates with a route for adding custom columns later.
+- [x] Demonstrate adding/editing a sample task and filtering or searching the sample board.
+- [x] Represent Table/Kanban/Calendar navigation without implying that unfinished views work.
 
 **Done when:** the demonstrated controls work and the board remains readable with realistic sample content.
 
@@ -109,8 +109,8 @@ You do not need to finish one increment per session. Some will take several sess
 **Deliverable:** the two main detail views connected to the board.
 
 - [ ] Open/close task details alongside the desktop board, with notes, subtasks/checklist, files, and future feature locations.
-- [ ] Build the Docs list/editor layout and a sample task-to-document link.
-- [ ] Label sample edits, collaboration indicators, and saving behavior accurately.
+- [x] Build the Docs list/editor layout and a sample task-to-document link.
+- [x] Label sample edits, collaboration indicators, and saving behavior accurately.
 
 **Done when:** you can move from a task into its document and back; no sample state is presented as durable server storage.
 
@@ -121,7 +121,7 @@ You do not need to finish one increment per session. Some will take several sess
 **Deliverable:** a reviewable prototype and a short remaining-issues list.
 
 - [ ] Inspect desktop and narrow layouts; check keyboard operation, focus, readable labels, and panel behavior.
-- [ ] Walk through the main journey, capture user feedback, and fix issues chosen for this stage.
+- [x] Walk through the main journey, capture user feedback, and fix issues chosen for this stage.
 - [x] Record the preview location, checks, design decisions, and remaining prototype limitations.
 
 **Progress 2026-10-05:** direct desktop/narrow browser checks completed part of the acceptance matrix. Calendar crash reproduced twice and replacement implemented; mobile preview access refined, nested Markdown links fixed, Assistant · Later added. Final browser confirmation is blocked again by policy verification. STATUS.md contains the failure register and remaining checks; this increment and Stage 1 stay open.
@@ -133,6 +133,8 @@ You do not need to finish one increment per session. Some will take several sess
 - [ ] **Stage 1 complete:** all M1 acceptance checks in MILESTONES.md have evidence.
 
 ---
+
+**Pre-M2 reconciliation 2026-10-06:** Individual delivery boxes above now reflect recorded checks; historical progress notes describe earlier states. The broad component/panel/layout and Stage 1 gates remain open. STATUS.md contains the complete carry-forward register, including inconclusive unload warning, remaining viewport/keyboard/history coverage and physical phone testing. Q:M2 starts with M2.1 architecture and a bounded local persistence slice, not a claim that all M1 checks passed.
 
 ## Stage 2 — Working foundation
 
