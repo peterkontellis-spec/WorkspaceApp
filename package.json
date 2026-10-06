@@ -18,10 +18,16 @@
     "db:migrate": "node scripts/db/command.mjs migrate",
     "db:seed": "node scripts/db/command.mjs seed",
     "db:status": "node scripts/db/command.mjs status",
-    "dev:db": "node --env-file=.local/database.env node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 3100",
-    "test:db": "node --test --test-concurrency=1 tests/database/*.test.mjs"
+    "dev:db": "node --env-file=.local/database.env --env-file=.local/auth.env node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 3100",
+    "test:db": "node --test --test-concurrency=1 tests/database/*.test.mjs",
+    "dev:prototype": "WORKSPACE_MODE=prototype next dev --hostname 127.0.0.1 --port 3100",
+    "account:setup": "node scripts/auth/operator.mjs setup",
+    "account:recover": "node scripts/auth/operator.mjs recover",
+    "account:revoke": "node scripts/auth/operator.mjs revoke",
+    "account:disable": "node scripts/auth/operator.mjs disable"
   },
   "dependencies": {
+    "better-auth": "1.7.7",
     "lucide-react": "1.48.0",
     "next": "16.3.6",
     "pg": "8.23.1",

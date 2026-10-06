@@ -1,4 +1,4 @@
-# Run the workspace prototype
+# Run the workspace app locally
 
 ## Current scope
 
@@ -6,7 +6,7 @@ M1.2–M1.5 implement the shell, personal Home/My Day, editable grouped boards, 
 
 Docs use a small Markdown subset with formatting controls and a safe preview. This is not a full word processor or collaborative editor. Attachments are sample metadata only. All edits reset on refresh/tab closure, and unload warnings are not dependable (physical iPhone refresh was silent). Reset demo in the account dialog asks for confirmation before clearing session data.
 
-M2.1 adds a separate local PostgreSQL foundation; see [DATABASE.md](DATABASE.md) for startup and checks. These UI screens still have no real accounts, enforced permissions, upload/download or durable saving. No NAS deployment exists. Sample roles are illustrative. The demo date remains 25 September 2026.
+M2.1 adds a separate local PostgreSQL foundation; see [DATABASE.md](DATABASE.md) for startup and checks. M2.2 adds real accounts and protected screens; follow [AUTHENTICATION.md](AUTHENTICATION.md) for first-owner setup/recovery. Sample editing still has no enforced task roles, upload/download or durable saving. No NAS deployment exists. Sample roles are illustrative. The demo date remains 25 September 2026.
 
 M1 was signed off as a sample-data prototype on 2026-10-06, including the replacement in-page calendar and phone/keyboard/zoom checks. Earlier browser-policy failures are historical; see STATUS.md for the recorded limits and current M2 progress. Build/model/HTTP checks do not substitute for browser verification.
 
@@ -19,7 +19,7 @@ The current local preview uses the production standalone build. After `pnpm buil
 ```sh
 cp -R public .next/standalone/
 cp -R .next/static .next/standalone/.next/
-HOSTNAME=127.0.0.1 PORT=3100 node .next/standalone/server.js
+HOSTNAME=127.0.0.1 PORT=3100 node --env-file=.local/database.env --env-file=.local/auth.env .next/standalone/server.js
 ```
 
 Stop this project's existing preview before starting another server on port 3100. This is a local preview, not NAS deployment. Development mode exposed a Next.js profiler timing error on a not-found route; the same route and recovery worked in production. The intermittent browser-policy block later returned and remains outside application code.
@@ -41,7 +41,7 @@ From a terminal:
 ```sh
 cd /Users/peterkontellis/.codex/.chatgpt-projects/g-p-6a0f76716e988191962260a53dc7ed97/workspace-app
 pnpm install --workspace-root --frozen-lockfile
-pnpm dev
+pnpm dev:prototype
 ```
 
 Installation is only necessary when dependencies are missing or changed. The development command serves port 3100 on `127.0.0.1`. Keep the terminal running; Ctrl+C stops the preview. If this project's server is already running, reuse it rather than starting another copy. A port collision should be resolved explicitly, not by silently choosing an unrelated service.
@@ -67,7 +67,7 @@ Both commands passed during M1.6 refinement checks. A native framework standalon
 
 ### Repeatable self-check commands
 
-Run `pnpm check` for TypeScript, behavioural model/Markdown/navigation tests, and the production build. With this project's server running at `127.0.0.1:3100`, run `pnpm check:smoke` in another terminal. The smoke script runs 16 checks covering the Home redirect, sample pages, task/filter/return query routes, prototype disclosure, filtered row count, task/editor markup and four HTTP 404 responses. Recovery-link rendering and clicks remain browser checks. The script exits nonzero on failure and uses no additional dependencies.
+Run `pnpm check` for TypeScript, behavioural model/Markdown/navigation tests, and the production build. With this project's server running at `127.0.0.1:3100`, run `pnpm check:smoke` in another terminal. In explicit prototype mode the smoke script runs 16 checks covering the Home redirect, sample pages, task/filter/return query routes, prototype disclosure, filtered row count, task/editor markup and four HTTP 404 responses. Accounts mode adds signed-out rejection checks (17 total) and needs an ignored disposable credentials file; see AUTHENTICATION.md. Recovery-link rendering and clicks remain browser checks. The script exits nonzero on failure and uses no additional dependencies.
 
 These HTTP checks do not execute client JavaScript, click controls, inspect layout, or replace the browser checklist below. Do not use them as a workaround for a denied browser check. Extend the checks as routes and behavior evolve.
 
@@ -118,8 +118,8 @@ Explicit approval for browser access to `http://127.0.0.1:3100` restored support
 
 | Location | Responsibility |
 | --- | --- |
-| `src/app/layout.tsx` | Shared document metadata and application shell |
-| `src/app/[...segments]/page.tsx` | Validate and serve sample section/detail routes |
+| `src/app/layout.tsx` | Shared document metadata; protected shell is in `(workspace)/layout.tsx` |
+| `src/app/(workspace)/[...segments]/page.tsx` | Validate and serve sample section/detail routes |
 | `src/components/workspace-shell.tsx` | Navigation, page picker, sample account, and mobile menu |
 | `src/components/workspace-pages.tsx` | Personal Home, board list and page composition |
 | `src/components/board-view.tsx` | Grouped board editing and URL filters |

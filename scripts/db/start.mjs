@@ -1,3 +1,4 @@
+import { localAuthConfig } from '../auth/config.mjs';
 import { writeFile } from 'node:fs/promises';
 import { localRoot, openLocalCluster, provisionLocalDatabase, grantApplicationAccess } from './local.mjs';
 import { createDatabase } from '../../src/server/database.mjs';
@@ -6,6 +7,7 @@ import { seedDevelopment } from './seed.mjs';
 
 let local;
 try {
+  await localAuthConfig();
   local = await openLocalCluster();
   await local.cluster.start();
   await provisionLocalDatabase(local);

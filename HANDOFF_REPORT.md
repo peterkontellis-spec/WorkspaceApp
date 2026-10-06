@@ -2,7 +2,13 @@
 
 Saved: **2026-10-06**, with browser-policy diagnostic results. This is a durable project checkpoint, not a claim that internal conversation compaction occurred. Read STATUS.md for detailed test evidence. October 5 ZIPs remain historical snapshots.
 
-## Current M2 checkpoint — 2026-10-06
+## Current M2.2 checkpoint — 2026-10-06
+
+**M2.1–M2.2 complete; M2.3 invitations/roles next.** Real password sign-in, protected screens, operator setup/recovery, idle/absolute expiry and revocation are implemented. User chose local operator identity verification and a short-lived reset link. TypeScript, 23 existing tests, 19 real PostgreSQL tests, production build and 17 HTTP checks passed. Desktop/narrow browser journeys passed; the user completed the disposable reset. Three independent review findings were fixed and checked. See STATUS.md for exact evidence/limits and AUTHENTICATION.md for setup.
+
+The QA account has been removed; run `pnpm account:setup` locally to create your own owner. Preview remains Mac-only at port 3100 with database at 55432. Board/task/Docs edits remain sample-only; invitations/role management and durable UI data are still open. No NAS/public deployment or credits/resets. Latest weekly allowance: 52% remaining. Unrelated local drafts remain excluded from this checkpoint.
+
+## Earlier M2.1 checkpoint — 2026-10-06
 
 **M2.1 complete; M2.2 next.** PostgreSQL foundation, schema/migrations, fictional development seed, server readiness and a narrow conflict-aware task repository are implemented. Eleven real database tests (including restart, failed migrations, role checks and concurrent edits), 23 existing tests, production build and 16 HTTP checks passed. Running app outage/reconnection checks passed. See the newest STATUS.md section and [DATABASE.md](DATABASE.md) for the M2 outline, exact evidence, local startup and limits.
 

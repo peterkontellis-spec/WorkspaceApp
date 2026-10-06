@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 
 // HTTP checks only. These do not execute browser JavaScript or verify the UI.
 // Run against this project's local dev or production server on port 3100.
@@ -17,11 +18,18 @@ const pages = [
   ['/docs/weekly-notes', 'Weekly notes'],
 ];
 const unknownPages = ['/unknown', '/boards/missing-board', '/docs/missing-doc', '/home/extra'];
+let cookie = '';
+if (process.env.WORKSPACE_SMOKE_CREDENTIALS_FILE) {
+  const credentials = JSON.parse(await readFile(process.env.WORKSPACE_SMOKE_CREDENTIALS_FILE, 'utf8'));
+  const response = await fetch(`${origin}/api/auth/sign-in/email`, { method: 'POST', headers: { origin, 'content-type': 'application/json' }, body: JSON.stringify(credentials) });
+  assert.equal(response.status, 200, 'Smoke account sign-in failed');
+  cookie = response.headers.getSetCookie().map((part) => part.split(';')[0]).join('; ');
+}
 let passed = 0;
 let failed = 0;
 
 async function request(path) {
-  return fetch(new URL(path, origin), { redirect: 'manual', signal: AbortSignal.timeout(30_000) });
+  return fetch(new URL(path, origin), { headers: { cookie }, redirect: 'manual', signal: AbortSignal.timeout(30_000) });
 }
 
 async function check(name, verify) {
@@ -34,6 +42,15 @@ async function check(name, verify) {
     console.error(`FAIL ${name}: ${error.message}${error.cause?.code ? ` (${error.cause.code})` : ''}`);
   }
 }
+
+if (cookie) await check('signed-out account and workspace requests are denied', async () => {
+  const denied = await fetch(`${origin}/api/account`);
+  assert.equal(denied.status, 401);
+  const page = await fetch(`${origin}/home`, { redirect: 'manual' });
+  assert.equal(page.status, 307);
+  assert.ok(page.headers.get('location').includes('/sign-in'));
+  assert.ok(!(await page.text()).includes('Prepare launch brief'));
+});
 
 await check('root redirects to Home', async () => {
   const response = await request('/');

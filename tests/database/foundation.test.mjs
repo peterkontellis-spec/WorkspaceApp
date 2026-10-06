@@ -9,6 +9,7 @@ import { migrate, migrationsDirectory } from '../../scripts/db/migrate.mjs';
 import { seedDevelopment, developmentIds as d } from '../../scripts/db/seed.mjs';
 import { readTask, renameTask } from '../../src/server/task-repository.mjs';
 
+const migrationNames = (await readdir(migrationsDirectory)).filter((name) => /^\d{3}_.*\.sql$/.test(name)).sort();
 let local, admin, app, directory;
 before(async () => {
   await mkdir(`${localRoot}tests`, { recursive: true });
@@ -31,7 +32,7 @@ test('record survives an additive migration, idempotent seeding and an actual da
   assert.equal((await migrate(admin, first)).length, 1);
   await seedDevelopment(admin);
   await admin.query('UPDATE task SET title = $1, revision = 7 WHERE id = $2', ['Keep this saved record', d.task]);
-  assert.deepEqual(await migrate(admin), ['002_task_notes.sql']);
+  assert.deepEqual(await migrate(admin), migrationNames.slice(1));
   assert.deepEqual(await migrate(admin), []);
   await seedDevelopment(admin);
   await grantApplicationAccess(admin);
@@ -53,7 +54,7 @@ test('record survives an additive migration, idempotent seeding and an actual da
 test('migration checksum changes fail closed without altering saved records', async () => {
   const changed = `${directory}/changed-migration`;
   await mkdir(changed);
-  for (const name of ['001_foundation.sql', '002_task_notes.sql']) await copyFile(`${migrationsDirectory}/${name}`, `${changed}/${name}`);
+  for (const name of migrationNames) await copyFile(`${migrationsDirectory}/${name}`, `${changed}/${name}`);
   await appendFile(`${changed}/001_foundation.sql`, '\n-- rewritten history\n');
   await assert.rejects(migrate(admin, changed), /history differs/);
   assert.equal((await readTask(app, d.workspace, d.task, d.user)).title, 'Keep this saved record');
@@ -62,11 +63,11 @@ test('migration checksum changes fail closed without altering saved records', as
 test('a failed schema update rolls back both its DDL and its migration record', async () => {
   const broken = `${directory}/broken-migration`;
   await mkdir(broken);
-  for (const name of ['001_foundation.sql', '002_task_notes.sql']) await copyFile(`${migrationsDirectory}/${name}`, `${broken}/${name}`);
-  await writeFile(`${broken}/003_broken.sql`, 'CREATE TABLE should_roll_back(id integer); SELECT * FROM deliberately_missing_table;');
+  for (const name of migrationNames) await copyFile(`${migrationsDirectory}/${name}`, `${broken}/${name}`);
+  await writeFile(`${broken}/999_broken.sql`, 'CREATE TABLE should_roll_back(id integer); SELECT * FROM deliberately_missing_table;');
   await assert.rejects(migrate(admin, broken), { code: '42P01' });
   assert.equal((await admin.query("SELECT to_regclass('should_roll_back') AS name")).rows[0].name, null);
-  assert.equal((await admin.query('SELECT count(*)::int AS count FROM schema_migration')).rows[0].count, 2);
+  assert.equal((await admin.query('SELECT count(*)::int AS count FROM schema_migration')).rows[0].count, migrationNames.length);
   assert.deepEqual(await migrate(admin), []);
 });
 

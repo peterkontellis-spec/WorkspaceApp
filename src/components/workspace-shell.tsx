@@ -1,6 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import type { SignedInAccount } from '@/server/auth';
+import { SignOutButton } from './session-boundary';
+import './auth.css';
 import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { ArrowUpRight, ChartNoAxesCombined, Check, ChevronDown, ChevronsUpDown, Clock3, Bot, FileText, Folder, House, LayoutGrid, Menu, Search, Settings2, X } from 'lucide-react';
@@ -38,7 +41,7 @@ function Brand() {
   return <div className="brand"><span className="brand-mark" aria-hidden="true"><span /><span /><span /></span><span>Workspace<span className="brand__subtitle">A shared space</span></span></div>;
 }
 
-export function WorkspaceShell({ children }: { children: ReactNode }) {
+export function WorkspaceShell({ children, account }: { children: ReactNode; account: SignedInAccount | null }) {
   const { resetDemo } = useWorkspace();
   const pathname = usePathname();
   const [member, setMember] = useState(members[0]);
@@ -129,7 +132,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           <div className="topbar__actions">
             <Button variant="ghost" className="search-trigger" aria-label="Find a page, board, or document" onClick={() => { setQuery(''); setOverlay('search'); }}><Search size={19} aria-hidden="true" /><span>Go to…</span><kbd>⌘ K</kbd></Button>
             <span className="topbar__separator" />
-            <Button variant="ghost" className="account-trigger" aria-label={`Sample account: ${member.name}. Switch sample account`} onClick={() => setOverlay('account')}><Avatar member={member} /><ChevronDown size={15} aria-hidden="true" /></Button>
+            <Button variant="ghost" className="account-trigger" aria-label={account ? `Account: ${account.name}` : `Sample account: ${member.name}. Switch sample account`} onClick={() => setOverlay('account')}><Avatar member={account ? { ...member, name: account.name, initials: account.name.split(/\s+/).map((word) => word[0]).slice(0, 2).join('') } : member} /><ChevronDown size={15} aria-hidden="true" /></Button>
           </div>
         </header>
         <main id="main-content" tabIndex={-1} className="main-content">{children}</main>
@@ -160,10 +163,11 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
       <p className="dialog-note">Search covers sample pages, boards, and document titles. Task search comes later.</p>
     </Dialog>
 
-    <Dialog open={overlay === 'account'} onClose={() => closeOverlay('account')} title="Sample accounts">
-      <p className="dialog-intro">Explore the shell as someone else on the sample team.</p>
+    <Dialog open={overlay === 'account'} onClose={() => closeOverlay('account')} title={account ? 'Your account' : 'Sample accounts'}>
+      {account ? <div className="account-identity"><strong>{account.name}</strong><p>{account.email}</p><p>{account.role} · staff workspace</p><SignOutButton /><p className="dialog-note">Signing out clears this tab’s sample edits.</p></div> : null}
+      <p className="dialog-intro">Preview sample work as someone on the fictional team.</p>
       <div className="account-options">{members.map((person) => <button key={person.id} type="button" className={`account-option ${person.id === member.id ? 'account-option--selected' : ''}`} aria-pressed={person.id === member.id} onClick={() => { setMember(person); close(); }}><Avatar member={person} /><span><strong>{person.name}</strong><span>{person.role} · sample account</span></span>{person.id === member.id ? <Check size={19} aria-hidden="true" /> : <ChevronsUpDown size={17} aria-hidden="true" />}</button>)}</div>
-      <p className="dialog-note">No sign-in or permissions yet. Accounts and edits reset on refresh.</p><Button onClick={() => setOverlay('reset')}>Reset demo</Button>
+      <p className="dialog-note">{account ? 'These sample views do not change your signed-in account or permissions. Sample edits reset on refresh.' : 'Sample-only mode: no sign-in. Accounts and edits reset on refresh.'}</p><Button onClick={() => setOverlay('reset')}>Reset demo</Button>
     </Dialog>
     <Dialog open={overlay === 'reset'} onClose={() => closeOverlay('reset')} title="Reset demo?">
       <p className="dialog-intro">Reset all sample tasks, documents and unfinished input? This clears this session’s edits and restores the original sample data.</p>

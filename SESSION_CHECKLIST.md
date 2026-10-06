@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype (2026-10-06); M2 is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3 invitations/roles is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Before every session — two-minute check
 
@@ -164,11 +164,13 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** real password-based sign-in.
 
-- [ ] Add account setup, sign-in, sign-out, protected screens, and secure session handling using a maintained authentication implementation.
-- [ ] Define and implement account recovery suitable for the chosen setup; do not assume an email provider is connected.
-- [ ] Check invalid credentials, signed-out access, session expiry/revocation, and recovery.
+- [x] Add account setup, sign-in, sign-out, protected screens, and secure session handling using a maintained authentication implementation.
+- [x] Define and implement account recovery suitable for the chosen setup; do not assume an email provider is connected.
+- [x] Check invalid credentials, signed-out access, session expiry/revocation, and recovery.
 
 **Done when:** valid users can return to their account, and unauthenticated requests cannot access workspace data.
+
+**Verified 2026-10-06:** 19 real database tests, 23 existing tests, production build and 17 authenticated/signed-out HTTP checks passed. Desktop/narrow login/logout/recovery checked; user submitted the test reset successfully. See STATUS.md and AUTHENTICATION.md. UI edits remain sample-only.
 
 ### M2.3 — Invitations and roles
 

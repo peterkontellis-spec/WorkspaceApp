@@ -1,8 +1,10 @@
+import { requireAccount } from '@/server/auth';
 import { notFound } from 'next/navigation';
 import { WorkspacePage } from '@/components/workspace-pages';
 import { boards, documents } from '@/lib/demo';
 
 export default async function Page({ params }: { params: Promise<{ segments: string[] }> }) {
+  await requireAccount();
   const { segments } = await params;
   const [section, id] = segments;
   const validRoot = segments.length === 1 && ['home', 'boards', 'docs'].includes(section);

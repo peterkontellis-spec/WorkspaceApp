@@ -1,4 +1,5 @@
 import { getDatabase } from '@/server/db';
+import { getAuth, prototypeMode } from '@/server/auth';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -6,10 +7,16 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const headers = { 'Cache-Control': 'no-store' };
   if (!process.env.DATABASE_URL) {
-    return Response.json({ status: 'prototype', database: 'not-configured' }, { headers });
+    return prototypeMode()
+      ? Response.json({ status: 'prototype', database: 'not-configured' }, { headers })
+      : Response.json({ status: 'unavailable' }, { status: 503, headers });
   }
   try {
     await getDatabase().query("SELECT notes FROM task WHERE false");
+    if (!prototypeMode()) {
+      getAuth();
+      await getDatabase().query('SELECT u.auth_user_id, s.id FROM app_user u CROSS JOIN auth_session s WHERE false');
+    }
     return Response.json({ status: 'ready' }, { headers });
   } catch {
     return Response.json({ status: 'unavailable' }, { status: 503, headers });

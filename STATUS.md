@@ -1,5 +1,25 @@
 # Current status
 
+## M2.2 — Accounts and sessions complete — 2026-10-06
+
+Delivered password sign-in/sign-out, protected workspace routes, first-owner setup, database-backed sessions, membership-bound identity, and local-operator recovery. The user explicitly selected identity verification by the operator followed by a short-lived reset link. Better Auth 1.7.7 is installed; generated/reviewed migration 003 and additive binding migration 004 are applied. Public signup and recovery issuance are closed. See [AUTHENTICATION.md](AUTHENTICATION.md) for setup, controls and operating limits.
+
+Actual checks:
+- `pnpm check`: TypeScript, **23/23 behavioral tests**, production build passed, including the final readiness change.
+- `pnpm test:db`: **19/19 real PostgreSQL integration tests passed** (8 authentication groups plus 11 foundation tests). Checked first-owner setup and rollback compensation, bound identities, invalid credentials, forged/expired/revoked sessions, database restart, removed membership, disabled accounts, cookie attributes, origin/body limits, persistent throttling, expired/reused reset links, concurrent reset attempts and password/session replacement. Isolated test clusters stopped.
+- `pnpm check:smoke` with a disposable authenticated account: **17/17 passed**, including direct signed-out rejection. The later health-only change passed the full build/check plus a direct readiness/no-store and signed-out redirect confirmation on the refreshed preview.
+- Supported browser: desktop 1440×900, narrow 360×800 and reset form 320×568. Invalid login shows a focused generic error; keyboard reaches password visibility; login/refresh preserve real identity; changing fictional members does not change it. Account dialog and sign-out remain reachable on narrow screens. Editing Docs then signing out clears sample drafts without a before-unload prompt; Back does not restore them. Recovery guidance, missing-token state and actual reset form were inspected; no horizontal overflow and 44–48px controls. Captured warnings/errors were empty. The user submitted the disposable reset themselves and confirmed “Password updated”; subsequent browser observation showed that QA account signed in at Home. No new physical-phone or actual zoom test is claimed.
+- Scoped Impeccable, current Web Interface Guidelines and React review completed; detector returned no findings. Independent read-only review caught passive polls extending idle expiry, incomplete setup leaving an identity, and unbounded fetches. All three were fixed; passive-versus-active session behavior and forced setup failure have regression coverage.
+- Initial stale generated Next route types and test-fixture session/throttle interference were corrected; final results above passed. Browser credential-change policy was respected through user handoff, not bypassed.
+
+Runtime: refreshed Mac-only production preview PID 53042 on 127.0.0.1:3100; database supervisor PID 51561 on 127.0.0.1:55432. Verify PIDs before acting. Disposable QA identity, its empty workspace, test credential file and reset-link file were removed precisely; fictional seed data remains. First-owner setup is available to the user. All local records/secrets stay ignored under `.local/`; Git is not their backup. Hotspot remains closed. No NAS/public deployment, purchases, credits or resets. Latest account-wide weekly snapshot: **48% used / 52% remaining**.
+
+Limits: real authentication protects a sample-data UI; board/task/Doc edits are still temporary. Invitations and full role administration are M2.3, durable boards/tasks M2.4, collaborative Docs M4. Loopback throttling uses a shared client bucket; proxy configuration, HTTPS production hardening, backup/restore and private admin/customer access are not signed off. Unrelated security/critique drafts remain preserved and excluded from this checkpoint.
+
+Next action: **M2.3 — invitations and roles**. Implement owner-issued expiring, one-use invitation links, server-enforced owner/editor/viewer membership actions, and direct-request/revocation tests; preserve separate customer/admin boundaries. The user can create their own local owner now using `pnpm account:setup` (AUTHENTICATION.md).
+
+Earlier sections below are historical and do not override this M2.2 status.
+
 ## M2.1 — Application and data foundation complete — 2026-10-06
 
 User authorized M2 and confirmed shared staff boards/tasks according to owner/editor/viewer roles; customer access and private admin material remain separate. M2 is being delivered in the eight existing increments, outlined in [DATABASE.md](DATABASE.md). M2.1 is complete; M2.2–M2.8 and Stage 2 remain open.
