@@ -1,5 +1,9 @@
-export type InlineToken = { kind: 'text' | 'bold' | 'italic'; text: string } | { kind: 'link'; text: string; href: string };
-export type MarkdownBlock = { kind: 'heading'; level: number; text: string } | { kind: 'paragraph'; text: string } | { kind: 'list'; items: string[] };
+export type InlineToken =
+  { kind: 'text' | 'bold' | 'italic'; text: string } | { kind: 'link'; text: string; href: string };
+export type MarkdownBlock =
+  | { kind: 'heading'; level: number; text: string }
+  | { kind: 'paragraph'; text: string }
+  | { kind: 'list'; items: string[] };
 export type TextEdit = { text: string; start: number; end: number };
 
 export function safeLinkUrl(value: string): string | null {
@@ -9,7 +13,9 @@ export function safeLinkUrl(value: string): string | null {
     const url = new URL(trimmed);
     if (!url.hostname || url.username || url.password) return null;
     return url.href;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 export function parseInline(text: string): InlineToken[] {
@@ -35,7 +41,10 @@ export function parseInline(text: string): InlineToken[] {
 export function parseMarkdown(source: string): MarkdownBlock[] {
   const blocks: MarkdownBlock[] = [];
   for (const line of source.replace(/\r\n?/g, '\n').split('\n')) {
-    if (!line.trim()) { blocks.push({ kind: 'paragraph', text: '' }); continue; }
+    if (!line.trim()) {
+      blocks.push({ kind: 'paragraph', text: '' });
+      continue;
+    }
     const heading = /^(#{1,6})\s+(.+)$/.exec(line);
     const list = /^\s*[-+*]\s+(.+)$/.exec(line);
     if (heading) blocks.push({ kind: 'heading', level: heading[1].length, text: heading[2] });
@@ -58,7 +67,12 @@ function selection(text: string, start: number, end: number) {
   return { first, last };
 }
 
-export function formatSelection(text: string, start: number, end: number, format: 'heading' | 'bold' | 'italic' | 'list'): TextEdit {
+export function formatSelection(
+  text: string,
+  start: number,
+  end: number,
+  format: 'heading' | 'bold' | 'italic' | 'list',
+): TextEdit {
   const { first, last } = selection(text, start, end);
   if (format === 'heading' || format === 'list') {
     const lineStart = first === 0 ? 0 : text.lastIndexOf('\n', first - 1) + 1;
@@ -67,19 +81,40 @@ export function formatSelection(text: string, start: number, end: number, format
     const lineEnd = nextNewline === -1 ? text.length : nextNewline;
     const prefix = format === 'heading' ? '## ' : '- ';
     const contents = text.slice(lineStart, lineEnd) || (format === 'heading' ? 'Heading' : 'List item');
-    const replacement = contents.split('\n').map((line) => `${prefix}${line.replace(/^(?:#{1,6}\s+|[-+*]\s+)/, '')}`).join('\n');
-    return { text: text.slice(0, lineStart) + replacement + text.slice(lineEnd), start: lineStart, end: lineStart + replacement.length };
+    const replacement = contents
+      .split('\n')
+      .map((line) => `${prefix}${line.replace(/^(?:#{1,6}\s+|[-+*]\s+)/, '')}`)
+      .join('\n');
+    return {
+      text: text.slice(0, lineStart) + replacement + text.slice(lineEnd),
+      start: lineStart,
+      end: lineStart + replacement.length,
+    };
   }
   const marker = format === 'bold' ? '**' : '*';
   const content = text.slice(first, last) || (format === 'bold' ? 'Bold text' : 'Italic text');
-  return { text: text.slice(0, first) + marker + content + marker + text.slice(last), start: first + marker.length, end: first + marker.length + content.length };
+  return {
+    text: text.slice(0, first) + marker + content + marker + text.slice(last),
+    start: first + marker.length,
+    end: first + marker.length + content.length,
+  };
 }
 
-export function insertLink(text: string, start: number, end: number, label: string, url: string): TextEdit | null {
+export function insertLink(
+  text: string,
+  start: number,
+  end: number,
+  label: string,
+  url: string,
+): TextEdit | null {
   const href = safeLinkUrl(url);
   const cleanLabel = label.trim();
   if (!href || !cleanLabel || /[\[\]\\\r\n]/.test(cleanLabel)) return null;
   const { first, last } = selection(text, start, end);
   const replacement = `[${cleanLabel}](${href.replaceAll('(', '%28').replaceAll(')', '%29')})`;
-  return { text: text.slice(0, first) + replacement + text.slice(last), start: first + 1, end: first + 1 + cleanLabel.length };
+  return {
+    text: text.slice(0, first) + replacement + text.slice(last),
+    start: first + 1,
+    end: first + 1 + cleanLabel.length,
+  };
 }

@@ -1,5 +1,9 @@
 # Current status
 
+## Corrective block 1 — formatting checkpoint — 2026-10-07
+
+Installed pinned development-only Prettier 3.9.9 and Playwright Test 1.63.0; formatted application source/configuration without intended behavior changes. Added `pnpm format` and `pnpm format:check`. TypeScript, 42 behavioral tests and production build passed; the refreshed isolated preview passed 21 HTTP smoke checks. No data/schema change. Repeatable browser harness is in progress, not yet acceptance evidence. Next: isolated browser verification and the scoped usability/archive corrections.
+
 ## Corrective blocks scoped after external review — 2026-10-07
 
 User requested detailed blocks 1–3 and durable retention of valid review findings. DECISIONS.md now records the direction, boundaries, proposed behaviors and completion checks: (1) existing M3 acceptance plus isolated repeatable browser tests, (2) board/task usability within the approved themes/star, (3) reversible archive/restore plus an honest Docs boundary. Pause new M3 feature expansion while these corrections are addressed. Full confirmed feature scope remains intact.

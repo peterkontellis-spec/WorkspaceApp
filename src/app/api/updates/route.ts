@@ -4,9 +4,14 @@ import { updatesHttpHandler } from '@/server/updates-http.mjs';
 export const dynamic = 'force-dynamic';
 async function handle(request: Request) {
   const headers = { 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' };
-  if (prototypeMode()) return Response.json({ error: 'Updates require accounts mode.' }, { status: 503, headers });
+  if (prototypeMode())
+    return Response.json({ error: 'Updates require accounts mode.' }, { status: 503, headers });
   try {
-    return await updatesHttpHandler(getDatabase(), getAuth(), { baseURL: process.env.AUTH_BASE_URL })(request);
-  } catch { return Response.json({ error: 'Updates unavailable. Try again shortly.' }, { status: 503, headers }); }
+    return await updatesHttpHandler(getDatabase(), getAuth(), { baseURL: process.env.AUTH_BASE_URL })(
+      request,
+    );
+  } catch {
+    return Response.json({ error: 'Updates unavailable. Try again shortly.' }, { status: 503, headers });
+  }
 }
 export { handle as GET, handle as POST };

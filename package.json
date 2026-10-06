@@ -25,7 +25,9 @@
     "account:setup": "node scripts/auth/operator.mjs setup",
     "account:recover": "node scripts/auth/operator.mjs recover",
     "account:revoke": "node scripts/auth/operator.mjs revoke",
-    "account:disable": "node scripts/auth/operator.mjs disable"
+    "account:disable": "node scripts/auth/operator.mjs disable",
+    "format": "prettier --write src next.config.ts",
+    "format:check": "prettier --check src next.config.ts"
   },
   "dependencies": {
     "better-auth": "1.7.7",
@@ -37,11 +39,13 @@
     "server-only": "0.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@types/node": "^24.0.0",
     "@types/pg": "8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "embedded-postgres": "18.4.0-beta.17",
+    "prettier": "3.9.9",
     "typescript": "^5.9.0"
   }
 }

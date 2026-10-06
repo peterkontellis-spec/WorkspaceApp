@@ -26,7 +26,9 @@ export function useTaskNavigation(restoreScroll = false) {
     previousTask.current = taskId;
     if (taskId || !closedTask) return;
     const frame = requestAnimationFrame(() => {
-      const trigger = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-task-id]')).find((el) => el.dataset.taskId === closedTask && el.getClientRects().length > 0);
+      const trigger = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-task-id]')).find(
+        (el) => el.dataset.taskId === closedTask && el.getClientRects().length > 0,
+      );
       (trigger ?? document.getElementById('main-content'))?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
@@ -37,11 +39,19 @@ export function useTaskNavigation(restoreScroll = false) {
     if (top === undefined) return;
     // History can revisit this origin more than once (Back → Forward → Back to task).
     // Keep it until a fresh task-opening click records the user's current position.
-    const frame = requestAnimationFrame(() => { window.scrollTo({ top, behavior: 'instant' }); });
+    const frame = requestAnimationFrame(() => {
+      window.scrollTo({ top, behavior: 'instant' });
+    });
     return () => cancelAnimationFrame(frame);
   }, [currentHref, positions, restoreScroll]);
-  function taskHref(id: string) { return updateTaskQuery(pathname, params.toString(), id); }
-  function closeTask() { router.replace(updateTaskQuery(pathname, params.toString(), null), { scroll: false }); }
-  function rememberOrigin(id?: string) { positions?.set(id ? taskHref(id) : currentHref, window.scrollY); }
+  function taskHref(id: string) {
+    return updateTaskQuery(pathname, params.toString(), id);
+  }
+  function closeTask() {
+    router.replace(updateTaskQuery(pathname, params.toString(), null), { scroll: false });
+  }
+  function rememberOrigin(id?: string) {
+    positions?.set(id ? taskHref(id) : currentHref, window.scrollY);
+  }
   return { taskId, taskHref, closeTask, currentHref, rememberOrigin };
 }

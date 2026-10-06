@@ -1,59 +1,275 @@
-.saved-board-view-links { flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
-.saved-view-add { display: flex; align-items: end; gap: 12px; margin: 20px 0; }
-.saved-view-add label { display: grid; gap: 6px; color: var(--muted); font-size: .875rem; max-width: 320px; min-width: 0; }
-.saved-view-add select { min-height: 48px; max-width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--control-border); border-radius: 9px; background: var(--surface); color: var(--text); font: inherit; }
-.saved-view-add .button { min-height: 48px; flex-shrink: 0; }
-.saved-kanban { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 22px; }
-.saved-kanban-column { min-width: 0; border-top: 2px solid var(--line); }
-.saved-kanban-column > header { display: flex; gap: 12px; justify-content: space-between; align-items: center; padding: 16px 0; }
-.saved-kanban-column h2 { font-size: 1rem; font-weight: 500; }
-.saved-kanban-column > header > span { color: var(--muted); font-size: .875rem; font-variant-numeric: tabular-nums; }
-.saved-kanban ul, .saved-calendar ul, .saved-calendar-days { list-style: none; padding: 0; margin: 0; }
-.saved-kanban-column > ul { display: grid; gap: 10px; }
-.saved-view-task { display: grid; gap: 7px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); min-height: 48px; min-width: 0; overflow-wrap: anywhere; }
-.saved-view-task:hover { border-color: var(--accent); }
-.saved-view-task:focus-visible, .saved-calendar-toolbar a:focus-visible, .saved-view-add select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-.saved-view-task > strong { font-size: .9375rem; font-weight: 500; color: var(--text); }
-.saved-view-task > span:not(.status) { color: var(--muted); font-size: .8125rem; }
-.saved-view-task > .saved-view-task__draft { color: var(--accent); }
-.saved-view-empty { padding: 16px 0; color: var(--muted); font-size: .875rem; }
-.saved-calendar { margin-top: 24px; }
-.saved-calendar-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
-.saved-calendar-toolbar h2 { font-size: 1.125rem; font-weight: 500; }
-.saved-calendar-toolbar nav { display: flex; gap: 4px; }
-.saved-calendar-toolbar a { display: flex; min-width: 48px; min-height: 48px; align-items: center; justify-content: center; padding: 10px; border-radius: 8px; font-size: .875rem; }
-.saved-calendar-toolbar a:hover { background: var(--hover); }
-.saved-calendar-count { margin: 8px 0 20px; color: var(--muted); font-size: .875rem; }
-.saved-calendar-weekdays, .saved-calendar-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
-.saved-calendar-weekdays > span { padding: 12px 8px; color: var(--muted); font-size: .8125rem; }
-.saved-calendar-days { border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
-.saved-calendar-day, .saved-calendar-blank { min-width: 0; min-height: 132px; padding: 8px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
-.saved-calendar-day > h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; padding: 4px 0 10px; font-size: .8125rem; font-weight: 400; font-variant-numeric: tabular-nums; }
-.saved-calendar-day--today > h3 { color: var(--accent); font-weight: 600; }
-.saved-calendar-today { font-size: .6875rem; }
-.saved-calendar-date, .saved-calendar-empty-day { display: none; }
-.saved-calendar-day > ul { display: grid; gap: 8px; }
-.saved-view-task--compact { padding: 10px 8px; gap: 8px; border-radius: 8px; }
-.saved-view-task--compact > strong { font-size: .8125rem; }
-.saved-view-task--compact .status { font-size: .6875rem; min-width: 0; white-space: normal; }
-.saved-calendar-undated { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
-.saved-calendar-undated h2 { font-size: 1rem; font-weight: 500; margin-bottom: 16px; }
-.saved-calendar-undated h2 > span { color: var(--muted); }
-.saved-calendar-undated > ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.saved-board-view-links {
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.saved-view-add {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin: 20px 0;
+}
+.saved-view-add label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  max-width: 320px;
+  min-width: 0;
+}
+.saved-view-add select {
+  min-height: 48px;
+  max-width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--control-border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+.saved-view-add .button {
+  min-height: 48px;
+  flex-shrink: 0;
+}
+.saved-kanban {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 22px;
+}
+.saved-kanban-column {
+  min-width: 0;
+  border-top: 2px solid var(--line);
+}
+.saved-kanban-column > header {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+}
+.saved-kanban-column h2 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+.saved-kanban-column > header > span {
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.saved-kanban ul,
+.saved-calendar ul,
+.saved-calendar-days {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.saved-kanban-column > ul {
+  display: grid;
+  gap: 10px;
+}
+.saved-view-task {
+  display: grid;
+  gap: 7px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  min-height: 48px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.saved-view-task:hover {
+  border-color: var(--accent);
+}
+.saved-view-task:focus-visible,
+.saved-calendar-toolbar a:focus-visible,
+.saved-view-add select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.saved-view-task > strong {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.saved-view-task > span:not(.status) {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.saved-view-task > .saved-view-task__draft {
+  color: var(--accent);
+}
+.saved-view-empty {
+  padding: 16px 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.saved-calendar {
+  margin-top: 24px;
+}
+.saved-calendar-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.saved-calendar-toolbar h2 {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+.saved-calendar-toolbar nav {
+  display: flex;
+  gap: 4px;
+}
+.saved-calendar-toolbar a {
+  display: flex;
+  min-width: 48px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+.saved-calendar-toolbar a:hover {
+  background: var(--hover);
+}
+.saved-calendar-count {
+  margin: 8px 0 20px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.saved-calendar-weekdays,
+.saved-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.saved-calendar-weekdays > span {
+  padding: 12px 8px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.saved-calendar-days {
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.saved-calendar-day,
+.saved-calendar-blank {
+  min-width: 0;
+  min-height: 132px;
+  padding: 8px;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+.saved-calendar-day > h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 0 10px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+.saved-calendar-day--today > h3 {
+  color: var(--accent);
+  font-weight: 600;
+}
+.saved-calendar-today {
+  font-size: 0.6875rem;
+}
+.saved-calendar-date,
+.saved-calendar-empty-day {
+  display: none;
+}
+.saved-calendar-day > ul {
+  display: grid;
+  gap: 8px;
+}
+.saved-view-task--compact {
+  padding: 10px 8px;
+  gap: 8px;
+  border-radius: 8px;
+}
+.saved-view-task--compact > strong {
+  font-size: 0.8125rem;
+}
+.saved-view-task--compact .status {
+  font-size: 0.6875rem;
+  min-width: 0;
+  white-space: normal;
+}
+.saved-calendar-undated {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.saved-calendar-undated h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.saved-calendar-undated h2 > span {
+  color: var(--muted);
+}
+.saved-calendar-undated > ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
 @media (max-width: 1100px) {
-  .saved-calendar-weekdays, .saved-calendar-blank, .saved-calendar-day--empty, .saved-calendar-number { display: none; }
-  .saved-calendar-days { display: block; border: 0; }
-  .saved-calendar-day { border: 0; border-top: 1px solid var(--line); padding: 12px 0 20px; min-height: 0; }
-  .saved-calendar-day > h3 { font-size: .9375rem; }
-  .saved-calendar-date { display: inline; }
-  .saved-calendar-day > ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .saved-view-task--compact { padding: 14px; }
-  .saved-view-task--compact > strong { font-size: .9375rem; }
+  .saved-calendar-weekdays,
+  .saved-calendar-blank,
+  .saved-calendar-day--empty,
+  .saved-calendar-number {
+    display: none;
+  }
+  .saved-calendar-days {
+    display: block;
+    border: 0;
+  }
+  .saved-calendar-day {
+    border: 0;
+    border-top: 1px solid var(--line);
+    padding: 12px 0 20px;
+    min-height: 0;
+  }
+  .saved-calendar-day > h3 {
+    font-size: 0.9375rem;
+  }
+  .saved-calendar-date {
+    display: inline;
+  }
+  .saved-calendar-day > ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .saved-view-task--compact {
+    padding: 14px;
+  }
+  .saved-view-task--compact > strong {
+    font-size: 0.9375rem;
+  }
 }
 @media (max-width: 760px) {
-  .saved-kanban { grid-template-columns: 1fr; gap: 24px; }
-  .saved-calendar-undated > ul, .saved-calendar-day > ul { grid-template-columns: 1fr; }
-  .saved-view-add { align-items: stretch; flex-direction: column; }
-  .saved-view-add label { max-width: none; }
-  .saved-view-add .button { align-self: flex-start; }
+  .saved-kanban {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .saved-calendar-undated > ul,
+  .saved-calendar-day > ul {
+    grid-template-columns: 1fr;
+  }
+  .saved-view-add {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .saved-view-add label {
+    max-width: none;
+  }
+  .saved-view-add .button {
+    align-self: flex-start;
+  }
 }

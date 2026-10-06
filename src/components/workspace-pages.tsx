@@ -16,20 +16,66 @@ function ProjectCard({ board }: { board: (typeof boards)[number] }) {
   const { tasks } = useWorkspace();
   const projectTasks = tasks.filter((task) => task.boardId === board.id);
   const completed = projectTasks.filter((task) => task.status === 'Done').length;
-  return <Link href={`/boards/${board.id}`} className={`project-card project-card--${board.color}`}>
-    <div className="project-card__top"><span className={`project-icon project-icon--${board.color}`}>{board.icon === 'layout' ? <LayoutTemplate size={23} aria-hidden="true" /> : <Layers3 size={23} aria-hidden="true" />}</span><ArrowUpRight size={20} aria-hidden="true" /></div>
-    <h3>{board.name}</h3><p>{board.description}</p>
-    <div className="project-card__progress" aria-label={`${completed} of ${projectTasks.length} sample tasks completed`}><span style={{ width: `${projectTasks.length ? completed / projectTasks.length * 100 : 0}%` }} /></div>
-    <div className="project-card__bottom"><span>{completed} of {projectTasks.length} completed</span><AvatarStack ids={board.memberIds} /></div>
-  </Link>;
+  return (
+    <Link href={`/boards/${board.id}`} className={`project-card project-card--${board.color}`}>
+      <div className="project-card__top">
+        <span className={`project-icon project-icon--${board.color}`}>
+          {board.icon === 'layout' ? (
+            <LayoutTemplate size={23} aria-hidden="true" />
+          ) : (
+            <Layers3 size={23} aria-hidden="true" />
+          )}
+        </span>
+        <ArrowUpRight size={20} aria-hidden="true" />
+      </div>
+      <h3>{board.name}</h3>
+      <p>{board.description}</p>
+      <div
+        className="project-card__progress"
+        aria-label={`${completed} of ${projectTasks.length} sample tasks completed`}
+      >
+        <span style={{ width: `${projectTasks.length ? (completed / projectTasks.length) * 100 : 0}%` }} />
+      </div>
+      <div className="project-card__bottom">
+        <span>
+          {completed} of {projectTasks.length} completed
+        </span>
+        <AvatarStack ids={board.memberIds} />
+      </div>
+    </Link>
+  );
 }
 
-function PageHeading({ eyebrow, title, description, children }: { eyebrow: string; title: string; description?: string; children?: React.ReactNode }) {
-  return <div className="page-heading"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1>{description && <p className="page-description">{description}</p>}</div>{children}</div>;
+function PageHeading({
+  eyebrow,
+  title,
+  description,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="page-heading">
+      <div>
+        <p className="eyebrow">{eyebrow}</p>
+        <h1>{title}</h1>
+        {description && <p className="page-description">{description}</p>}
+      </div>
+      {children}
+    </div>
+  );
 }
 
 function StageNote({ children }: { children: React.ReactNode }) {
-  return <p className="stage-note"><span className="stage-note__label">Preview</span>{children}</p>;
+  return (
+    <p className="stage-note">
+      <span className="stage-note__label">Preview</span>
+      {children}
+    </p>
+  );
 }
 
 function HomePage() {
@@ -45,32 +91,139 @@ function HomePage() {
     { title: 'Upcoming', items: buckets.upcoming, empty: 'No upcoming deadlines.' },
     { title: 'Without a date', items: buckets.undated, empty: 'All your open tasks have dates.' },
   ];
-  return <>
-    <PageHeading eyebrow="FRIDAY, 25 SEPTEMBER · DEMO" title={`Welcome back, ${member.name.split(' ')[0]}.`} description="Your work, one day at a time."><Link className="button button--secondary" href="/boards">Browse boards<ArrowUpRight size={18} aria-hidden="true" /></Link></PageHeading>
-    <div className="section-heading"><h2>My Day</h2><label className="demo-toggle"><input type="checkbox" checked={emptyDemo} onChange={(event) => setEmptyDemo(event.target.checked)} />Preview new collaborator</label></div>
-    <p className="session-note">Sample assignments · 25 September 2026. Edits last until refresh.</p>
-    {assigned.length === 0 ? <Panel className="inline-empty"><h3>No tasks assigned yet.</h3><p>{emptyDemo ? 'This previews a new collaborator’s Home without changing your demo tasks.' : 'Your shared boards are ready when you are.'}</p><Link href="/boards" className="text-link">Explore the shared boards<ArrowRight size={16} aria-hidden="true" /></Link></Panel> : <div className="my-day-sections">{sections.map(({title, items, empty}) => <Panel key={title}><div className="panel-heading"><h3>{title}</h3><span className="count-badge">{items.length}</span></div>{items.length ? <ul className="task-list">{items.map((task) => <TaskRow key={task.id} task={task} href={taskHref(task.id)} onOpen={() => rememberOrigin(task.id)} />)}</ul> : <p className="bucket-empty">{empty}</p>}</Panel>)}</div>}
-    <div className="section-heading docs-section-heading"><h2>Recent documents</h2><Link className="text-link" href="/docs">All docs<ArrowRight size={16} aria-hidden="true" /></Link></div>
-    <div className="document-shortcuts">{sessionDocuments.slice(0, 2).map((doc) => <Link href={`/docs/${doc.id}`} key={doc.id} className="document-shortcut"><span className="document-icon"><FileText size={21} aria-hidden="true" /></span><span><strong>{doc.title}</strong><span>{boardFor(doc.boardId)?.name}</span></span><ArrowUpRight size={18} aria-hidden="true" /></Link>)}</div>
-    <div className="section-heading docs-section-heading"><h2>Shared boards</h2><span className="section-count">{boards.length} projects</span></div>
-    <div className="project-grid">{boards.map((board) => <ProjectCard key={board.id} board={board} />)}</div>
-  </>;
+  return (
+    <>
+      <PageHeading
+        eyebrow="FRIDAY, 25 SEPTEMBER · DEMO"
+        title={`Welcome back, ${member.name.split(' ')[0]}.`}
+        description="Your work, one day at a time."
+      >
+        <Link className="button button--secondary" href="/boards">
+          Browse boards
+          <ArrowUpRight size={18} aria-hidden="true" />
+        </Link>
+      </PageHeading>
+      <div className="section-heading">
+        <h2>My Day</h2>
+        <label className="demo-toggle">
+          <input
+            type="checkbox"
+            checked={emptyDemo}
+            onChange={(event) => setEmptyDemo(event.target.checked)}
+          />
+          Preview new collaborator
+        </label>
+      </div>
+      <p className="session-note">Sample assignments · 25 September 2026. Edits last until refresh.</p>
+      {assigned.length === 0 ? (
+        <Panel className="inline-empty">
+          <h3>No tasks assigned yet.</h3>
+          <p>
+            {emptyDemo
+              ? 'This previews a new collaborator’s Home without changing your demo tasks.'
+              : 'Your shared boards are ready when you are.'}
+          </p>
+          <Link href="/boards" className="text-link">
+            Explore the shared boards
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </Panel>
+      ) : (
+        <div className="my-day-sections">
+          {sections.map(({ title, items, empty }) => (
+            <Panel key={title}>
+              <div className="panel-heading">
+                <h3>{title}</h3>
+                <span className="count-badge">{items.length}</span>
+              </div>
+              {items.length ? (
+                <ul className="task-list">
+                  {items.map((task) => (
+                    <TaskRow
+                      key={task.id}
+                      task={task}
+                      href={taskHref(task.id)}
+                      onOpen={() => rememberOrigin(task.id)}
+                    />
+                  ))}
+                </ul>
+              ) : (
+                <p className="bucket-empty">{empty}</p>
+              )}
+            </Panel>
+          ))}
+        </div>
+      )}
+      <div className="section-heading docs-section-heading">
+        <h2>Recent documents</h2>
+        <Link className="text-link" href="/docs">
+          All docs
+          <ArrowRight size={16} aria-hidden="true" />
+        </Link>
+      </div>
+      <div className="document-shortcuts">
+        {sessionDocuments.slice(0, 2).map((doc) => (
+          <Link href={`/docs/${doc.id}`} key={doc.id} className="document-shortcut">
+            <span className="document-icon">
+              <FileText size={21} aria-hidden="true" />
+            </span>
+            <span>
+              <strong>{doc.title}</strong>
+              <span>{boardFor(doc.boardId)?.name}</span>
+            </span>
+            <ArrowUpRight size={18} aria-hidden="true" />
+          </Link>
+        ))}
+      </div>
+      <div className="section-heading docs-section-heading">
+        <h2>Shared boards</h2>
+        <span className="section-count">{boards.length} projects</span>
+      </div>
+      <div className="project-grid">
+        {boards.map((board) => (
+          <ProjectCard key={board.id} board={board} />
+        ))}
+      </div>
+    </>
+  );
 }
 
 function BoardsPage({ id }: { id?: string }) {
-  if (!id) return <>
-    <PageHeading eyebrow="TOGETHER, IN ONE PLACE" title="Boards" description="A clear home for each project." />
-    <div className="section-heading"><h2>All projects</h2><span className="section-count">{boards.length} boards</span></div>
-    <div className="project-grid">{boards.map((board) => <ProjectCard key={board.id} board={board} />)}</div>
-    <StageNote>Open a board to add, edit and filter sample tasks. Changes last until refresh.</StageNote>
-  </>;
+  if (!id)
+    return (
+      <>
+        <PageHeading
+          eyebrow="TOGETHER, IN ONE PLACE"
+          title="Boards"
+          description="A clear home for each project."
+        />
+        <div className="section-heading">
+          <h2>All projects</h2>
+          <span className="section-count">{boards.length} boards</span>
+        </div>
+        <div className="project-grid">
+          {boards.map((board) => (
+            <ProjectCard key={board.id} board={board} />
+          ))}
+        </div>
+        <StageNote>Open a board to add, edit and filter sample tasks. Changes last until refresh.</StageNote>
+      </>
+    );
   return <BoardView key={id} id={id} />;
 }
 
 export function WorkspacePage({ section, id }: { section: 'home' | 'boards' | 'docs'; id?: string }) {
   const { taskId } = useTaskNavigation(true);
-  return <div className={taskId && section !== 'docs' ? 'page-with-task' : undefined}>
-    {section === 'boards' ? <BoardsPage id={id} /> : section === 'docs' ? <DocsView id={id} /> : <HomePage />}
-    {section !== 'docs' && <TaskPanel key={taskId} />}
-  </div>;
+  return (
+    <div className={taskId && section !== 'docs' ? 'page-with-task' : undefined}>
+      {section === 'boards' ? (
+        <BoardsPage id={id} />
+      ) : section === 'docs' ? (
+        <DocsView id={id} />
+      ) : (
+        <HomePage />
+      )}
+      {section !== 'docs' && <TaskPanel key={taskId} />}
+    </div>
+  );
 }

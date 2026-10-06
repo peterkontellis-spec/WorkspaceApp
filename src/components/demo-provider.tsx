@@ -1,7 +1,23 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { addDemoTask, createDemoState, patchDemoDocument, patchDemoTask, type DemoDocument, type DemoTask } from '@/lib/demo-state';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import {
+  addDemoTask,
+  createDemoState,
+  patchDemoDocument,
+  patchDemoTask,
+  type DemoDocument,
+  type DemoTask,
+} from '@/lib/demo-state';
 
 type WorkspaceContextValue = {
   drafts: Record<string, string>;
@@ -26,12 +42,20 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const initialState = useRef(state);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const setDraft = useCallback((key: string, value: string | null) => {
-    setDrafts((current) => { const next = { ...current }; if (value === null) delete next[key]; else next[key] = value; return next; });
+    setDrafts((current) => {
+      const next = { ...current };
+      if (value === null) delete next[key];
+      else next[key] = value;
+      return next;
+    });
   }, []);
   const hasSessionChanges = state !== initialState.current || Object.keys(drafts).length > 0;
   useEffect(() => {
     if (!hasSessionChanges) return;
-    const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
     window.addEventListener('beforeunload', warn);
     return () => window.removeEventListener('beforeunload', warn);
   }, [hasSessionChanges]);
@@ -70,7 +94,20 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setEmptyDemo(false);
   }, []);
 
-  const value = useMemo(() => ({ ...state, drafts, setDraft, updateTask, addTask, updateDocument, resetDemo, emptyDemo, setEmptyDemo }), [state, drafts, setDraft, updateTask, addTask, updateDocument, resetDemo, emptyDemo]);
+  const value = useMemo(
+    () => ({
+      ...state,
+      drafts,
+      setDraft,
+      updateTask,
+      addTask,
+      updateDocument,
+      resetDemo,
+      emptyDemo,
+      setEmptyDemo,
+    }),
+    [state, drafts, setDraft, updateTask, addTask, updateDocument, resetDemo, emptyDemo],
+  );
   return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;
 }
 

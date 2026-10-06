@@ -10,9 +10,14 @@ export default async function Page({ params }: { params: Promise<{ segments: str
   const account = await requireAccount();
   const { segments } = await params;
   const [section, id] = segments;
-  if (account && section === 'notifications' && segments.length === 1) return <NotificationsPage/>;
-  if (account && section === 'files' && segments.length === 1) return <SavedFilesPage/>;
-  if (account && (section === 'home' || section === 'boards') && (segments.length === 1 || (section === 'boards' && segments.length === 2 && /^[0-9a-f-]{36}$/i.test(id)))) return <SavedWorkPage section={section} boardId={id} />;
+  if (account && section === 'notifications' && segments.length === 1) return <NotificationsPage />;
+  if (account && section === 'files' && segments.length === 1) return <SavedFilesPage />;
+  if (
+    account &&
+    (section === 'home' || section === 'boards') &&
+    (segments.length === 1 || (section === 'boards' && segments.length === 2 && /^[0-9a-f-]{36}$/i.test(id)))
+  )
+    return <SavedWorkPage section={section} boardId={id} />;
   if (account && section === 'boards') notFound();
   const validRoot = segments.length === 1 && ['home', 'boards', 'docs'].includes(section);
   const validBoard = segments.length === 2 && section === 'boards' && boards.some((board) => board.id === id);

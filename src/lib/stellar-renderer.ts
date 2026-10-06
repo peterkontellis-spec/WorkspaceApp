@@ -176,7 +176,9 @@ export function createStellarRenderer(canvas: HTMLCanvasElement): StellarRendere
       preserveDrawingBuffer: false,
       powerPreference: 'low-power',
     });
-  } catch { return null; }
+  } catch {
+    return null;
+  }
   if (!gl) return null;
   const context = gl;
   let disposed = false;
@@ -190,58 +192,109 @@ export function createStellarRenderer(canvas: HTMLCanvasElement): StellarRendere
     if (program) context.deleteProgram(program);
     if (vertex) context.deleteShader(vertex);
     if (fragment) context.deleteShader(fragment);
-    buffer = null; program = null; vertex = null; fragment = null;
+    buffer = null;
+    program = null;
+    vertex = null;
+    fragment = null;
   }
-  const onLost = () => { lost = true; };
+  const onLost = () => {
+    lost = true;
+  };
   try {
     vertex = context.createShader(context.VERTEX_SHADER);
     fragment = context.createShader(context.FRAGMENT_SHADER);
-    program = context.createProgram(); buffer = context.createBuffer();
-    if (!vertex || !fragment || !program || !buffer) { release(); return null; }
-    context.shaderSource(vertex, vertexSource); context.compileShader(vertex);
-    context.shaderSource(fragment, fragmentSource); context.compileShader(fragment);
-    if (!context.getShaderParameter(vertex, context.COMPILE_STATUS) || !context.getShaderParameter(fragment, context.COMPILE_STATUS)) { release(); return null; }
-    context.attachShader(program, vertex); context.attachShader(program, fragment); context.linkProgram(program);
-    if (!context.getProgramParameter(program, context.LINK_STATUS)) { release(); return null; }
+    program = context.createProgram();
+    buffer = context.createBuffer();
+    if (!vertex || !fragment || !program || !buffer) {
+      release();
+      return null;
+    }
+    context.shaderSource(vertex, vertexSource);
+    context.compileShader(vertex);
+    context.shaderSource(fragment, fragmentSource);
+    context.compileShader(fragment);
+    if (
+      !context.getShaderParameter(vertex, context.COMPILE_STATUS) ||
+      !context.getShaderParameter(fragment, context.COMPILE_STATUS)
+    ) {
+      release();
+      return null;
+    }
+    context.attachShader(program, vertex);
+    context.attachShader(program, fragment);
+    context.linkProgram(program);
+    if (!context.getProgramParameter(program, context.LINK_STATUS)) {
+      release();
+      return null;
+    }
     const position = context.getAttribLocation(program, 'a_position');
     const resolution = context.getUniformLocation(program, 'u_resolution');
     const timeUniform = context.getUniformLocation(program, 'u_time');
     const progressUniform = context.getUniformLocation(program, 'u_progress');
     const boundaryUniform = context.getUniformLocation(program, 'u_boundary');
     const flareSeedUniform = context.getUniformLocation(program, 'u_flare_seed');
-    if (position < 0 || resolution === null || timeUniform === null || progressUniform === null || boundaryUniform === null || flareSeedUniform === null) { release(); return null; }
+    if (
+      position < 0 ||
+      resolution === null ||
+      timeUniform === null ||
+      progressUniform === null ||
+      boundaryUniform === null ||
+      flareSeedUniform === null
+    ) {
+      release();
+      return null;
+    }
     const flareSeed = Math.random() * 31;
     context.bindBuffer(context.ARRAY_BUFFER, buffer);
-    context.bufferData(context.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), context.STATIC_DRAW);
+    context.bufferData(
+      context.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+      context.STATIC_DRAW,
+    );
     canvas.addEventListener('webglcontextlost', onLost);
     return {
       draw(time, progress) {
         if (disposed || lost || context.isContextLost() || !canvas.width || !canvas.height) return;
         context.viewport(0, 0, canvas.width, canvas.height);
-        context.useProgram(program); context.bindBuffer(context.ARRAY_BUFFER, buffer);
-        context.enableVertexAttribArray(position); context.vertexAttribPointer(position, 2, context.FLOAT, false, 0, 0);
-        context.disable(context.DEPTH_TEST); context.disable(context.BLEND);
+        context.useProgram(program);
+        context.bindBuffer(context.ARRAY_BUFFER, buffer);
+        context.enableVertexAttribArray(position);
+        context.vertexAttribPointer(position, 2, context.FLOAT, false, 0, 0);
+        context.disable(context.DEPTH_TEST);
+        context.disable(context.BLEND);
         context.uniform2f(resolution, canvas.width, canvas.height);
         context.uniform1f(timeUniform, Number.isFinite(time) ? Math.max(0, time) % 4096 : 0);
         context.uniform1f(flareSeedUniform, flareSeed);
-        const boundedProgress = progress !== null && Number.isFinite(progress) ? Math.max(0, Math.min(100, progress)) : -1;
+        const boundedProgress =
+          progress !== null && Number.isFinite(progress) ? Math.max(0, Math.min(100, progress)) : -1;
         context.uniform1f(progressUniform, boundedProgress);
-        const coverage = Math.max(0, Math.min(1, boundedProgress <= 60 ? boundedProgress / 60 : (boundedProgress - 60) / 20));
+        const coverage = Math.max(
+          0,
+          Math.min(1, boundedProgress <= 60 ? boundedProgress / 60 : (boundedProgress - 60) / 20),
+        );
         // Invert projected-disc area once per frame, keeping division spatial.
         // At 75% progress the green region covers about 75% of the disc.
         let boundary = Math.max(-0.999, Math.min(0.999, coverage * 2 - 1));
         for (let step = 0; step < 4; step++) {
           const height = Math.sqrt(Math.max(0.001, 1 - boundary * boundary));
           const area = 0.5 + (Math.asin(boundary) + boundary * height) / Math.PI;
-          boundary = Math.max(-0.999, Math.min(0.999, boundary - (area - coverage) / Math.max(0.03, 2 * height / Math.PI)));
+          boundary = Math.max(
+            -0.999,
+            Math.min(0.999, boundary - (area - coverage) / Math.max(0.03, (2 * height) / Math.PI)),
+          );
         }
         context.uniform1f(boundaryUniform, boundary);
         context.drawArrays(context.TRIANGLES, 0, 6);
       },
       dispose() {
         if (disposed) return;
-        disposed = true; canvas.removeEventListener('webglcontextlost', onLost); release();
+        disposed = true;
+        canvas.removeEventListener('webglcontextlost', onLost);
+        release();
       },
     };
-  } catch { release(); return null; }
+  } catch {
+    release();
+    return null;
+  }
 }

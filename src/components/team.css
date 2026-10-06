@@ -1,30 +1,130 @@
-.team-page { max-width: 900px; min-width: 0; }
-.team-scope { color: var(--muted); font-size: .875rem; margin-top: 16px; max-width: 70ch; }
-.team-page .auth-copy { max-width: 70ch; }
-.team-section { margin-top: 32px; border-top: 1px solid var(--line); padding-top: 24px; }
-.team-section h2 { font-size: 1.125rem; }
-.team-count { font-size: .875rem; color: var(--muted); font-weight: 400; margin-left: 12px; font-variant-numeric: tabular-nums; }
-.team-list { list-style: none; margin: 16px 0 0; padding: 0; }
-.team-list > li { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line-soft); }
-.team-person { display: grid; gap: 3px; min-width: 0; overflow-wrap: anywhere; }
-.team-person span, .team-role-name { color: var(--muted); font-size: .875rem; }
-.team-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-.team-actions .auth-link { margin: 0; }
-.team-role select { width: 100%; min-height: 48px; background: var(--surface); color: var(--text); border: 1px solid var(--control-border); border-radius: 9px; padding: 10px 32px 10px 12px; font: inherit; }
-.team-role select:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-.team-invite-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 230px); gap: 18px; margin-top: 24px; }
-.team-invite-form > button { justify-self: start; grid-column: 1 / -1; }
-.team-share { display: grid; gap: 12px; margin-top: 24px; }
-.team-share > button { justify-self: start; }
-.team-feedback { margin-top: 20px; }
-.team-feedback .team-actions { margin-top: 10px; }
-.team-notice { color: var(--accent); margin-top: 16px; overflow-wrap: anywhere; }
-.team-notice:empty { margin: 0; }
-.team-page h1, .team-page h2 { text-wrap: balance; }
+.team-page {
+  max-width: 900px;
+  min-width: 0;
+}
+.team-scope {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin-top: 16px;
+  max-width: 70ch;
+}
+.team-page .auth-copy {
+  max-width: 70ch;
+}
+.team-section {
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+.team-section h2 {
+  font-size: 1.125rem;
+}
+.team-count {
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-left: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.team-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+.team-list > li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.team-person {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.team-person span,
+.team-role-name {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.team-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.team-actions .auth-link {
+  margin: 0;
+}
+.team-role select {
+  width: 100%;
+  min-height: 48px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--control-border);
+  border-radius: 9px;
+  padding: 10px 32px 10px 12px;
+  font: inherit;
+}
+.team-role select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.team-invite-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 230px);
+  gap: 18px;
+  margin-top: 24px;
+}
+.team-invite-form > button {
+  justify-self: start;
+  grid-column: 1 / -1;
+}
+.team-share {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+.team-share > button {
+  justify-self: start;
+}
+.team-feedback {
+  margin-top: 20px;
+}
+.team-feedback .team-actions {
+  margin-top: 10px;
+}
+.team-notice {
+  color: var(--accent);
+  margin-top: 16px;
+  overflow-wrap: anywhere;
+}
+.team-notice:empty {
+  margin: 0;
+}
+.team-page h1,
+.team-page h2 {
+  text-wrap: balance;
+}
 @media (max-width: 600px) {
-  .team-list > li { align-items: flex-start; flex-direction: column; gap: 12px; }
-  .team-list .team-actions { width: 100%; }
-  .team-list .team-role { flex: 1; }
-  .team-invite-form { grid-template-columns: minmax(0, 1fr); }
-  .team-invite-form > button { width: 100%; }
+  .team-list > li {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .team-list .team-actions {
+    width: 100%;
+  }
+  .team-list .team-role {
+    flex: 1;
+  }
+  .team-invite-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .team-invite-form > button {
+    width: 100%;
+  }
 }

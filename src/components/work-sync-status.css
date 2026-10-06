@@ -1,5 +1,32 @@
-.work-sync-status { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 24px; background: var(--surface); border-bottom: 1px solid var(--line); }
-.work-sync-status p { flex: 1 1 240px; margin: 0; font-size: .875rem; line-height: 1.5; }
-.work-sync-status .button, .work-sync-status > a { min-height: 44px; display: inline-flex; align-items: center; }
-.saved-task-update { padding: 12px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 16px; }
-.saved-task-update p { font-size: .875rem; line-height: 1.5; margin-bottom: 8px; }
+.work-sync-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.work-sync-status p {
+  flex: 1 1 240px;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.work-sync-status .button,
+.work-sync-status > a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.saved-task-update {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.saved-task-update p {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}

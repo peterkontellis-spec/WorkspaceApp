@@ -23,11 +23,17 @@ export function hasWorkFilters(filters) {
 // not an authorization boundary; /api/work verifies current workspace membership.
 export function filterWorkTasks(tasks, filters, todayISO) {
   const query = filters.q.slice(0, 200).trim().toLowerCase();
-  return tasks.filter(task => {
-    if (query && !task.title.toLowerCase().includes(query) && !task.notes.toLowerCase().includes(query)) return false;
+  return tasks.filter((task) => {
+    if (query && !task.title.toLowerCase().includes(query) && !task.notes.toLowerCase().includes(query))
+      return false;
     if (filters.status && task.status !== filters.status) return false;
     if (filters.priority && task.priority !== filters.priority) return false;
-    if (filters.assignee === 'unassigned' ? task.assigneeIds.length !== 0 : filters.assignee && !task.assigneeIds.includes(filters.assignee)) return false;
+    if (
+      filters.assignee === 'unassigned'
+        ? task.assigneeIds.length !== 0
+        : filters.assignee && !task.assigneeIds.includes(filters.assignee)
+    )
+      return false;
     if (filters.due === 'none') return task.dueDate === null;
     if (filters.due && task.dueDate === null) return false;
     if (filters.due === 'overdue') return task.dueDate < todayISO;
