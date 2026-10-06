@@ -14,6 +14,12 @@ The main assistant owns the plan, shared records, integration, and result. Selec
 
 Do not silently expand into optional comments, mentions, private boards, or inbox features. Visual identity, product name, network setup, and backup retention remain open decisions. Use provisional design only when the current task permits it; label it as provisional.
 
+## Review-informed corrective priorities — 2026-10-07
+
+Before further M3 feature expansion, follow the three corrective blocks in DECISIONS.md: existing acceptance/repeatable tests, saved board/task usability, and reversible archive/Docs boundaries. Preserve the approved themes and star. The external review is advice, not an authoritative plan; only recorded adopted decisions apply. Owners/editors may archive/restore tasks; only owners may archive/restore boards. Keep Docs at drafted behavior scope until NAS configuration is settled; do not silently bring persistence forward.
+
+Preserve revision conflict checks, unsaved drafts and role enforcement; isolate browser test fixtures from the user's preview data. Automated browser tests complement visual/keyboard/physical-device checks. Keep current summaries concise, separate formatting from behavior changes, and retain confirmed future scope. Before real team use, require reversible work removal and honest durable-saving boundaries; before deployment, require diagnostic logging, tested database/attachment restoration and the existing security gate.
+
 ## Specialist agents
 
 Delegate concrete independent subtasks when parallel work materially helps; prefer at most two specialists concurrently within available limits. Use the current model settings. Roles are assignments to available subagents, not separate installed services:

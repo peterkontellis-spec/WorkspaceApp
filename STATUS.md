@@ -1,5 +1,13 @@
 # Current status
 
+## Corrective blocks scoped after external review — 2026-10-07
+
+User requested detailed blocks 1–3 and durable retention of valid review findings. DECISIONS.md now records the direction, boundaries, proposed behaviors and completion checks: (1) existing M3 acceptance plus isolated repeatable browser tests, (2) board/task usability within the approved themes/star, (3) reversible archive/restore plus an honest Docs boundary. Pause new M3 feature expansion while these corrections are addressed. Full confirmed feature scope remains intact.
+
+User confirmed owners/editors may archive/restore tasks and only owners may archive/restore boards. Docs should be drafted and noted for later, until NAS configuration is settled; do not bring persistence forward. Interim Docs placeholder/navigation behavior remains a proposal. No app behavior, data, schema, dependencies or services changed in this planning checkpoint. External measurements/test reports have not been relabelled as local passes. Existing acceptance boxes stay open.
+
+Validation: checked the plan against actual work-provider concurrency, saved editor/board structure, activity schema, project tests and pending checks; document diff/link consistency only. Next implementation: block 1's isolated test harness and acceptance coverage before the usability/archive batches; keep Docs at draft scope. Current usage tool reports 0% weekly used; no credits/resets redeemed.
+
 ## Stronger light-mode star tint — 2026-10-07
 
 User explicitly requested this narrow adjustment after the design freeze. Increased light-mode maximum tint opacity from 7% to 18%; dark remains 10%. Same colours, phase weighting, sidebar/header boundaries, neutral/off behavior and motion policy. No data or dependency changes.

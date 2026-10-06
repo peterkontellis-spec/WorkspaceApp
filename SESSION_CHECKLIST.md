@@ -5,6 +5,14 @@ Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
 > **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.3 are implemented but browser acceptance remains pending; see STATUS.md and PENDING_CHECKS.md.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
+## Corrective blocks before further M3 features — 2026-10-07
+
+See DECISIONS.md, “External review assessment and corrective blocks”, for scope and acceptance criteria. These are corrections to the current implementation, not replacement milestones or completed work.
+
+- [ ] Block 1: close reproducible M3 gaps, add an isolated browser regression harness and a separate formatting checkpoint; retain explicit physical-device gaps.
+- [ ] Block 2: improve board density/scanability, task panel/actions and revision-safe quick edits within the approved design; verify the final UI.
+- [ ] Block 3: implement tested archive/restore (owners/editors: tasks; owners: boards); keep Docs at drafted behavior scope pending NAS configuration.
+
 ## Before every session — two-minute check
 
 These boxes are a reusable routine, not project completion marks. Reset them for each session.

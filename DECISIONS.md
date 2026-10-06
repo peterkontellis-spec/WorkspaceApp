@@ -116,3 +116,46 @@ The notification bell uses the existing authorized snapshot poll. Notification/a
 ## 2026-10-07 — Freeze visual design after random flares
 
 User approved the integrated light/dark direction and requested two-to-four randomly enabled solar flares as the final visual adjustment for now. Keep subsequent work focused on functionality, verification and defect fixes within the existing design. This does not sign off pending browser/phone checks or connect the illustrative star to real task scoring.
+
+
+## 2026-10-07 — External review assessment and corrective blocks
+
+Authority: the user asked to assess `workspaceapp-review.md` as advice, not instructions, then to hash out blocks 1–3 and retain valid findings. This records the agreed direction and proposed details; it is not implementation evidence or adoption of the external roadmap. The user confirmed owner/editor task archive and owner-only board archive. Docs remains a drafted behavior proposal until the user configures the NAS; do not bring durable Docs forward now.
+
+Standing principles:
+- Preserve the approved Mineral/Midnight themes and stellar identity. Improve functional layout, density, navigation and editing within that direction. No unsolicited star redesign, task score formula or removal of user-requested Later items.
+- Address saved-app interaction regressions and outstanding M3 acceptance before further feature expansion. Implementation and acceptance remain distinct; external test claims are supporting reports, not locally reproduced passes.
+- Add repeatable browser regression tests alongside the existing database/behavior/HTTP checks. Retain scoped visual, keyboard and physical-phone checks. Never bypass a tool-policy denial.
+- Preserve concurrency protection, drafts, workspace permissions and existing user data during quick-edit and archive work. Never silently overwrite or retry a conflicting mutation against a newer revision.
+- Archive/restore is needed before routine team use. Editable session-only Docs must not look like a durable working feature. Deployment requires useful error logging, verified database/attachment recovery and the required security review.
+- Keep the confirmed later features in scope. Comments, drag-and-drop, new scoring, automatic conflict merging and notification aggregation are not adopted by this review. The four-person cap is intentional; production resource use remains unmeasured.
+- Keep current summaries concise and distinguish current evidence from dated history. Formatting is a separate behavior-preserving checkpoint; no backend rewrite solely because modules use JavaScript.
+
+### Block 1 — Existing acceptance and repeatable verification
+
+1. Map each M3.1–M3.3 gap to a browser scenario, existing lower-level test, visual inspection or actual-device check. Cover cross-view identity/dates/filters; four isolated account sessions; viewer writes denied; polling/reconnect and stale drafts; notification recipients/read state; expiry/revocation and console errors.
+2. Build a committed browser-test harness against a disposable database, attachments directory, test accounts and separate local server. Never run destructive fixture setup against the saved preview or user boards. Test authentication uses fictional generated credentials; obey any browser credential restrictions.
+3. Reproduce important journeys through supported automation, fix concrete failures and retain traces/screenshots on failure. Prepare repeatable local commands; CI integration must respect the no-spend constraint and not assume a paid runner allowance.
+4. Format dense source separately, then rerun the appropriate existing checks. Do not combine formatting with feature behavior changes.
+
+Done when: repeatable local browser scenarios pass, required existing checks pass, failures have fixes/retests, and PENDING_CHECKS accurately distinguishes covered journeys from remaining physical-device/environment checks. Do not claim total M3 acceptance while required checks remain open. New UI work in block 2 also requires regression checks against its final implementation.
+
+### Block 2 — Board and task usability
+
+1. Compress board heading/navigation/filter chrome, move infrequent configuration out of the primary work area, add readable table headings and omit repeated board names inside their own board. Aim for multiple useful tasks in the first desktop viewport and at least the start of task content on a normal phone viewport; exact pixel positions are not universal gates under zoom/long content.
+2. Give the task editor a desktop side panel where space permits and a full-screen narrow layout. Keep Save/Cancel reachable with the software keyboard, prioritize title/status/priority/date/assignees then content, and put structure/order controls under secondary disclosure. Preserve unsaved-change handling, context, focus and Escape behavior.
+3. Add quick status editing first in Table/Kanban; then due date, priority and assignees through the same revision-checked server path. Show pending/success/failure honestly; prevent dropped rapid edits and preserve a recoverable failed selection. Notes/checklists remain explicit-save drafts. No automatic conflicting-edit merge in this block.
+4. Add textual overdue state for incomplete dated tasks across views, consistent app date formatting, and resolve verified active-tab/focus/spacing defects. Preserve native accessibility and useful task information; do not hide all non-high priorities or replace names with hover-only avatars by default.
+5. Reduce repeated instructions and show clear sync state where polling applies. Keep refresh/retry for attachment, activity and notification lists until those lists actually refresh automatically; a polling bell is not evidence that its list is live.
+
+Done when: routine status changes need no long editor/Save sequence, editor actions are reachable, tasks scan clearly, and desktop/narrow/keyboard/contrast/error/conflict checks pass without saved-data or role regressions. Physical keyboard/touch claims require a real phone check. Preserve the star's explicit prototype meaning; no new metric implied.
+
+### Block 3 — Reversible archive and Docs boundary
+
+Confirmed user choice: owners and editors may archive/restore tasks; only owners may archive/restore whole boards; viewers stay read-only. Enforce this on the server and test direct requests.
+
+Proposed behavior: Archive removes work from active views/search/My Day without deleting its history or attachment bytes. A visible Archived list supports restoration beyond a short Undo window. Archiving a parent includes its active descendants with a disclosed count. Restoration must not revive descendants that were already archived separately. Board archive hides/freezes its contents; restoring the board preserves previously archived tasks. Archived records remain authorized/readable in the archive; edits and uploads are disabled until restoration. Preserve context for old activity/notification links. In-flight edits/uploads must fail safely if the target becomes archived. Record who archived/restored and when; revision checks apply. Independent attachment removal/purge is a separately designed follow-up, not physical file deletion hidden inside task archive.
+
+User direction for Docs: draft the intended behavior and retain a note until NAS configuration is settled; no durable Docs implementation brought forward. Proposed interim boundary: normal authenticated Docs shows a clear “Document storage is not connected yet” explanation and no editable sample masquerading as saved work; preserve the writing prototype separately. Exact navigation/placeholder treatment remains a proposal, not a shipped change. Future durable Docs needs permissions, save/conflict handling, refresh/restart tests and recoverable drafts; simultaneous collaborative editing remains later. Do not replace the phone tab with a duplicate destination.
+
+Done when: chosen permissions, archive/undo/restore, parent/board behavior, search/view exclusions, historical links, attachments and concurrent edits have database and browser evidence; Docs behavior matches the user's choice and cannot imply sample text is durably saved. No irreversible purge or deployment in these blocks.
