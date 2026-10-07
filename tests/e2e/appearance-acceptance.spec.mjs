@@ -133,6 +133,7 @@ test('both themes persist across routes and account controls, with narrow layout
   const routes = [
     '/home',
     '/overview',
+    '/time',
     '/boards',
     fixture.path,
     `${fixture.path}?view=kanban`,

@@ -16,6 +16,12 @@ import { authHttpHandler } from '../../src/server/auth-http.mjs';
 import { workHttpHandler } from '../../src/server/work-http.mjs';
 import { uploadFile, listFiles, downloadFile } from '../../src/server/files-core.mjs';
 
+// Server time advances on each read; all durable fields, including the active
+// timer, must still match across retries, rollback and database restart.
+function stableSnapshot({ serverNow, ...saved }) {
+  assert.ok(Number.isFinite(Date.parse(serverNow)));
+  return saved;
+}
 let local, admin, pool, auth, handle, owner, ownerCookie, workspace;
 const options = { secret: randomBytes(48).toString('hex'), baseURL: 'http://127.0.0.1:3100' };
 const password = 'Disposable work test password 123!';
@@ -301,7 +307,7 @@ test('archive metadata and batch provenance persist after a database restart and
   await transition('archiveBoard', b);
   const saved = await ok();
   await migrate(admin);
-  assert.deepEqual(await ok(), saved);
+  assert.deepEqual(stableSnapshot(await ok()), stableSnapshot(saved));
   await pool.end();
   pool = null;
   await admin.end();
@@ -312,7 +318,7 @@ test('archive metadata and batch provenance persist after a database restart and
   pool = createDatabase(local.appUrl);
   auth = createAuthentication(pool, options);
   handle = workHttpHandler(pool, auth, options);
-  assert.deepEqual(await ok(), saved);
+  assert.deepEqual(stableSnapshot(await ok()), stableSnapshot(saved));
 });
 
 test('an activity failure rolls back the entire parent archive, including earlier descendants', async () => {
@@ -328,7 +334,7 @@ test('an activity failure rolls back the entire parent archive, including earlie
       (await work({ action: 'archiveTask', id: parent.id, revision: parent.revision })).status,
       503,
     );
-    assert.deepEqual(await ok(), before);
+    assert.deepEqual(stableSnapshot(await ok()), stableSnapshot(before));
     assert.equal((await admin.query('SELECT count(*)::int n FROM task_activity')).rows[0].n, 2);
   } finally {
     await admin.query(

@@ -46,7 +46,7 @@ async function check(name, verify) {
 if (cookie) await check('signed-out account and workspace requests are denied', async () => {
   const denied = await fetch(`${origin}/api/account`);
   assert.equal(denied.status, 401);
-  for (const path of ['/home', '/overview']) {
+  for (const path of ['/home', '/overview', '/time']) {
     const page = await fetch(`${origin}${path}`, { redirect: 'manual' });
     assert.equal(page.status, 307);
     assert.ok(page.headers.get('location').includes('/sign-in'));
@@ -70,7 +70,7 @@ await check('root redirects to Home', async () => {
 });
 
 const checkedPages = cookie ? pages.filter(([path]) => !path.includes('/boards/') && path !== '/home?task=t1').map(([path, heading]) => [path, path === '/home' ? 'Your workspace' : heading]) : pages;
-if (cookie) checkedPages.push(['/overview', 'Overview']);
+if (cookie) checkedPages.push(['/overview', 'Overview'], ['/time', 'Time']);
 for (const [path, heading] of checkedPages) {
   await check(path, async () => {
     const response = await request(path);
@@ -131,6 +131,16 @@ if (cookie) {
     assert.match(response.headers.get('cache-control'), /no-store/);
     assert.equal((await fetch(`${origin}/api/files`)).status, 401);
     assert.equal((await request('/files/unexpected')).status, 404);
+  });
+  await check('time API respects account boundaries and returns saved totals', async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const path = `/api/time?from=${today}&to=${today}&timeZone=UTC`;
+    const response = await request(path); assert.equal(response.status, 200);
+    const data = await response.json(); assert.ok(data.actor.id); assert.ok(Array.isArray(data.entries));
+    assert.ok(Number.isFinite(data.summary.totalSeconds));
+    assert.match(response.headers.get('cache-control'), /no-store/);
+    assert.equal((await fetch(origin + path)).status, 401);
+    assert.equal((await request('/time/unexpected')).status, 404);
   });
   await check('work API returns only the authenticated workspace', async () => {
     const response = await request('/api/work'); assert.equal(response.status, 200);

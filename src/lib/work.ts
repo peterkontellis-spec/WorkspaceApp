@@ -1,3 +1,4 @@
+import type { TimeEntry } from './time';
 export type WorkRole = 'owner' | 'editor' | 'viewer';
 export type WorkBoard = {
   id: string;
@@ -42,6 +43,8 @@ export type WorkTask = {
 };
 export type WorkMember = { id: string; name: string; email: string; role: WorkRole };
 export type WorkSnapshot = {
+  activeTimer?: TimeEntry | null;
+  serverNow?: string;
   archivedBoards: WorkBoard[];
   archivedTasks: WorkTask[];
   boards: WorkBoard[];

@@ -8,6 +8,7 @@ import { DatePicker } from './date-picker';
 import { Button, StatusLabel } from './ui';
 import { useWork } from './work-provider';
 import { SavedFieldValue } from './saved-field-value';
+import { TaskTimeLink } from './active-time';
 import { TaskActivity } from './work-updates';
 import { SavedTaskAttachments } from './saved-files';
 import './saved-task-editor.css';
@@ -466,6 +467,7 @@ export function SavedTaskEditor({
           )}
         </section>
         <SavedTaskAttachments taskId={task.id} canEdit={false} />
+        <TaskTimeLink taskId={task.id} />
         <TaskActivity taskId={task.id} />
         <Button onClick={close}>Close task</Button>
       </div>
@@ -725,6 +727,7 @@ export function SavedTaskEditor({
         </fieldset>
       </form>
       <SavedTaskAttachments taskId={task.id} canEdit={canEdit} blocked={dirty || pending || confirmReload} />
+      <TaskTimeLink taskId={task.id} />
       <TaskActivity taskId={task.id} />
     </>
   );

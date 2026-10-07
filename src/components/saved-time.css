@@ -1,0 +1,214 @@
+.time-page {
+  min-width: 0;
+}
+.time-section {
+  margin-block: 28px 36px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+.time-section h2 {
+  font-size: 1.25rem;
+  margin: 0 0 18px;
+}
+.time-section h3 {
+  font-size: 1rem;
+}
+.time-section label {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.time-section select,
+.time-section input,
+.time-section textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid var(--control-border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+}
+.time-section textarea {
+  resize: vertical;
+}
+.time-start {
+  display: flex;
+  align-items: end;
+  gap: 16px;
+  max-width: 750px;
+}
+.time-start label {
+  flex: 1;
+}
+.time-running {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.time-running > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.time-running small,
+.time-hint,
+.time-entries p,
+.time-entries small {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.time-running .time-duration {
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+.time-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr auto;
+  gap: 14px;
+  align-items: end;
+}
+.time-hint {
+  max-width: 75ch;
+  line-height: 1.65;
+  margin-block: 16px;
+}
+.time-total {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-block: 16px;
+  border-block: 1px solid var(--line);
+}
+.time-total strong {
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+.time-summaries {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.time-summaries ul,
+.time-task-totals ul,
+.time-entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.time-summaries li,
+.time-task-totals li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--line-soft);
+  padding-block: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.time-summaries li > :first-child,
+.time-task-totals li > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.time-summaries li > :last-child,
+.time-task-totals li > :last-child {
+  flex-shrink: 0;
+}
+.time-task-totals summary {
+  min-height: 48px;
+  cursor: pointer;
+  padding-block: 14px;
+}
+.time-task-totals summary:focus-visible,
+.time-section h2:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.time-entry {
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  padding-block: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.time-entry > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.time-entry p {
+  margin-block: 6px;
+}
+.time-entry-notes {
+  white-space: pre-wrap;
+}
+.time-entry-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: 380px;
+}
+.time-entry-actions strong {
+  font-variant-numeric: tabular-nums;
+}
+.time-entry-actions > span {
+  flex-basis: 100%;
+  font-size: 0.875rem;
+}
+.time-entry--void > div > .text-link {
+  text-decoration: line-through;
+}
+.time-form {
+  display: grid;
+  gap: 18px;
+  max-width: 700px;
+}
+.time-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.time-form legend {
+  font-size: 0.875rem;
+  color: var(--muted);
+  padding: 0 0 16px;
+}
+.time-duration-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 1100px) {
+  .time-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .time-filters,
+  .time-summaries {
+    grid-template-columns: 1fr;
+  }
+  .time-start,
+  .time-running,
+  .time-entry {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .time-entry-actions {
+    justify-content: flex-start;
+    max-width: none;
+  }
+  .time-total {
+    align-items: start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}

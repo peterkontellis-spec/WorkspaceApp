@@ -1,5 +1,9 @@
 # Decisions
 
+## Time-tracking policy and semantics — 2026-10-07
+
+The user confirmed shared time-entry visibility, with owners/editors changing only their own time and viewers read-only. No owner override for another person's entries. M3.5 implementation choices: one stored running timer per person, server timestamp duration, original timers split at local midnight, manual entries/corrections allocated to their selected work date, recoverable void/restore and retained original/audit history. Archive/access loss stops active timers in the same transaction; restoring access does not restart them. Existing work is never backfilled as time. Current-month defaults and a maximum 93-day inclusive report range bound queries. No new service or star scoring. See TIME_TRACKING.md for exact behavior and STATUS.md for checked evidence.
+
 | Date / source | Decision | State and reason |
 | --- | --- | --- |
 | Existing PLANNING.md baseline | Self-host on UGREEN DXP2800 for up to four people; NAS-resident data and Docs; no required Google Drive | Confirmed in baseline; central product constraints |

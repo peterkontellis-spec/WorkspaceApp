@@ -14,9 +14,17 @@ Updated 2026-10-07 after the user asked the assistant to attempt all remaining c
 | Motion/fallback | Real WebGL drawing and six captures over 45 seconds, reviewed changing flare locations; pause/resume and emulated reduced-motion stop drawing; actual WEBGL_lose_context fallback and simulated missing-WebGL navigation passed. Main CUA live screenshots also showed changed flare positions without runtime warnings. No hardware/GPU/battery performance claim. |
 | Reflow/touch | 720×450 CSS viewport tests the reflow corresponding to a 1440×900 display at 200%; task actions remain reachable. Chromium mobile/touch emulation saves task notes and dismisses the date popup. These are simulations, not physical iPhone/software-keyboard or native browser-zoom evidence. |
 
-The suite now contains 45 scenarios. M3.4 full run `.local/e2e/run-WXexp5`: **43 passed, one test-assumption failure, one visibility capability skip**, exit 1. The theme test was corrected to explicitly select both themes; final-build focused run `.local/e2e/run-hTWxQW`: **1 passed**, exit 0. Thus **44 distinct scenarios pass**, including all five dashboards cases. This is combined evidence, not a claim that the initial full command passed. Both owned app/database environments stopped.
+The M3.4 suite contained 45 scenarios. M3.4 full run `.local/e2e/run-WXexp5`: **43 passed, one test-assumption failure, one visibility capability skip**, exit 1. The theme test was corrected to explicitly select both themes; final-build focused run `.local/e2e/run-hTWxQW`: **1 passed**, exit 0. Thus **44 distinct scenarios pass**, including all five dashboards cases. This is combined evidence, not a claim that the initial full command passed. Both owned app/database environments stopped.
 
 M3.4 adds verified exact personal/team/board/workload totals, shared assignees/subtasks/archive rules, record links, private notification count and recent tasks, account polling/viewer access, offline/reconnect, inactive-assignee repair, empty/long layouts in both themes and emulated local-midnight rollover. TypeScript, **49 behavior tests**, production build, formatting, **76 database checks** and **22 preview HTTP checks** passed. Overview is included in the existing rendered-contrast/route matrix.
+
+## M3.5 local coverage
+
+Six new time scenarios cover stored timer start/stop/reload/global indicator, shared own-only editing and viewer access, manual corrections/void/restore, exact filtered totals, a committed response lost in transit with idempotent retry, malformed date recovery, stale corrections retaining input, and keyboard/long-content layout at 1440/390px in both themes. The route/contrast matrix includes Time; all seven existing workspace regression cases also passed. Final captures were visually reviewed.
+
+Initial run `.local/e2e/run-RDNIOJ`: 11 passed / 3 test-setup failures. `.local/e2e/run-gk2E2Y`: uncertain-save and invalid-date/stale-correction cases passed, layout still failed the default-theme assumption. Final layout run `.local/e2e/run-8ytRYD`: 1 passed, exit 0. All 14 selected scenarios have passing evidence; the initial command is not reported as successful. The suite now contains 51 cases, with 50 distinct cases covered by cumulative passing evidence and the previously disclosed real-visibility capability gap. This was a targeted regression run, not a fresh full-suite run.
+
+Current M3.5 checks also passed TypeScript, 49 behavior tests, production build, formatting, 90 database tests (including actual DB restart and access-disable race), and 24 preview HTTP checks. Existing preview record fingerprints were unchanged by additive migration008.
 
 ## Checks this environment cannot establish
 
@@ -25,7 +33,7 @@ M3.4 adds verified exact personal/team/board/workload totals, shared assignees/s
 - [ ] **Physical iPhone Firefox / software keyboard:** real touch, keyboard-induced visual viewport changes, safe areas, pinch zoom and responsiveness. Emulated touch/viewport checks passed; no private HTTPS phone connection has been configured or exposed.
 - [ ] **Actual OS/device behavior:** OS reduced-motion setting propagation, physical GPU smoothness, battery impact and four-device load. Browser reduced-motion emulation and renderer/fallback behavior passed.
 
-These environment checks are retained for device acceptance/M3.7; they do not imply a known failing app behavior. M3.1–M3.4 local core journeys have evidence, while unconditional full-device/Stage 3 sign-off remains separate. Next bounded feature: M3.5 time tracking.
+These environment checks are retained for device acceptance/M3.7; they do not imply a known failing app behavior. M3.1–M3.5 local core journeys have evidence, while unconditional full-device/Stage 3 sign-off remains separate. Next bounded feature: M3.6 templates.
 
 ## Later release gates
 

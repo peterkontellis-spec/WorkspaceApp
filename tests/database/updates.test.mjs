@@ -11,6 +11,12 @@ import { authHttpHandler } from '../../src/server/auth-http.mjs';
 import { workHttpHandler } from '../../src/server/work-http.mjs';
 import { updatesHttpHandler } from '../../src/server/updates-http.mjs';
 
+// Server time advances on each read; all durable fields, including the active
+// timer, must still match across retries, rollback and database restart.
+function stableSnapshot({ serverNow, ...saved }) {
+  assert.ok(Number.isFinite(Date.parse(serverNow)));
+  return saved;
+}
 let local, admin, pool, auth, handle, updatesHandle, owner, ownerCookie, workspace;
 const options = { secret: randomBytes(48).toString('hex'), baseURL: 'http://127.0.0.1:3100' };
 const password = 'Disposable work test password 123!';
@@ -134,7 +140,7 @@ test('history/read-state survive restart and additive migration reruns without b
   await migrate(admin);assert.deepEqual(await inbox(ownerCookie,`?taskId=${t.id}`),history);
   await pool.end();pool=null;await admin.end();admin=null;await local.cluster.stop();await local.cluster.start();
   admin=createDatabase(local.adminUrl);pool=createDatabase(local.appUrl);auth=createAuthentication(pool,options);handle=workHttpHandler(pool,auth,options);updatesHandle=updatesHttpHandler(pool,auth,options);
-  assert.deepEqual(await inbox(viewer.cookie),notifications);assert.deepEqual(await inbox(ownerCookie,`?taskId=${t.id}`),history);assert.deepEqual(await ok(undefined,viewer.cookie),snapshot);
+  assert.deepEqual(await inbox(viewer.cookie),notifications);assert.deepEqual(await inbox(ownerCookie,`?taskId=${t.id}`),history);assert.deepEqual(stableSnapshot(await ok(undefined,viewer.cookie)),stableSnapshot(snapshot));
 });
 
 test('fresh membership recheck rejects a read-state request begun before membership removal', async () => {

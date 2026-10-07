@@ -2,6 +2,10 @@
 
 In accounts mode, Home and Boards use PostgreSQL records belonging to the signed-in staff workspace. Owners and editors can create/edit boards, groups and tasks; viewers can read them. Only owners manage invitations and membership. Customer folders and private admin material are not part of this shared staff workspace.
 
+## Time tracking
+
+Accounts-mode Time provides shared completed entries, own timers/manual corrections, reversible void/restore and task/board/date totals. Owners/editors edit only their own time; viewers remain read-only. See [TIME_TRACKING.md](TIME_TRACKING.md) for permissions, stored timestamp semantics, date ranges and recovery.
+
 ## Current behavior
 
 - Create/edit a board name and description; create/edit named groups and their numeric order.

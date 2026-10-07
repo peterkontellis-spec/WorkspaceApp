@@ -309,9 +309,11 @@ Local verification: 49 behavior tests, 76 database tests, 22 HTTP checks and all
 
 **Deliverable:** dependable task time tracking.
 
-- [ ] Implement start/stop, manual entries/corrections, and summaries by task/project/date.
-- [ ] Define active-timer behavior across tabs and devices; one active timer per user is the current proposal.
-- [ ] Verify totals, permissions, and recovery after refreshing or restarting the service.
+- [x] Implement start/stop, manual entries/corrections, and summaries by task/project/date.
+- [x] Define active-timer behavior across tabs and devices; one stored active timer per user is enforced.
+- [x] Verify totals, permissions, and recovery after refreshing or restarting the service.
+
+Local verification: 49 behavior tests, 90 isolated database checks, 24 preview HTTP checks and 14 selected browser scenarios have passing evidence. Final 1440/390px captures in both themes reviewed. Exact runs and remaining device gates are in STATUS.md and PENDING_CHECKS.md.
 
 **Done when:** elapsed time is based on stored timestamps and totals remain correct when a browser closes.
 

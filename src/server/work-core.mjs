@@ -1,3 +1,4 @@
+import { readActiveTimer } from './time-core.mjs';
 import { randomUUID } from 'node:crypto';
 import { transaction } from './database.mjs';
 import { taskActivityState, recordTaskActivity } from './updates-core.mjs';
@@ -135,6 +136,8 @@ async function snapshot(c, member) {
     )
   ).rows[0].n;
   return {
+    activeTimer: await readActiveTimer(c, member),
+    serverNow: (await c.query('SELECT clock_timestamp() AS now')).rows[0].now,
     boards: boards.filter((item) => !item.archivedAt),
     archivedBoards: boards.filter((item) => item.archivedAt),
     groups,

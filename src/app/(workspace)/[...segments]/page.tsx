@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SavedTimePage } from '@/components/saved-time-page';
 import { requireAccount } from '@/server/auth';
 import { notFound } from 'next/navigation';
 import { NotificationsPage } from '@/components/work-updates';
@@ -14,6 +15,7 @@ export default async function Page({ params }: { params: Promise<{ segments: str
   const [section, id] = segments;
   if (account && section === 'notifications' && segments.length === 1) return <NotificationsPage />;
   if (account && section === 'overview' && segments.length === 1) return <SavedOverviewPage />;
+  if (account && section === 'time' && segments.length === 1) return <SavedTimePage />;
   if (account && section === 'files' && segments.length === 1) return <SavedFilesPage />;
   if (
     account &&

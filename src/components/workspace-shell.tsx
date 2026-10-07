@@ -5,6 +5,7 @@ import type { SignedInAccount } from '@/server/auth';
 import { StellarProvider, StellarControl, StellarOrb } from './stellar-identity';
 import { ThemeToggle, AppearanceSettings } from './theme-provider';
 import { NotificationsLink } from './work-updates';
+import { ActiveTimeNotice } from './active-time';
 import { WorkSyncStatus } from './work-sync-status';
 import { useWork } from './work-provider';
 import { filterWorkTasks, readWorkFilters } from '@/lib/work-filters.mjs';
@@ -59,16 +60,14 @@ function Navigation({ close, mobile = false }: { close?: () => void; mobile?: bo
     <nav aria-label={mobile ? 'Mobile workspace navigation' : 'Workspace navigation'} className="side-nav">
       {navigation.map((item) => {
         const Icon = item.icon;
-        if ((item.label === 'Files' || item.label === 'Overview') && enabled)
+        if (['Files', 'Overview', 'Time'].includes(item.label) && enabled)
           return (
             <Link
               key={item.label}
-              href={item.label === 'Files' ? '/files' : '/overview'}
+              href={`/${item.label.toLowerCase()}`}
               onClick={close}
-              className={`nav-item ${pathname === (item.label === 'Files' ? '/files' : '/overview') ? 'nav-item--active' : ''}`}
-              aria-current={
-                pathname === (item.label === 'Files' ? '/files' : '/overview') ? 'page' : undefined
-              }
+              className={`nav-item ${pathname === `/${item.label.toLowerCase()}` ? 'nav-item--active' : ''}`}
+              aria-current={pathname === `/${item.label.toLowerCase()}` ? 'page' : undefined}
             >
               <Icon size={20} aria-hidden="true" />
               <span>{item.label}</span>
@@ -134,16 +133,18 @@ export function WorkspaceShell({
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const section = pathname.split('/')[1];
   const currentLabel =
-    section === 'notifications' && account
-      ? 'Notifications'
-      : section === 'files' && account
-        ? 'Files'
-        : section === 'team'
-          ? 'Team access'
-          : section === 'overview'
-            ? 'Overview'
-            : (navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ??
-              'Workspace');
+    section === 'time' && account
+      ? 'Time'
+      : section === 'notifications' && account
+        ? 'Notifications'
+        : section === 'files' && account
+          ? 'Files'
+          : section === 'team'
+            ? 'Team access'
+            : section === 'overview'
+              ? 'Overview'
+              : (navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ??
+                'Workspace');
   const close = () => setOverlay(null);
   const closeOverlay = (name: 'navigation' | 'search' | 'account' | 'reset') => {
     setOverlay((current) => (current === name ? null : current));
@@ -225,6 +226,7 @@ export function WorkspaceShell({
     ...(account
       ? [
           { name: 'Notifications', detail: 'Your task updates', href: '/notifications', kind: 'Page' },
+          { name: 'Time', detail: 'Timers and shared time entries', href: '/time', kind: 'Page' },
           { name: 'Files', detail: 'Saved task attachments', href: '/files', kind: 'Page' },
           { name: 'Team access', detail: 'Real members and invitations', href: '/team', kind: 'Page' },
         ]
@@ -368,6 +370,7 @@ export function WorkspaceShell({
               </div>
             </header>
             <WorkSyncStatus />
+            <ActiveTimeNotice />
             <main id="main-content" tabIndex={-1} className="main-content">
               {children}
             </main>

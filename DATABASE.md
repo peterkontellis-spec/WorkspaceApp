@@ -92,3 +92,7 @@ NAS PostgreSQL packaging, restricted production network/credentials, backup/rest
 ## Archive schema — migration 007
 
 `007_work_archive.sql` adds board/task archive metadata, task subtree batch provenance and board archive audit events. Records and attachment bytes are retained. Archive/restore mutations use existing workspace locks, permission checks and revisions. Applying this additive migration to the local preview preserved existing record fingerprints apart from the new fields. The complete isolated database suite includes archive/recovery/race/attachment tests; see STATUS.md for the executed result. Never edit an already-applied migration.
+
+## M3.5 time records
+
+Additive migration `008_time_tracking.sql` introduces `time_entry` and `time_entry_audit`, a unique running-timer constraint per user, revision-safe corrections and transaction-bound archive/access auto-stop triggers. Time mutations also lock the active user row against concurrent local operator disable. All entry access remains authenticated and workspace-scoped; write permission is owner/editor plus entry ownership. Existing boards/tasks are not converted into invented time. See [TIME_TRACKING.md](TIME_TRACKING.md).

@@ -12,6 +12,12 @@ import { workHttpHandler } from '../../src/server/work-http.mjs';
 import { buildWorkDashboard } from '../../src/lib/work-dashboard.mjs';
 import { readWorkFilters, filterWorkTasks } from '../../src/lib/work-filters.mjs';
 
+// Server time advances on each read; all durable fields, including the active
+// timer, must still match across retries, rollback and database restart.
+function stableSnapshot({ serverNow, ...saved }) {
+  assert.ok(Number.isFinite(Date.parse(serverNow)));
+  return saved;
+}
 let local, admin, pool, auth, handle, owner, ownerCookie, workspace;
 const options = { secret: randomBytes(48).toString('hex'), baseURL: 'http://127.0.0.1:3100' };
 const password = 'Disposable work test password 123!';
@@ -119,7 +125,7 @@ test('task data, multiple assignees, dates, groups, subtasks and order survive a
   const before = await ok();
   await pool.end(); pool = null; await admin.end(); admin = null; await local.cluster.stop(); await local.cluster.start();
   admin = createDatabase(local.adminUrl); pool = createDatabase(local.appUrl); auth = createAuthentication(pool, options); handle = workHttpHandler(pool, auth, options);
-  assert.deepEqual(await ok(), before);
+  assert.deepEqual(stableSnapshot(await ok()), stableSnapshot(before));
   const saved = before.tasks.find(x => x.id === child.id); assert.equal(saved.parentId, parent.id); assert.equal(saved.groupId, group.id); assert.equal(saved.dueDate, '2026-12-31'); assert.equal(saved.revision, 2);
   assert.deepEqual(before.tasks.find(x => x.id === parent.id).assigneeIds.sort(), [owner, editor.id].sort());
 });
@@ -214,7 +220,7 @@ test('creation IDs make lost-response retries and competing worker creates idemp
     ]) {
       const responses = await Promise.all([work(body), second(request(body)), work(body)]);
       for (const response of responses) assert.equal(response.status, 200, await response.clone().text());
-      assert.deepEqual(await responses[0].json(), await responses[1].json());
+      assert.deepEqual(stableSnapshot(await responses[0].json()), stableSnapshot(await responses[1].json()));
     }
     let data = await ok(); assert.equal(data.boards.length, 1); assert.equal(data.groups.length, 2); assert.equal(data.tasks.length, 1);
     assert.equal(data.tasks[0].id, taskId); assert.deepEqual(data.tasks[0].assigneeIds, [owner]);
@@ -273,7 +279,7 @@ test('all column kinds, notes and checklist persist atomically across restart an
   const before = await ok();
   await pool.end(); pool = null; await admin.end(); admin = null; await local.cluster.stop(); await local.cluster.start();
   admin = createDatabase(local.adminUrl); pool = createDatabase(local.appUrl); auth = createAuthentication(pool, options); handle = workHttpHandler(pool, auth, options);
-  assert.deepEqual(await ok(), before);
+  assert.deepEqual(stableSnapshot(await ok()), stableSnapshot(before));
   data = await ok({ action: 'updateTask', id: t.id, revision: 3, patch: { notes: '', checklist: [checklist[1]], fields: [field(columns[0], null)] } });
   assert.equal(data.tasks[0].notes, ''); assert.deepEqual(data.tasks[0].checklist, [checklist[1]]); assert.equal(data.tasks[0].fields.length, 5);
 });
@@ -376,7 +382,7 @@ test('independent workers conflict on task details and column revisions; late ch
     const response = await work({ action: 'updateTask', id: t.id, revision: 2, patch: { notes: 'Rolled back', fields: [field({ ...c, revision: 2 }, 'Rolled back')], checklist: [{ id: randomUUID(), label: 'Fail', done: false, position: 0 }] } });
     assert.equal(response.status, 503); assert.doesNotMatch(await response.text(), /private details failure/);
   } finally { await admin.query('DROP TRIGGER test_details_checklist ON checklist_item; DROP FUNCTION fail_details_checklist()'); }
-  assert.deepEqual(await ok(), before);
+  assert.deepEqual(stableSnapshot(await ok()), stableSnapshot(before));
 });
 
 test('four passive clients converge after missed updates without extending idle sessions', async () => {
