@@ -323,9 +323,11 @@ Additional closure: full current browser suite 50 passed / 1 capability skip / 0
 
 **Deliverable:** reusable task/checklist and board structures.
 
-- [ ] Save and reuse task and board templates, including relevant groups and custom columns.
-- [ ] Define how dates, assignees, attachments, and document links are handled when creating from a template.
-- [ ] Verify new tasks/boards can change independently of the template and original records.
+- [x] Save and reuse task and board templates, including relevant groups and custom columns.
+- [x] Define how dates, assignees, attachments, and document links are handled when creating from a template.
+- [x] Verify new tasks/boards can change independently of the template and original records.
+
+Local template journeys, permissions, retries, restart persistence and desktop/narrow checks passed; see STATUS.md for exact runs and separate device gates.
 
 **Done when:** a repeat project can be created predictably without unintended shared edits.
 

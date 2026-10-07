@@ -1,5 +1,17 @@
 # Current status
 
+## M3.6 — reusable templates locally verified — 2026-10-07
+
+Templates is live in accounts-mode navigation/search, Boards and the saved task panel. Owners/editors save and reuse immutable board/task snapshots; viewers browse. Task-template archive/restore allows owners/editors; whole-board template archive/restore is owner-only. Copies have independent IDs, fresh progress, empty dates/assignments and explicit file/time/history/document-link rules. SAVED_WORK.md and DATABASE.md record exact limits, column mapping and retry behavior. No M4 behavior or durable Docs was added; approved themes/star remain unchanged.
+
+Checks: final `pnpm check` passed typecheck, **49/49 behavior tests** and production build; formatting, scoped Impeccable/interface/React review and detector passed. Full database regression **102/102** passed (96.1 seconds); a subsequently added actual template DB-restart case passed with the complete template file **12/12** (9.4 seconds), giving **103 distinct database cases** with passing evidence, not a fresh single 103-case command. Initial backend test failures were fixture setup using unsupported createTask detail fields; those fixtures were corrected before the passing runs. Review also fixed one-to-one mapping for duplicate column definitions.
+
+Initial isolated browser run `.local/e2e/run-ScxprN`: **7/7 passed**, including the four-account integrated journey. Review then added explicit stale-version recovery and keyboard focus return. All **seven final-build template scenarios** passed within `.local/e2e/run-Tz3919`; final full-suite outcome belongs to M3.7 closure. Desktop/narrow 1400/390px captures in both themes were reviewed, with final dark-desktop/light-narrow confirmation. Lost committed responses, unchanged retry IDs, offline retention, stale source/template recovery, role checks, archive/restore, keyboard and copy independence passed. The expanded route/contrast matrix includes Templates. Supported-browser inspection of the real empty library found no captured warnings/errors; temporary inspection tab closed.
+
+Migration009 applied additively; before/after fingerprints matched all 14 checked existing work/time/user tables (including the user's four boards and six tasks). Private copied-build preview: http://127.0.0.1:3100/templates, **PID 92504**. **26/26 preview HTTP checks** passed. Actual preview work was not used as QA fixtures; its existing running timer was preserved. No new dependency/service, LAN/public/NAS exposure, purchases, credits or resets. Latest usage snapshot: **23% weekly used**.
+
+Next: finish M3.7 full regression/evidence and stop before M4. Physical phone/keyboard, genuine zoom/background lifecycle, OS/GPU/battery/four-device and NAS acceptance remain explicit in PENDING_CHECKS.md.
+
 ## Additional acceptance and recovery checks closed — 2026-10-07
 
 User requested completion of remaining checks possible on the assistant's side. The unchanged M3.5 application build now has a clean full browser run: **50 passed, 1 genuine background-visibility capability skip, 0 failed**, exit 0, 6.3 minutes, `.local/e2e/run-GuQgZN`. This replaces the previous targeted-only regression evidence; no application fix was needed.

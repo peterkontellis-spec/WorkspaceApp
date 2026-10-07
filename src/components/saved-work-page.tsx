@@ -329,6 +329,18 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
           </p>
         </div>
         <div className="saved-actions">
+          {section === 'boards' && (
+            <Link
+              className="button button--secondary"
+              href={
+                board && canEdit && !board.archivedAt
+                  ? `/templates?kind=board&source=${board.id}`
+                  : '/templates'
+              }
+            >
+              {board && canEdit && !board.archivedAt ? 'Save as template' : 'Templates'}
+            </Link>
+          )}
           <span className="saved-sync" role="status">
             {work.pending ? 'Saving…' : work.syncState === 'current' ? 'Up to date' : 'Checking updates…'}
           </span>

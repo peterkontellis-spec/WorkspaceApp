@@ -1,0 +1,133 @@
+.templates-page {
+  min-width: 0;
+}
+.template-hint,
+.template-rules p {
+  max-width: 75ch;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.template-rules {
+  border-block: 1px solid var(--line);
+  margin-block: 24px;
+  padding-block: 4px;
+}
+.template-rules summary {
+  cursor: pointer;
+  padding-block: 14px;
+  min-height: 48px;
+}
+.template-rules summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.template-toolbar {
+  display: flex;
+  align-items: end;
+  gap: 20px;
+  margin-block: 24px;
+}
+.template-toolbar label {
+  flex: 1;
+  max-width: 480px;
+}
+.template-toolbar label,
+.template-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  min-width: 0;
+}
+.template-toolbar input,
+.template-form input,
+.template-form select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid var(--control-border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+}
+.template-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.template-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 24px;
+  border-bottom: 1px solid var(--line);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 110px;
+}
+.template-list li > div {
+  min-width: 0;
+}
+.template-list h2 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+.template-list p {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+.template-list .saved-actions {
+  flex-shrink: 0;
+  align-content: start;
+}
+.template-empty {
+  color: var(--muted);
+  padding-block: 24px;
+}
+.template-form-section {
+  margin-block: 36px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  scroll-margin-top: 100px;
+}
+.template-form-section h2 {
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+.template-form {
+  max-width: 720px;
+}
+.template-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 24px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.template-form .saved-actions {
+  justify-content: flex-end;
+}
+.template-discard {
+  line-height: 1.65;
+}
+@media (max-width: 700px) {
+  .template-toolbar,
+  .template-list li {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .template-toolbar label {
+    max-width: none;
+  }
+  .template-form fieldset {
+    grid-template-columns: 1fr;
+  }
+  .template-list .saved-actions {
+    justify-content: flex-start;
+  }
+}

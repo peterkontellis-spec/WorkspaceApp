@@ -134,6 +134,7 @@ test('both themes persist across routes and account controls, with narrow layout
     '/home',
     '/overview',
     '/time',
+    '/templates',
     '/boards',
     fixture.path,
     `${fixture.path}?view=kanban`,

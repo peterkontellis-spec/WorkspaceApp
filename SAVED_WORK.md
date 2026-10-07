@@ -6,6 +6,26 @@ In accounts mode, Home and Boards use PostgreSQL records belonging to the signed
 
 Accounts-mode Time provides shared completed entries, own timers/manual corrections, reversible void/restore and task/board/date totals. Owners/editors edit only their own time; viewers remain read-only. See [TIME_TRACKING.md](TIME_TRACKING.md) for permissions, stored timestamp semantics, date ranges and recovery.
 
+## Reusable templates — M3.6
+
+Templates is available in navigation/search and from Boards. A saved task exposes Save task as template when its editor has no unsaved changes. Owners/editors can save and use shared task/board templates; viewers can browse. Owners/editors archive or restore task templates; only owners archive or restore board templates. Archive preserves the immutable snapshot and does not change existing copies. Permanent template deletion and template editing are not implemented; save a new template for a revised process.
+
+A template captures current saved source work atomically, with a revision check on the selected board or root task. A board revision does not represent every child revision: the form explicitly captures the latest saved descendants at submission. Unsaved editor input is excluded. Each application creates independent record IDs and fresh creation activity; the source, saved snapshot and other copies stay independent.
+
+| Data | Copy rule |
+| --- | --- |
+| Board | Name chosen when applying; description, groups and column definitions retained. Archived tasks excluded. |
+| Task | Saved title, plain-text notes, priority, active subtree and checklist labels retained. |
+| Progress | Status resets to To do; checklist items reset to unchecked. |
+| Dates and people | Due dates and assignments cleared. |
+| Custom fields | Text/number values retained. Date/status/link values cleared; column settings retained. |
+| Files, time, history | Attachments, time entries and previous activity excluded. Only fresh creation activity is written. |
+| Documents | No document copy/connection. Links embedded in plain-text notes remain text; custom link fields are cleared. |
+
+Task templates capture definitions used by the subtree. On another board, identical name/type/settings reuse a matching column one-to-one; missing definitions are added. Incompatible same-name columns or exceeding 20 columns rejects the entire operation without partial work. Board templates preserve all column definitions, including duplicate names. Limits: 200 task records, 100 groups, 20 columns, 2 MiB of snapshot content.
+
+The library refreshes while visible/online using the existing polling coordinator. Draft names/destinations stay in this tab across in-app navigation. A lost response retains the same creation ID; retrying the unchanged request returns the original result without another copy. Changed-payload retries reject. After a revision conflict, Use latest saved version explicitly reloads the authorized source/template revision while keeping the entered name/destination; it does not silently replace a draft. Session loss clears protected work. Reload/closing the tab can lose unsaved input; there is no offline queue or durable draft promise.
+
 ## Current behavior
 
 - Create/edit a board name and description; create/edit named groups and their numeric order.

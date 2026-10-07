@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import type { WorkColumn, WorkChecklistItem, WorkGroup, WorkMember, WorkTask } from '@/lib/work';
 import { localToday } from '@/lib/work';
@@ -727,6 +728,11 @@ export function SavedTaskEditor({
         </fieldset>
       </form>
       <SavedTaskAttachments taskId={task.id} canEdit={canEdit} blocked={dirty || pending || confirmReload} />
+      {!dirty && !pending && !task.archivedAt && (
+        <Link className="text-link" href={`/templates?kind=task&source=${task.id}`}>
+          Save task as template
+        </Link>
+      )}
       <TaskTimeLink taskId={task.id} />
       <TaskActivity taskId={task.id} />
     </>

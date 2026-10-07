@@ -26,6 +26,7 @@ import {
   Folder,
   House,
   LayoutGrid,
+  Copy,
   Search,
   Settings2,
   Users,
@@ -45,6 +46,7 @@ const navigation = [
   { label: 'Overview', icon: ChartNoAxesCombined, later: 'Shared progress comes later.' },
   { label: 'Docs', href: '/docs', icon: FileText },
   { label: 'Files', icon: Folder, later: 'Attachment storage comes later.' },
+  { label: 'Templates', icon: Copy, later: 'Reusable work comes later.' },
   { label: 'Time', icon: Clock3, later: 'Time tracking comes later.' },
   {
     label: 'Assistant',
@@ -60,7 +62,7 @@ function Navigation({ close, mobile = false }: { close?: () => void; mobile?: bo
     <nav aria-label={mobile ? 'Mobile workspace navigation' : 'Workspace navigation'} className="side-nav">
       {navigation.map((item) => {
         const Icon = item.icon;
-        if (['Files', 'Overview', 'Time'].includes(item.label) && enabled)
+        if (['Files', 'Overview', 'Time', 'Templates'].includes(item.label) && enabled)
           return (
             <Link
               key={item.label}
@@ -133,18 +135,20 @@ export function WorkspaceShell({
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const section = pathname.split('/')[1];
   const currentLabel =
-    section === 'time' && account
-      ? 'Time'
-      : section === 'notifications' && account
-        ? 'Notifications'
-        : section === 'files' && account
-          ? 'Files'
-          : section === 'team'
-            ? 'Team access'
-            : section === 'overview'
-              ? 'Overview'
-              : (navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ??
-                'Workspace');
+    section === 'templates' && account
+      ? 'Templates'
+      : section === 'time' && account
+        ? 'Time'
+        : section === 'notifications' && account
+          ? 'Notifications'
+          : section === 'files' && account
+            ? 'Files'
+            : section === 'team'
+              ? 'Team access'
+              : section === 'overview'
+                ? 'Overview'
+                : (navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ??
+                  'Workspace');
   const close = () => setOverlay(null);
   const closeOverlay = (name: 'navigation' | 'search' | 'account' | 'reset') => {
     setOverlay((current) => (current === name ? null : current));
@@ -226,6 +230,7 @@ export function WorkspaceShell({
     ...(account
       ? [
           { name: 'Notifications', detail: 'Your task updates', href: '/notifications', kind: 'Page' },
+          { name: 'Templates', detail: 'Reusable boards and tasks', href: '/templates', kind: 'Page' },
           { name: 'Time', detail: 'Timers and shared time entries', href: '/time', kind: 'Page' },
           { name: 'Files', detail: 'Saved task attachments', href: '/files', kind: 'Page' },
           { name: 'Team access', detail: 'Real members and invitations', href: '/team', kind: 'Page' },

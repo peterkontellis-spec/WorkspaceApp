@@ -1,5 +1,13 @@
 # Decisions
 
+## M3.6 template rules and stop before M4 — 2026-10-07
+
+The user authorized completion through the end of M3, stopping before M4. Use independent immutable snapshots of saved board/task structures: copy title/instructions/priority/groups/column definitions/active subtasks/checklist labels; reset task status/checklist completion/due dates/assignees; retain text/number custom values and clear date/status/link values. Exclude attachments, time and prior activity. Plain-text notes, including embedded URLs, copy verbatim; documents are not duplicated or connected. Durable Docs remains deferred.
+
+Templates are shared staff work. Owners/editors save/apply; viewers read. Archive/restore follows the adopted work boundary: task templates owner/editor, board templates owner only. Reuse matching destination columns one-to-one; add missing definitions within the existing limit; reject incompatible same-name columns atomically. Snapshot bounds are 200 tasks,100 groups,20 columns,2 MiB. Save a new template to revise its contents.
+
+The source root revision is checked, but capture includes the latest saved descendants at transaction time (board revision is not a whole-project version). Show this explicitly. Keep draft input/retry identity; require an explicit version reload after conflict rather than silently rebasing. M3.7 local integration can close on executed four-account evidence, while physical/browser-host acceptance stays visibly pending. M4 and NAS/publication work are not started by this authorization.
+
 ## Time-tracking policy and semantics — 2026-10-07
 
 The user confirmed shared time-entry visibility, with owners/editors changing only their own time and viewers read-only. No owner override for another person's entries. M3.5 implementation choices: one stored running timer per person, server timestamp duration, original timers split at local midnight, manual entries/corrections allocated to their selected work date, recoverable void/restore and retained original/audit history. Archive/access loss stops active timers in the same transaction; restoring access does not restart them. Existing work is never backfilled as time. Current-month defaults and a maximum 93-day inclusive report range bound queries. No new service or star scoring. See TIME_TRACKING.md for exact behavior and STATUS.md for checked evidence.

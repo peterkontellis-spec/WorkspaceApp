@@ -96,3 +96,9 @@ NAS PostgreSQL packaging, restricted production network/credentials, backup/rest
 ## M3.5 time records
 
 Additive migration `008_time_tracking.sql` introduces `time_entry` and `time_entry_audit`, a unique running-timer constraint per user, revision-safe corrections and transaction-bound archive/access auto-stop triggers. Time mutations also lock the active user row against concurrent local operator disable. All entry access remains authenticated and workspace-scoped; write permission is owner/editor plus entry ownership. Existing boards/tasks are not converted into invented time. See [TIME_TRACKING.md](TIME_TRACKING.md).
+
+## M3.6 template snapshots
+
+Additive migration `009_work_templates.sql` adds `work_template` (immutable versioned JSON snapshots with reversible archive metadata) and `template_operation` (actor-bound creation fingerprints/results). Saving and applying a template use the same workspace transaction lock as saved work and membership changes, plus an active-user guard against operator disable. Copies generate independent board/group/column/task/checklist IDs. Failed field mapping, limits or activity writes roll back the entire copy. Repeated unchanged requests return the recorded result; changed requests cannot reuse a committed creation ID.
+
+Copy rules and limits are in [SAVED_WORK.md](SAVED_WORK.md). Template tables and operation identities belong in the database backup; preserving them also preserves safe retries after restart/recovery. This increment adds no service, dependency or scheduled worker.

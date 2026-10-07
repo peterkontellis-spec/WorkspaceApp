@@ -70,7 +70,7 @@ await check('root redirects to Home', async () => {
 });
 
 const checkedPages = cookie ? pages.filter(([path]) => !path.includes('/boards/') && path !== '/home?task=t1').map(([path, heading]) => [path, path === '/home' ? 'Your workspace' : heading]) : pages;
-if (cookie) checkedPages.push(['/overview', 'Overview'], ['/time', 'Time']);
+if (cookie) checkedPages.push(['/overview', 'Overview'], ['/time', 'Time'], ['/templates', 'Templates']);
 for (const [path, heading] of checkedPages) {
   await check(path, async () => {
     const response = await request(path);
@@ -141,6 +141,13 @@ if (cookie) {
     assert.match(response.headers.get('cache-control'), /no-store/);
     assert.equal((await fetch(origin + path)).status, 401);
     assert.equal((await request('/time/unexpected')).status, 404);
+  });
+  await check('template library respects account boundaries', async () => {
+    const response = await request('/api/templates'); assert.equal(response.status, 200);
+    const data = await response.json(); assert.ok(data.actor.id); assert.ok(Array.isArray(data.templates)); assert.ok(Array.isArray(data.archivedTemplates));
+    assert.match(response.headers.get('cache-control'), /no-store/);
+    assert.equal((await fetch(`${origin}/api/templates`)).status, 401);
+    assert.equal((await request('/templates/unexpected')).status, 404);
   });
   await check('work API returns only the authenticated workspace', async () => {
     const response = await request('/api/work'); assert.equal(response.status, 200);

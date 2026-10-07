@@ -1,0 +1,131 @@
+'use client';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createWorkSync, type WorkSync, type WorkSyncState } from '@/lib/work-sync.mjs';
+import type { TemplateLibrary, TemplateResult } from '@/lib/templates';
+import { useWork } from './work-provider';
+
+export function useTemplates(actorId: string) {
+  const work = useWork();
+  const refreshWork = work.refresh;
+  const [report, setReport] = useState<TemplateLibrary | null>(null);
+  const [readError, setReadError] = useState('');
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [pending, setPending] = useState(false);
+  const [state, setState] = useState<WorkSyncState>('connecting');
+  const sync = useRef<WorkSync | null>(null);
+  const writing = useRef(false);
+  const generation = useRef(0);
+  const writeRequest = useRef<AbortController | null>(null);
+  useEffect(() => {
+    const version = ++generation.current;
+    const coordinator = createWorkSync<TemplateLibrary>({
+      read: async (signal) => {
+        const response = await fetch('/api/templates', {
+          cache: 'no-store',
+          signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]),
+        });
+        const value = await response.json();
+        if (
+          response.status === 401 ||
+          response.status === 403 ||
+          (response.ok && value.actor?.id !== actorId)
+        ) {
+          throw Object.assign(new Error('Your access changed. Sign in again to load templates.'), {
+            expired: true,
+          });
+        }
+        if (!response.ok) throw new Error(value.error || 'Templates could not be loaded. Try Refresh.');
+        return value;
+      },
+      onData: (value) => {
+        if (generation.current === version) {
+          setReport(value);
+          setReadError('');
+        }
+      },
+      onError: (failure) => {
+        if (generation.current === version) {
+          if ((failure as { expired?: boolean })?.expired) setReport(null);
+          setReadError(failure instanceof Error ? failure.message : 'Templates could not be loaded.');
+        }
+      },
+      onState: setState,
+    });
+    sync.current = coordinator;
+    const availability = () =>
+      coordinator.setAvailable(document.visibilityState !== 'hidden', navigator.onLine);
+    const reconnect = () => {
+      availability();
+      coordinator.reconnect();
+    };
+    availability();
+    coordinator.start();
+    window.addEventListener('online', reconnect);
+    window.addEventListener('offline', availability);
+    window.addEventListener('focus', reconnect);
+    document.addEventListener('visibilitychange', reconnect);
+    return () => {
+      generation.current++;
+      writeRequest.current?.abort();
+      coordinator.dispose();
+      window.removeEventListener('online', reconnect);
+      window.removeEventListener('offline', availability);
+      window.removeEventListener('focus', reconnect);
+      document.removeEventListener('visibilitychange', reconnect);
+    };
+  }, [actorId]);
+  const refresh = useCallback(() => sync.current?.refresh(), []);
+  const mutate = useCallback(
+    async (payload: object): Promise<TemplateResult | null> => {
+      if (writing.current || state === 'expired') return null;
+      writing.current = true;
+      setPending(true);
+      setError('');
+      setNotice('');
+      const version = generation.current;
+      const coordinator = sync.current;
+      coordinator?.suspend();
+      const controller = new AbortController();
+      writeRequest.current = controller;
+      try {
+        const response = await fetch('/api/templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
+        });
+        const value = await response.json();
+        if (generation.current !== version) return null;
+        if (response.status === 401 || response.status === 403) {
+          setReport(null);
+          coordinator?.expire();
+        }
+        if (!response.ok)
+          throw new Error(value.error || 'Template could not be saved. Your input is kept here.');
+        setNotice('Template change saved.');
+        coordinator?.resume();
+        await Promise.all([coordinator?.refresh(), refreshWork()]);
+        return generation.current === version ? value : null;
+      } catch (failure) {
+        if (generation.current === version && !controller.signal.aborted)
+          setError(
+            failure instanceof Error && !['TypeError', 'TimeoutError'].includes(failure.name)
+              ? failure.message
+              : 'Save could not be confirmed. Your input is kept. Reconnect and check the list before retrying.',
+          );
+        return null;
+      } finally {
+        coordinator?.resume();
+        writing.current = false;
+        if (generation.current === version) setPending(false);
+      }
+    },
+    [state, refreshWork],
+  );
+  const clearFeedback = useCallback(() => {
+    setError('');
+    setNotice('');
+  }, []);
+  return { clearFeedback, report, error: error || readError, notice, pending, state, refresh, mutate };
+}
