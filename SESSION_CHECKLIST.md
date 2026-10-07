@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.3 are implemented with core browser journeys verified; detailed acceptance and physical-device gaps remain in STATUS.md and PENDING_CHECKS.md.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.7 are implemented and locally verified; physical-device/browser-host acceptance remains in STATUS.md and PENDING_CHECKS.md. M4 has not started.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Corrective blocks before further M3 features — 2026-10-07
 
@@ -335,9 +335,11 @@ Local template journeys, permissions, retries, restart persistence and desktop/n
 
 **Deliverable:** an integrated daily workflow with recorded checks.
 
-- [ ] Run assignment → live update → notification → task completion → dashboard update across accounts.
-- [ ] Check all views, time summaries, and a template-created project together.
-- [ ] Review desktop/narrow layouts and resolve issues that prevent everyday use.
+- [x] Run assignment → live update → notification → task completion → dashboard update across accounts.
+- [x] Check all views, time summaries, and a template-created project together.
+- [x] Review desktop/narrow layouts and resolve issues that prevent everyday use.
+
+Local review passed: full browser suite **58 passed / 1 genuine background-visibility capability skip / 0 failed** in `.local/e2e/run-Tz3919`. The integrated four-account journey passed. Physical phone, native zoom, real background lifecycle and hardware checks remain in PENDING_CHECKS.md; M4 has not started.
 
 **Done when:** core teamwork works with four accounts and known limitations are documented.
 

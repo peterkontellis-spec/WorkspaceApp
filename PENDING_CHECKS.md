@@ -2,6 +2,14 @@
 
 Updated 2026-10-07 after the user asked the assistant to attempt all remaining checks. The reproducible local browser matrix is complete for the scenarios below. No failed app scenario is left open. Physical/device and browser-host limitations are explicitly separate; this is not NAS or publication acceptance.
 
+## M3.6/M3.7 final local review — 2026-10-07
+
+- **Final full browser run:** 58 passed / 1 genuine background-visibility capability skip / 0 failed, exit 0, 6.6 minutes, `.local/e2e/run-Tz3919`. This supersedes the historical 50-pass M3.5 run below.
+- **Templates:** board/task UI capture/application, reset rules, independent copies, custom-column mapping, roles, reversible archive/restore, lost committed response retry, offline draft retention, explicit stale-source/template reload with unchanged retry identity, keyboard focus, long content and 1400/390px light/dark layouts passed. Template snapshots and operation identities also survived an actual isolated DB restart.
+- **Integrated four-account workflow:** template project → assignment → other-account polling → recipient notification → editor time/checklist/task completion → updated dashboard → matching Table/Kanban/Calendar records → shared, own-edit-only time totals passed.
+- **Checks:** final typecheck/build/49 behavior tests, formatting, 26 preview HTTP checks; 102 full DB checks plus the extended 12-case template file passed (103 distinct DB cases). Fresh cold-recovery evidence `.local/tests/restore-0NGqI0/evidence.json` includes the new tables empty; populated template persistence is separately proven by restart, not a populated restore claim.
+- **Review and preservation:** approved visual identity retained; bounded Impeccable/interface/React review and actual screenshots/keyboard checks completed. Migration009 preserved all checked existing work/time rows; private preview updated. No remaining observed app failure. M3.6/M3.7 local boxes are complete; full-device Stage 3 acceptance is still pending below. **M4 remains unstarted.**
+
 ## Latest checks closed — 2026-10-07
 
 - **Full current browser suite:** 50 passed / 1 actual-visibility capability skip / 0 failed, exit 0, `.local/e2e/run-GuQgZN`, 6.3 minutes. No app source changes were required.
@@ -41,7 +49,7 @@ Current M3.5 checks also passed TypeScript, 49 behavior tests, production build,
 - [ ] **Physical iPhone Firefox / software keyboard:** real touch, keyboard-induced visual viewport changes, safe areas, pinch zoom and responsiveness. Emulated touch/viewport checks passed; no private HTTPS phone connection has been configured or exposed.
 - [ ] **Actual OS/device behavior:** OS reduced-motion setting propagation, physical GPU smoothness, battery impact and four-device load. Browser reduced-motion emulation and renderer/fallback behavior passed.
 
-These environment checks are retained for device acceptance/M3.7; they do not imply a known failing app behavior. M3.1–M3.5 local core journeys have evidence, while unconditional full-device/Stage 3 sign-off remains separate. Next bounded feature: M3.6 templates.
+These environment checks are retained for device acceptance/M3.7; they do not imply a known failing app behavior. M3.1–M3.7 local core journeys have evidence, while unconditional full-device/Stage 3 sign-off remains separate. Next: user review and remaining device acceptance; M4 planning/implementation requires the next continuation.
 
 ## Later release gates
 

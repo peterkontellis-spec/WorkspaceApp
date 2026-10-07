@@ -53,6 +53,8 @@ Acceptance:
 - Templates produce independent new tasks/boards, with defined handling of dates and assignees.
 - Notification and activity behavior is verified for the implemented actions.
 
+**M3 local implementation and four-account integration verified 2026-10-07.** See STATUS.md and PENDING_CHECKS.md for the 58-pass full browser run, template persistence/retry checks and remaining physical/browser-host acceptance. This is not unconditional full-device, NAS or publication sign-off. Work stopped before M4.
+
 ## M4 — Advanced behavior and Docs
 
 Deliver dependencies, recurring tasks, constrained automation rules, and collaborative Docs linked to projects/tasks.
