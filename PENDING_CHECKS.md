@@ -2,6 +2,14 @@
 
 Updated 2026-10-07 after the user asked the assistant to attempt all remaining checks. The reproducible local browser matrix is complete for the scenarios below. No failed app scenario is left open. Physical/device and browser-host limitations are explicitly separate; this is not NAS or publication acceptance.
 
+## Latest checks closed — 2026-10-07
+
+- **Full current browser suite:** 50 passed / 1 actual-visibility capability skip / 0 failed, exit 0, `.local/e2e/run-GuQgZN`, 6.3 minutes. No app source changes were required.
+- **Whole app-server restart with a running timer:** the browser closes, the isolated app is abruptly terminated/restarted, and a new browser resumes the same timer/session. Stop saves exactly one correctly totalled entry; a second app restart preserves it. `pnpm test:e2e --restart-check` passed, final `.local/e2e/run-asMzWs`. This now has direct browser and new-process evidence in addition to prior DB restart coverage.
+- **Local database/attachment recovery:** focused cold physical restore passed, `.local/tests/restore-ujjtCn/evidence.json`. All 24 public-table fingerprints, accounts/roles/time audit, exact synthetic file bytes and authorization checks matched. Separate restored cluster; source/backup retained; owned services stopped. See RECOVERY_CHECKS.md for the downtime/same-major/platform limits. NAS, offsite, encryption and retention are still open.
+
+The detailed M3.4/M3.5 delivery-run paragraphs below are historical evidence. The full run above supersedes the previous targeted-only browser coverage limitation.
+
 ## Verified local coverage
 
 | Area | Executed evidence |
@@ -22,14 +30,14 @@ M3.4 adds verified exact personal/team/board/workload totals, shared assignees/s
 
 Six new time scenarios cover stored timer start/stop/reload/global indicator, shared own-only editing and viewer access, manual corrections/void/restore, exact filtered totals, a committed response lost in transit with idempotent retry, malformed date recovery, stale corrections retaining input, and keyboard/long-content layout at 1440/390px in both themes. The route/contrast matrix includes Time; all seven existing workspace regression cases also passed. Final captures were visually reviewed.
 
-Initial run `.local/e2e/run-RDNIOJ`: 11 passed / 3 test-setup failures. `.local/e2e/run-gk2E2Y`: uncertain-save and invalid-date/stale-correction cases passed, layout still failed the default-theme assumption. Final layout run `.local/e2e/run-8ytRYD`: 1 passed, exit 0. All 14 selected scenarios have passing evidence; the initial command is not reported as successful. The suite now contains 51 cases, with 50 distinct cases covered by cumulative passing evidence and the previously disclosed real-visibility capability gap. This was a targeted regression run, not a fresh full-suite run.
+Initial run `.local/e2e/run-RDNIOJ`: 11 passed / 3 test-setup failures. `.local/e2e/run-gk2E2Y`: uncertain-save and invalid-date/stale-correction cases passed, layout still failed the default-theme assumption. Final layout run `.local/e2e/run-8ytRYD`: 1 passed, exit 0. All 14 selected scenarios have passing evidence; the initial command is not reported as successful. At M3.5 delivery, the suite contained 51 cases, with 50 distinct cases covered by cumulative passing evidence and the previously disclosed real-visibility capability gap. This was a targeted regression run, not a fresh full-suite run.
 
 Current M3.5 checks also passed TypeScript, 49 behavior tests, production build, formatting, 90 database tests (including actual DB restart and access-disable race), and 24 preview HTTP checks. Existing preview record fingerprints were unchanged by additive migration008.
 
 ## Checks this environment cannot establish
 
-- [ ] **Real background-tab lifecycle:** Chromium headless tabs and supported in-app tabs both continued to report `document.visibilityState === 'visible'` after another tab took focus. The browser test attaches that observation and skips explicitly. Underlying hidden/visible/backoff behavior passes deterministic tests, but actual browser lifecycle timing needs a browser host that exposes real visibility changes.
-- [ ] **Native browser zoom:** the supported in-app zoom shortcut had no effect (viewport and device-pixel ratio unchanged). Equivalent reflow passed; genuine 200% browser chrome zoom remains unverified.
+- [ ] **Real background-tab lifecycle:** Chromium headless tabs and supported in-app tabs both continued to report `document.visibilityState === 'visible'` after another tab took focus. The browser test attaches that observation and skips explicitly. Underlying hidden/visible/backoff behavior passes deterministic tests, but actual browser lifecycle timing needs a browser host that exposes real visibility changes. The full-suite skip and a fresh two-tab in-app retry both reconfirmed this limitation.
+- [ ] **Native browser zoom:** the supported in-app zoom shortcut had no effect (viewport and device-pixel ratio unchanged). Equivalent reflow passed; genuine 200% browser chrome zoom remains unverified. Retried 2026-10-07: width1280/height720/DPR2/scale1 stayed unchanged after the shortcut; the only connected browser is the in-app host.
 - [ ] **Physical iPhone Firefox / software keyboard:** real touch, keyboard-induced visual viewport changes, safe areas, pinch zoom and responsiveness. Emulated touch/viewport checks passed; no private HTTPS phone connection has been configured or exposed.
 - [ ] **Actual OS/device behavior:** OS reduced-motion setting propagation, physical GPU smoothness, battery impact and four-device load. Browser reduced-motion emulation and renderer/fallback behavior passed.
 
@@ -37,4 +45,4 @@ These environment checks are retained for device acceptance/M3.7; they do not im
 
 ## Later release gates
 
-Docs remains a non-editable storage-pending placeholder in accounts mode; durable saving/recovery/collaboration await NAS configuration and M4. NAS performance, deployment, diagnostic logging, actual database+attachment backup restoration and the required Cloudflare pre-publication security audit remain later release work. No public access, paid CI, credit/reset use or NAS changes occurred.
+Docs remains a non-editable storage-pending placeholder in accounts mode; durable saving/recovery/collaboration await NAS configuration and M4. NAS performance, deployment, operational diagnostic logging, the deployed backup/restore procedure and the required Cloudflare pre-publication security audit remain later release work. Local cold recovery now passes; deployed backup destination/schedule/retention, offsite recovery, encryption and NAS-specific restoration are not established. Logging is limited to connection errors/readiness today; broader operational diagnostics need implementation. Publication security sign-off requires the concrete release/deployment configuration. No public access, paid CI, credit/reset use or NAS changes occurred.

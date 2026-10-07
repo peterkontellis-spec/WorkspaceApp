@@ -15,8 +15,13 @@ const root = resolve(import.meta.dirname, '../..');
 process.umask(0o077);
 const args = process.argv.slice(2);
 const grep = args.length === 2 && args[0] === '--grep' && args[1].length <= 500 ? args[1] : null;
-if (!grep && (args.some((arg) => !['--setup-check', '--serve'].includes(arg)) || args.length > 1))
-  throw new Error('Usage: node scripts/e2e/run.mjs [--setup-check | --serve | --grep pattern]');
+if (
+  !grep &&
+  (args.some((arg) => !['--setup-check', '--serve', '--restart-check'].includes(arg)) || args.length > 1)
+)
+  throw new Error(
+    'Usage: node scripts/e2e/run.mjs [--setup-check | --serve | --restart-check | --grep pattern]',
+  );
 await readFile(join(root, '.next/BUILD_ID'), 'utf8');
 await mkdir(join(root, '.local/e2e'), { recursive: true, mode: 0o700 });
 const directory = await mkdtemp(join(root, '.local/e2e/run-'));
@@ -115,32 +120,35 @@ try {
     WORKSPACE_MODE: 'accounts',
   };
   log = await open(join(directory, 'server.log'), 'a', 0o600);
-  server = spawn(process.execPath, [join(release, 'server.js')], {
-    cwd: release,
-    env,
-    stdio: ['ignore', log.fd, log.fd],
-  });
-  server.on('error', (error) => {
-    serverFailure = error;
-  });
-  await once(server, 'spawn');
-  let ready = false;
-  for (let attempt = 0; attempt < 100; attempt++) {
-    if (serverFailure) throw serverFailure;
-    if (server.exitCode !== null || server.signalCode !== null)
-      throw new Error('Isolated app exited; inspect the run server.log.');
-    try {
-      const response = await fetch(`${baseURL}/api/health`, { signal: AbortSignal.timeout(500) });
-      if (response.ok) {
-        ready = true;
-        break;
+  async function startServer() {
+    server = spawn(process.execPath, [join(release, 'server.js')], {
+      cwd: release,
+      env,
+      stdio: ['ignore', log.fd, log.fd],
+    });
+    server.on('error', (error) => {
+      serverFailure = error;
+    });
+    await once(server, 'spawn');
+    let ready = false;
+    for (let attempt = 0; attempt < 100; attempt++) {
+      if (serverFailure) throw serverFailure;
+      if (server.exitCode !== null || server.signalCode !== null)
+        throw new Error('Isolated app exited; inspect the run server.log.');
+      try {
+        const response = await fetch(`${baseURL}/api/health`, { signal: AbortSignal.timeout(500) });
+        if (response.ok) {
+          ready = true;
+          break;
+        }
+      } catch {
+        /* bounded readiness retry */
       }
-    } catch {
-      /* bounded readiness retry */
+      await sleep(100);
     }
-    await sleep(100);
+    if (!ready) throw new Error('Isolated app did not start.');
   }
-  if (!ready) throw new Error('Isolated app did not start.');
+  await startServer();
   for (const [key, person] of Object.entries(people)) {
     // Only this disposable server receives generated fictional credentials. No browser password entry.
     const response = await fetch(`${baseURL}/api/auth/sign-in/email`, {
@@ -182,6 +190,29 @@ try {
     console.log(
       'Setup check passed: isolated database, migrations, four accounts, app and authenticated snapshots. No browser launched.',
     );
+    resultCode = 0;
+  } else if (args[0] === '--restart-check') {
+    process.env.PLAYWRIGHT_BROWSERS_PATH = join(root, '.local/playwright-browsers');
+    const { checkAppRestart } = await import('./restart-check.mjs');
+    await checkAppRestart({
+      directory,
+      baseURL,
+      people,
+      restart: async () => {
+        if (!server?.pid || server.exitCode !== null || server.signalCode !== null)
+          throw new Error('Expected the owned disposable app to be running.');
+        const oldPid = server.pid;
+        const exited = once(server, 'exit');
+        server.kill('SIGKILL');
+        await exited;
+        // Real downtime with no app process; the PostgreSQL fixture stays up.
+        await sleep(1250);
+        serverFailure = null;
+        await startServer();
+        if (server.pid === oldPid) throw new Error('Expected a new app process.');
+        return { before: oldPid, after: server.pid };
+      },
+    });
     resultCode = 0;
   } else if (args[0] === '--serve') {
     await writeFile(

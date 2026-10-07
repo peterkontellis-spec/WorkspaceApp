@@ -29,3 +29,5 @@ The default range is the first day of the viewer's current month through today, 
 - History is paginated at 50 entries; totals cover the entire filtered range, not just the visible page. Voided entries remain in history so their owner can restore them.
 
 No new service, package, external integration or NAS exposure is added. Migration `008_time_tracking.sql` adds the entries, audit records, constraints, indexes and lifecycle triggers. Existing work is not backfilled into fictional time. Actual checks and remaining device acceptance are recorded in STATUS.md and PENDING_CHECKS.md.
+
+Additional recovery evidence: a browser closed before an abrupt app-server termination; a fresh process/browser resumed the same timer/session and stored start. Stop produced exact totals; a second restart retained the completed record. The isolated cold physical backup/restore test also recovers timer history/audit and the running timer. STATUS.md and RECOVERY_CHECKS.md distinguish this local evidence from later NAS recovery acceptance.

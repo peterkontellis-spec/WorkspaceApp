@@ -315,6 +315,8 @@ Local verification: 49 behavior tests, 76 database tests, 22 HTTP checks and all
 
 Local verification: 49 behavior tests, 90 isolated database checks, 24 preview HTTP checks and 14 selected browser scenarios have passing evidence. Final 1440/390px captures in both themes reviewed. Exact runs and remaining device gates are in STATUS.md and PENDING_CHECKS.md.
 
+Additional closure: full current browser suite 50 passed / 1 capability skip / 0 failed; actual browser close plus two abrupt app-server restarts preserve active/completed timer state and exact totals. See STATUS.md.
+
 **Done when:** elapsed time is based on stored timestamps and totals remain correct when a browser closes.
 
 ### M3.6 — Reusable templates
@@ -485,6 +487,8 @@ Local verification: 49 behavior tests, 90 isolated database checks, 24 preview H
 - [ ] Choose destination, schedule, and retention, including a recovery copy outside the same NAS storage pool.
 - [ ] Back up the database, attachments, and required configuration with a consistent recovery plan.
 - [ ] Restore into a separate safe test location and verify sign-in, tasks, documents, and files.
+
+Local precursor completed 2026-10-07: cleanly stopped fictional PostgreSQL 18.4 cluster, attachments and auth configuration copied/restored into a separate local cluster; data fingerprints, file bytes, login and permissions passed. This does not check the NAS/offsite/schedule/retention or durable Docs portions above. See RECOVERY_CHECKS.md.
 
 **Done when:** a real recovery has succeeded; a successful backup job alone does not complete this increment.
 
