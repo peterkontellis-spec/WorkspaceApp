@@ -20,16 +20,18 @@ export function AssigneePicker({
   disabled?: boolean;
 }) {
   const available = people ?? members;
+  const activeIds = new Set(available.map((member) => member.id));
+  const inactiveCount = value.filter((memberId) => !activeIds.has(memberId)).length;
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<CSSProperties>({});
   const names =
-    available
-      .filter((member) => value.includes(member.id))
-      .map((member) => member.name)
-      .join(', ') || 'Unassigned';
+    [
+      ...available.filter((member) => value.includes(member.id)).map((member) => member.name),
+      ...(inactiveCount ? [`${inactiveCount} inactive assignee${inactiveCount === 1 ? '' : 's'}`] : []),
+    ].join(', ') || 'Unassigned';
 
   function positionMenu() {
     const rect = trigger.current?.getBoundingClientRect();
@@ -103,6 +105,16 @@ export function AssigneePicker({
             </label>
           ))}
         </fieldset>
+        {inactiveCount > 0 && (
+          <button
+            type="button"
+            className="button button--ghost assignee-done"
+            disabled={disabled}
+            onClick={() => onChange(value.filter((memberId) => activeIds.has(memberId)))}
+          >
+            Remove inactive assignees
+          </button>
+        )}
         <button
           type="button"
           className="button button--ghost assignee-done"

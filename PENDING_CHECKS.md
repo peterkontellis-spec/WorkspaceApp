@@ -14,9 +14,9 @@ Updated 2026-10-07 after the user asked the assistant to attempt all remaining c
 | Motion/fallback | Real WebGL drawing and six captures over 45 seconds, reviewed changing flare locations; pause/resume and emulated reduced-motion stop drawing; actual WEBGL_lose_context fallback and simulated missing-WebGL navigation passed. Main CUA live screenshots also showed changed flare positions without runtime warnings. No hardware/GPU/battery performance claim. |
 | Reflow/touch | 720×450 CSS viewport tests the reflow corresponding to a 1440×900 display at 200%; task actions remain reachable. Chromium mobile/touch emulation saves task notes and dismisses the date popup. These are simulations, not physical iPhone/software-keyboard or native browser-zoom evidence. |
 
-The suite now contains 40 scenarios. Combined run `.local/e2e/run-n6ouhy`: **38 passed, 1 capability skip**, exit 0. A subsequent CSS-only placeholder fix and new contrast test passed five relevant final-build scenarios in `.local/e2e/run-ziThWp`: **5 passed**, exit 0. Thus 39 distinct scenarios have passing evidence; one real-visibility scenario remains unverified. This is not a claim that all 40 executed in one run. Both owned app/database environments stopped.
+The suite now contains 45 scenarios. M3.4 full run `.local/e2e/run-WXexp5`: **43 passed, one test-assumption failure, one visibility capability skip**, exit 1. The theme test was corrected to explicitly select both themes; final-build focused run `.local/e2e/run-hTWxQW`: **1 passed**, exit 0. Thus **44 distinct scenarios pass**, including all five dashboards cases. This is combined evidence, not a claim that the initial full command passed. Both owned app/database environments stopped.
 
-The placeholder review found and fixed default-grey search text on the dark surface. Final rendered contrast: **7.01:1 dark**, **6.77:1 light**. TypeScript, 42 behavior tests, production build, formatting and 21 refreshed-preview HTTP checks pass. The existing 75-test database result remains current: this turn changed no backend/schema code.
+M3.4 adds verified exact personal/team/board/workload totals, shared assignees/subtasks/archive rules, record links, private notification count and recent tasks, account polling/viewer access, offline/reconnect, inactive-assignee repair, empty/long layouts in both themes and emulated local-midnight rollover. TypeScript, **49 behavior tests**, production build, formatting, **76 database checks** and **22 preview HTTP checks** passed. Overview is included in the existing rendered-contrast/route matrix.
 
 ## Checks this environment cannot establish
 
@@ -25,7 +25,7 @@ The placeholder review found and fixed default-grey search text on the dark surf
 - [ ] **Physical iPhone Firefox / software keyboard:** real touch, keyboard-induced visual viewport changes, safe areas, pinch zoom and responsiveness. Emulated touch/viewport checks passed; no private HTTPS phone connection has been configured or exposed.
 - [ ] **Actual OS/device behavior:** OS reduced-motion setting propagation, physical GPU smoothness, battery impact and four-device load. Browser reduced-motion emulation and renderer/fallback behavior passed.
 
-These environment checks are retained for device acceptance/M3.7; they do not imply a known failing app behavior. M3.1–M3.3 local core journeys have evidence, while unconditional full-device/Stage 3 sign-off remains separate. Next feature when authorized: M3.4 dashboards.
+These environment checks are retained for device acceptance/M3.7; they do not imply a known failing app behavior. M3.1–M3.4 local core journeys have evidence, while unconditional full-device/Stage 3 sign-off remains separate. Next bounded feature: M3.5 time tracking.
 
 ## Later release gates
 

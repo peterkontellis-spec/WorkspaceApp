@@ -3,6 +3,7 @@ import { requireAccount } from '@/server/auth';
 import { notFound } from 'next/navigation';
 import { NotificationsPage } from '@/components/work-updates';
 import { SavedFilesPage } from '@/components/saved-files';
+import { SavedOverviewPage } from '@/components/saved-dashboard';
 import { SavedWorkPage } from '@/components/saved-work-page';
 import { WorkspacePage } from '@/components/workspace-pages';
 import { boards, documents } from '@/lib/demo';
@@ -12,6 +13,7 @@ export default async function Page({ params }: { params: Promise<{ segments: str
   const { segments } = await params;
   const [section, id] = segments;
   if (account && section === 'notifications' && segments.length === 1) return <NotificationsPage />;
+  if (account && section === 'overview' && segments.length === 1) return <SavedOverviewPage />;
   if (account && section === 'files' && segments.length === 1) return <SavedFilesPage />;
   if (
     account &&

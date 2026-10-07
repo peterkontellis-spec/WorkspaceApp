@@ -20,6 +20,7 @@ export type WorkColumn = {
 export type WorkChecklistItem = { id: string; label: string; done: boolean; position: number };
 export type WorkFieldValue = { columnId: string; value: string | number };
 export type WorkTask = {
+  updatedAt?: string;
   archivedAt?: string | null;
   archivedBy?: string | null;
   archiveBatchId?: string | null;

@@ -46,10 +46,12 @@ async function check(name, verify) {
 if (cookie) await check('signed-out account and workspace requests are denied', async () => {
   const denied = await fetch(`${origin}/api/account`);
   assert.equal(denied.status, 401);
-  const page = await fetch(`${origin}/home`, { redirect: 'manual' });
-  assert.equal(page.status, 307);
-  assert.ok(page.headers.get('location').includes('/sign-in'));
-  assert.ok(!(await page.text()).includes('Prepare launch brief'));
+  for (const path of ['/home', '/overview']) {
+    const page = await fetch(`${origin}${path}`, { redirect: 'manual' });
+    assert.equal(page.status, 307);
+    assert.ok(page.headers.get('location').includes('/sign-in'));
+    assert.ok(!(await page.text()).includes('Prepare launch brief'));
+  }
 });
 
 await check('account forms fail safely before scripts load', async () => {
@@ -68,6 +70,7 @@ await check('root redirects to Home', async () => {
 });
 
 const checkedPages = cookie ? pages.filter(([path]) => !path.includes('/boards/') && path !== '/home?task=t1').map(([path, heading]) => [path, path === '/home' ? 'Your workspace' : heading]) : pages;
+if (cookie) checkedPages.push(['/overview', 'Overview']);
 for (const [path, heading] of checkedPages) {
   await check(path, async () => {
     const response = await request(path);

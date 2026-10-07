@@ -9,6 +9,7 @@ import { createAuthentication, verifiedActor } from '../../src/server/auth-core.
 import { createFirstOwner } from '../../src/server/account-operator.mjs';
 import { authHttpHandler } from '../../src/server/auth-http.mjs';
 import { workHttpHandler } from '../../src/server/work-http.mjs';
+import { buildWorkDashboard } from '../../src/lib/work-dashboard.mjs';
 import { readWorkFilters, filterWorkTasks } from '../../src/lib/work-filters.mjs';
 
 let local, admin, pool, auth, handle, owner, ownerCookie, workspace;
@@ -405,4 +406,31 @@ test('four passive clients converge after missed updates without extending idle 
   assert.equal((await work(undefined,viewer.cookie)).status,401);
   await admin.query('UPDATE auth_session SET "updatedAt"=now()-interval \'31 minutes\' WHERE "userId"=$1',[second.id]);
   assert.equal((await work(undefined,second.cookie)).status,401);
+});
+
+
+test('dashboard inputs expose saved timestamps and preserve account/workspace scope', async () => {
+  const viewer = await member('dashboard-viewer@example.test', 'viewer');
+  const editor = await member('dashboard-editor@example.test', 'editor');
+  const b = await board('Dashboard board');
+  const shared = await task(b, 'Shared overdue', { assigneeIds: [owner, viewer.id], dueDate: '2028-02-28' });
+  await task(b, 'Editor done', { assigneeIds: [editor.id], status: 'Done', dueDate: '2028-02-28' });
+  const saved = await ok(undefined, viewer.cookie);
+  assert.ok(Number.isFinite(Date.parse(saved.tasks.find(t => t.id === shared.id).updatedAt)));
+  const personal = buildWorkDashboard(saved, '2028-02-29');
+  assert.equal(personal.personal.open, 1);
+  assert.equal(personal.team.total, 2);
+  assert.equal(personal.team.overdue, 1);
+  assert.equal(personal.recentTasks[0].id, shared.id);
+  const other = (await admin.query("INSERT INTO workspace(name) VALUES('Dashboard outside') RETURNING id")).rows[0].id;
+  const outsider = await member('dashboard-outside@example.test', 'owner', other);
+  const outside = buildWorkDashboard(await ok(undefined, outsider.cookie), '2028-02-29');
+  assert.equal(outside.team.total, 0);
+  assert.equal(outside.recentTasks.length, 0);
+  assert.ok(!outside.members.some(row => row.member.id === owner));
+  await ok({ action: 'updateTask', id: shared.id, revision: shared.revision, patch: { status: 'Done' } });
+  const updated = buildWorkDashboard(await ok(undefined, viewer.cookie), '2028-02-29');
+  assert.equal(updated.personal.open, 0);
+  assert.equal(updated.team.overdue, 0);
+  assert.equal(updated.team.completionPercent, 100);
 });

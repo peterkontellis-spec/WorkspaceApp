@@ -1,4 +1,4 @@
-# Saved boards and task details — M2.4–M2.6
+# Saved workspace work
 
 In accounts mode, Home and Boards use PostgreSQL records belonging to the signed-in staff workspace. Owners and editors can create/edit boards, groups and tasks; viewers can read them. Only owners manage invitations and membership. Customer folders and private admin material are not part of this shared staff workspace.
 
@@ -15,6 +15,16 @@ In accounts mode, Home and Boards use PostgreSQL records belonging to the signed
 - Connection failures retain forms. Session checks continue, with a Retry connection notice; signed-out/revoked identities are redirected. There is no offline write queue. Visible online tabs refresh through M3.2 polling; manual Refresh remains available.
 
 Accounts-mode Docs is a non-editable storage-pending placeholder until NAS configuration is settled. Explicit prototype mode retains its sample editor. Durable Docs remain M4. Task attachments and the Files library are implemented; see [FILES.md](FILES.md).
+
+## Home and Overview — M3.4
+
+Home shows the signed-in person's open/in-progress/overdue/due-today/done counts, My Day buckets, private unread notification count/link, and the five most recently updated assigned tasks. Recent tasks use saved task timestamps, not browser visit history; completed tasks can appear there. Personal filtering does not make shared tasks private.
+
+Overview is available to all current staff roles from desktop navigation, the mobile navigation menu, or Home's Team overview link. It shows board completion, open overdue tasks and workload with links back to the saved records. Viewers retain read-only access. It uses the existing authorized snapshot and polling; no extra service, polling stream, database migration or scoring system is added. The star remains an illustrative appearance preview.
+
+Counting rules: each task/subtask is one record with equal weight; completed means current status Done, with no reporting-period claim. Board completion is rounded Done / total; an empty board says No tasks yet. Archived tasks/boards are excluded. Due buckets exclude Done. Dates follow the viewer's device timezone and refresh at local midnight and after focus/visibility changes. Workload is open assignments, not hours/capacity. Shared assignments count for every assignee but only once in team totals. Unassigned means no assignee IDs. Tasks assigned solely to unavailable members have a separate No active assignee row and recovery list; mixed active/inactive assignments remain with the active members. The picker names inactive assignments and offers explicit removal so owners/editors can reassign safely.
+
+Offline dashboards retain the last received data with an explicit connection notice. Existing account-expiry/revocation behavior still clears protected data. Actual checks and device limitations are in STATUS.md and PENDING_CHECKS.md.
 
 ## Archive and quick edits — corrective blocks
 

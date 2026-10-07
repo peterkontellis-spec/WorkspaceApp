@@ -27,7 +27,7 @@ The full requirements and architecture proposals are in [PLANNING.md](PLANNING.m
 
 ## Current delivery target
 
-M1 is accepted as a sample-data prototype; M2 is accepted locally with accounts/roles, saved boards/tasks/custom fields/notes/checklists, search and private attachments. M3.1 saved views, M3.2 polling/reconnect and M3.3 activity/in-app notifications are implemented. Corrective work adds repeatable isolated browser tests, denser boards, revision-safe quick edits, a task side panel with pinned actions, and reversible archive/restore. Owners/editors archive tasks; owners archive boards.
+M1 is accepted as a sample-data prototype; M2 is accepted locally with accounts/roles, saved boards/tasks/custom fields/notes/checklists, search and private attachments. M3.1 saved views, M3.2 polling/reconnect, M3.3 activity/in-app notifications and M3.4 personal/team dashboards are implemented and locally verified, with device/environment acceptance retained separately. Corrective work adds repeatable isolated browser tests, denser boards, revision-safe quick edits, a task side panel with pinned actions, and reversible archive/restore. Owners/editors archive tasks; owners archive boards.
 
 Accounts-mode Docs is a non-editable storage-pending placeholder. Its sample editor remains in explicit prototype mode; durable/collaborative writing stays later work until NAS configuration is settled. Approved Mineral/Midnight themes and the illustrative star remain the visual baseline.
 

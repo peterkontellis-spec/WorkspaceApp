@@ -110,7 +110,7 @@ async function snapshot(c, member) {
   const tasks = (
     await c.query(
       `SELECT t.id,t.board_id AS "boardId",t.group_id AS "groupId",t.parent_id AS "parentId",t.title,t.status,t.priority,
-    to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.position,t.revision,t.notes,
+    to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.position,t.revision,t.notes,t.updated_at AS "updatedAt",
     coalesce(t.archived_at,b.archived_at) AS "archivedAt",coalesce(t.archived_by,b.archived_by) AS "archivedBy",
     t.archive_batch_id AS "archiveBatchId",(b.archived_at IS NOT NULL) AS "boardArchived",
     ARRAY(SELECT a.user_id FROM task_assignee a WHERE a.workspace_id=t.workspace_id AND a.task_id=t.id ORDER BY a.user_id) AS "assigneeIds",

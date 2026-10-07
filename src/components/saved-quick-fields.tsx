@@ -81,7 +81,7 @@ export function SavedQuickFields({ task, statusOnly = false }: { task: WorkTask;
             ) : (
               <span>
                 {task.assigneeIds
-                  .map((id) => work.data?.members.find((m) => m.id === id)?.name)
+                  .map((id) => work.data?.members.find((m) => m.id === id)?.name ?? 'Inactive assignee')
                   .filter(Boolean)
                   .join(', ') || 'Unassigned'}
               </span>

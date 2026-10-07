@@ -169,3 +169,9 @@ Common table fields and Kanban status save immediately with serialized requests.
 Accounts-mode Docs now shows a non-editable storage-pending explanation; the sample editor remains only in explicit prototype mode. Durable local Docs, permissions, save/recovery and collaboration remain later work after NAS configuration is settled. This does not choose NAS deployment or document retention.
 
 Pinned formatting and isolated browser tooling support repeatable local checks. Fixture servers/databases/files and generated credentials stay under ignored .local paths. No hosted CI job or paid service has been enabled; local repeatability is the implemented boundary. See E2E_TESTING.md and PENDING_CHECKS.md for evidence and residual acceptance gaps.
+
+## M3.4 dashboard counting rules — 2026-10-07
+
+Implementation rules within the approved shared-staff dashboard scope: derive from the existing authorized snapshot rather than add another service or query path. Count each task/subtask equally, exclude archived work and Done from due buckets, and report rounded current Done/total completion without a reporting-period or hours/capacity claim. Personalized views remain shared work. Device-local calendar dates refresh at midnight/focus; no per-account timezone setting is introduced. Recent work uses saved task timestamps; notification counts remain recipient-private.
+
+A multiple-assignee task counts once in team totals and once for each active assignee. Keep genuinely unassigned work separate from records whose assignees are all unavailable; expose a recovery list and explicit inactive-assignee removal without changing historical assignments automatically. Existing illustrative star/appearance settings remain independent of these metrics. No metric/scoring or private-workspace policy is implied.

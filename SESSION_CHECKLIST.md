@@ -297,9 +297,11 @@ You do not need to finish one increment per session. Some will take several sess
 
 **Deliverable:** working Home/My Day and shared Overview screens.
 
-- [ ] Connect personal tasks, due/overdue work, notifications, and relevant recent items to the signed-in account.
-- [ ] Add shared progress, overdue work, and workload summaries.
-- [ ] Check calculations, empty states, user timezone boundaries, and access rules with different accounts.
+- [x] Connect personal tasks, due/overdue work, notifications, and relevant recent items to the signed-in account.
+- [x] Add shared progress, overdue work, and workload summaries.
+- [x] Check calculations, empty states, user timezone boundaries, and access rules with different accounts.
+
+Local verification: 49 behavior tests, 76 database tests, 22 HTTP checks and all five new dashboard browser scenarios passed. Full-suite/targeted-run evidence and remaining physical/environment gates are in STATUS.md and PENDING_CHECKS.md.
 
 **Done when:** dashboard figures match the underlying boards. Personalized views do not make shared tasks private.
 

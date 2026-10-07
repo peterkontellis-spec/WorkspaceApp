@@ -5,6 +5,9 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { LayoutGrid, Plus, MoreHorizontal, ArrowLeft } from 'lucide-react';
 import { Button, Dialog, StatusLabel } from './ui';
 import { useWork } from './work-provider';
+import { PersonalDashboard } from './saved-dashboard';
+import { useWorkDay } from './use-work-day';
+import { buildWorkDashboard } from '@/lib/work-dashboard.mjs';
 import { SavedQuickFields } from './saved-quick-fields';
 import { ArchiveControl } from './archive-control';
 import { SavedColumnForm, columnFormKey, type ColumnEdit } from './saved-column-form';
@@ -36,6 +39,7 @@ type Edit = (
 ) & { creationId?: string };
 export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'; boardId?: string }) {
   const work = useWork();
+  const deviceToday = useWorkDay();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -210,7 +214,11 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
             <h2>{item.name}</h2>
             <p>{item.description || 'A shared board for your team.'}</p>
             <span className="section-count">
-              {allTasks.filter((task) => task.boardId === item.id && !task.parentId).length} tasks
+              {
+                (showArchived ? allTasks : (data?.tasks ?? [])).filter((task) => task.boardId === item.id)
+                  .length
+              }{' '}
+              tasks
             </span>
           </Link>
         ))}
@@ -257,10 +265,8 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
   const boardTasks = data.tasks
     .filter((task) => task.boardId === boardId)
     .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id));
-  const mine = data.tasks.filter(
-    (task) => task.assigneeIds.includes(data.actor.id) && task.status !== 'Done',
-  );
-  const today = localToday();
+  const today = deviceToday || localToday();
+  const dashboard = section === 'home' ? buildWorkDashboard(data, today) : null;
   const calendarMonth = readCalendarMonth(params.get('month'), today);
   const matchingTasks = filterWorkTasks(boardId ? boardTasks : data.tasks, filters, today);
   const viewProps = {
@@ -285,12 +291,14 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
       apply={applyFilters}
     />
   );
-  const buckets = [
-    ['Overdue', mine.filter((task) => task.dueDate && task.dueDate < today)],
-    ['Today', mine.filter((task) => task.dueDate === today)],
-    ['Upcoming', mine.filter((task) => task.dueDate && task.dueDate > today)],
-    ['Without a date', mine.filter((task) => !task.dueDate)],
-  ] as const;
+  const buckets = dashboard
+    ? ([
+        ['Overdue', dashboard.personalBuckets.overdue],
+        ['Today', dashboard.personalBuckets.today],
+        ['Upcoming', dashboard.personalBuckets.upcoming],
+        ['Without a date', dashboard.personalBuckets.undated],
+      ] as const)
+    : [];
   return (
     <section className="saved-work">
       <div className="page-heading">
@@ -401,9 +409,10 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
       ) : null}
       {section === 'home' ? (
         <>
+          <PersonalDashboard data={data} today={today} />
           <section className="saved-section">
             <h2>My Day</h2>
-            {mine.length ? (
+            {dashboard?.personal.open ? (
               buckets
                 .filter(([, tasks]) => tasks.length)
                 .map(([name, tasks]) => (

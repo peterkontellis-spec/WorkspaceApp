@@ -234,7 +234,7 @@ export function AuthForm({ mode, token }: AuthFormProps) {
           </>
         )}
         <p className="auth-preview-note">
-          Accounts, boards and tasks are saved. Docs remain a sample; their edits reset after refresh.
+          Accounts, boards and tasks are saved. Document storage is not connected yet.
         </p>
       </div>
     </main>

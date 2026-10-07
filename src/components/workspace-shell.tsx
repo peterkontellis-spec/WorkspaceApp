@@ -59,17 +59,19 @@ function Navigation({ close, mobile = false }: { close?: () => void; mobile?: bo
     <nav aria-label={mobile ? 'Mobile workspace navigation' : 'Workspace navigation'} className="side-nav">
       {navigation.map((item) => {
         const Icon = item.icon;
-        if (item.label === 'Files' && enabled)
+        if ((item.label === 'Files' || item.label === 'Overview') && enabled)
           return (
             <Link
               key={item.label}
-              href="/files"
+              href={item.label === 'Files' ? '/files' : '/overview'}
               onClick={close}
-              className={`nav-item ${pathname === '/files' ? 'nav-item--active' : ''}`}
-              aria-current={pathname === '/files' ? 'page' : undefined}
+              className={`nav-item ${pathname === (item.label === 'Files' ? '/files' : '/overview') ? 'nav-item--active' : ''}`}
+              aria-current={
+                pathname === (item.label === 'Files' ? '/files' : '/overview') ? 'page' : undefined
+              }
             >
               <Icon size={20} aria-hidden="true" />
-              <span>Files</span>
+              <span>{item.label}</span>
             </Link>
           );
         if ('href' in item)
@@ -138,7 +140,10 @@ export function WorkspaceShell({
         ? 'Files'
         : section === 'team'
           ? 'Team access'
-          : (navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ?? 'Workspace');
+          : section === 'overview'
+            ? 'Overview'
+            : (navigation.find((item) => 'href' in item && item.href === `/${section}`)?.label ??
+              'Workspace');
   const close = () => setOverlay(null);
   const closeOverlay = (name: 'navigation' | 'search' | 'account' | 'reset') => {
     setOverlay((current) => (current === name ? null : current));
