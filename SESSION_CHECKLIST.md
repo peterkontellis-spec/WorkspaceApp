@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.7 are implemented and locally verified; physical-device/browser-host acceptance remains in STATUS.md and PENDING_CHECKS.md. M4 has not started.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.7 are implemented and locally verified; physical-device/browser-host acceptance remains in STATUS.md and PENDING_CHECKS.md. M4.1 dependencies are locally verified; later M4 work has not started.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Corrective blocks before further M3 features — 2026-10-07
 
@@ -339,7 +339,7 @@ Local template journeys, permissions, retries, restart persistence and desktop/n
 - [x] Check all views, time summaries, and a template-created project together.
 - [x] Review desktop/narrow layouts and resolve issues that prevent everyday use.
 
-Local review passed: full browser suite **58 passed / 1 genuine background-visibility capability skip / 0 failed** in `.local/e2e/run-Tz3919`. The integrated four-account journey passed. Physical phone, native zoom, real background lifecycle and hardware checks remain in PENDING_CHECKS.md; M4 has not started.
+Local review passed: full browser suite **58 passed / 1 genuine background-visibility capability skip / 0 failed** in `.local/e2e/run-Tz3919`. The integrated four-account journey passed. Physical phone, native zoom, real background lifecycle and hardware checks remain in PENDING_CHECKS.md; the later user continuation starts M4.1.
 
 **Done when:** core teamwork works with four accounts and known limitations are documented.
 
@@ -357,9 +357,11 @@ Local review passed: full browser suite **58 passed / 1 genuine background-visib
 
 **Deliverable:** clear relationships between tasks that depend on each other.
 
-- [ ] Add/remove dependencies and show what is waiting on what.
-- [ ] Define whether dependency status is advisory or prevents completion before implementing that behavior.
-- [ ] Reject cycles and test completing, reopening, or removing a prerequisite.
+- [x] Add/remove dependencies and show what is waiting on what.
+- [x] Define whether dependency status is advisory or prevents completion before implementing that behavior.
+- [x] Reject cycles and test completing, reopening, or removing a prerequisite.
+
+Local M4.1 checks passed: 113 database tests, seven dependency browser scenarios within the final 69-pass / 1 capability-skip full suite. Advisory completion was confirmed by the user. Popup filters, clickable breadcrumbs and a queued dialog-close race fix are included; device gates remain separate in PENDING_CHECKS.md.
 
 **Done when:** dependency state is understandable and cannot enter an impossible circular chain.
 
@@ -468,6 +470,7 @@ Local review passed: full browser suite **58 passed / 1 genuine background-visib
 **Deliverable:** the intended HTTPS entry point for collaborators.
 
 - [ ] Before any publication/external release, run Cloudflare `security-audit` against the release candidate and deployment configuration; record coverage, resolve release blockers, retest fixes and revalidate subsequent changes. Incomplete verification remains pending. Repeat this gate for later changed releases.
+- [ ] Before publication/external release, remove the preview-only `test@test.com` login entirely, including credential/session/recovery/invitation access; verify account absence and rejected sign-in. Preserve legitimate shared work/history and never deploy its seed or password. Disabling alone is insufficient.
 - [ ] Prepare the concrete domain/routing configuration and confirm authorization before enabling external access.
 - [ ] Configure the chosen route and verify login, live connections, Docs, and file transfers from outside the local network.
 - [ ] Confirm the app deployment does not expose its database or the NAS administration interface.

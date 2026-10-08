@@ -279,6 +279,28 @@ a.nav-item--active:hover {
 .topbar__location {
   font-size: 0.875rem;
 }
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+}
+.breadcrumbs a {
+  display: inline-flex;
+  align-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 4px;
+}
+.breadcrumbs a:hover {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.breadcrumbs a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
 .breadcrumb-root {
   color: var(--subtle);
 }
@@ -1121,8 +1143,23 @@ kbd {
   .topbar__location {
     gap: 8px;
   }
-  .breadcrumb-root,
-  .breadcrumb-divider,
+  .topbar {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  .topbar__location {
+    display: contents;
+  }
+  .topbar__actions {
+    grid-column: 2;
+    grid-row: 1;
+    justify-content: end;
+  }
+  .breadcrumbs {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    gap: 12px;
+  }
   .topbar__separator {
     display: none;
   }

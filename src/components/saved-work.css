@@ -33,20 +33,13 @@
 .saved-search-line .button {
   min-height: 48px;
 }
-.saved-filter-options summary {
-  cursor: pointer;
-  min-height: 48px;
-  padding-block: 12px;
-  width: fit-content;
-}
-.saved-filter-options summary:focus-visible,
 .saved-view-links a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 .saved-filter-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   margin-block: 8px 14px;
 }
@@ -60,8 +53,14 @@
   color: var(--text);
   font: inherit;
 }
-.saved-filter-options > .button {
-  margin-top: 12px;
+.saved-filter-dialog .dialog__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+.saved-filter-dialog form {
+  display: block;
 }
 .saved-filter-result {
   display: flex;
@@ -386,7 +385,7 @@
   min-width: 260px;
   margin: 0;
 }
-.saved-filters form {
+.saved-filters > form {
   display: flex;
   flex-wrap: wrap;
   align-items: start;
@@ -405,18 +404,6 @@
   height: 1px;
   overflow: hidden;
   clip-path: inset(50%);
-}
-.saved-filter-options {
-  position: relative;
-}
-.saved-filter-options[open] {
-  flex-basis: 100%;
-}
-.saved-filter-options summary {
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
 }
 .saved-filter-result {
   font-size: 0.8125rem;

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { DependencySummary, TaskDependencies } from './task-dependencies';
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import type { WorkColumn, WorkChecklistItem, WorkGroup, WorkMember, WorkTask } from '@/lib/work';
 import { localToday } from '@/lib/work';
@@ -18,6 +19,7 @@ type Draft = Pick<
   WorkTask,
   'title' | 'status' | 'priority' | 'groupId' | 'parentId' | 'dueDate' | 'assigneeIds'
 > & {
+  dependencyIds: string[];
   position: string;
   notes: string;
   checklist: WorkChecklistItem[];
@@ -44,6 +46,7 @@ export type SavedTaskEditorProps = {
 
 function taskDraft(task: WorkTask, columns: WorkColumn[]): Draft {
   return {
+    dependencyIds: [...(task.dependencyIds ?? [])],
     title: task.title,
     status: task.status,
     priority: task.priority,
@@ -65,7 +68,11 @@ function taskDraft(task: WorkTask, columns: WorkColumn[]): Draft {
 }
 
 function draftKey(draft: Draft) {
-  return JSON.stringify({ ...draft, assigneeIds: [...draft.assigneeIds].sort() });
+  return JSON.stringify({
+    ...draft,
+    dependencyIds: [...(draft.dependencyIds ?? [])].sort(),
+    assigneeIds: [...draft.assigneeIds].sort(),
+  });
 }
 
 const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long', timeZone: 'UTC' });
@@ -258,6 +265,7 @@ export function SavedTaskEditor({
           parentId: draft.parentId,
           dueDate: draft.dueDate,
           assigneeIds: draft.assigneeIds,
+          dependencyIds: draft.dependencyIds ?? [],
           position,
           notes: draft.notes,
           checklist: draft.checklist.map((item, index) => ({
@@ -467,6 +475,7 @@ export function SavedTaskEditor({
             <p className="detail-empty">No checklist items yet.</p>
           )}
         </section>
+        <TaskDependencies task={task} ids={task.dependencyIds ?? []} />
         <SavedTaskAttachments taskId={task.id} canEdit={false} />
         <TaskTimeLink taskId={task.id} />
         <TaskActivity taskId={task.id} />
@@ -537,6 +546,15 @@ export function SavedTaskEditor({
               onChange={(event) => patch({ title: event.target.value })}
             />
           </label>
+          {(draft.dependencyIds ?? []).length > 0 && (
+            <div className="saved-task-hint" role="status">
+              <DependencySummary
+                task={{ ...task, dependencyIds: draft.dependencyIds }}
+                tasks={[...(work.data?.tasks ?? []), ...(work.data?.archivedTasks ?? [])]}
+              />
+              You can complete this task even when prerequisites are unresolved.
+            </div>
+          )}
           <div className="saved-task-grid">
             <label className="saved-task-label">
               Status
@@ -653,6 +671,12 @@ export function SavedTaskEditor({
               </div>
             )}
           </section>
+          <TaskDependencies
+            task={task}
+            ids={draft.dependencyIds ?? []}
+            initialIds={initial.draft.dependencyIds ?? []}
+            change={(dependencyIds) => patch({ dependencyIds })}
+          />
           <details className="saved-task-more">
             <summary>More task settings</summary>
             <div className="saved-task-fields">

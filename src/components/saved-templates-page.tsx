@@ -36,8 +36,9 @@ function CopyRules() {
       </p>
       <p>
         Notes are copied as plain text, including any links written inside them. Documents are not copied or
-        connected. Task templates reuse matching columns or add missing ones; a conflicting column definition
-        must be resolved first.
+        connected. Dependencies copy only when both tasks are included; links to other tasks are excluded.
+        Task templates reuse matching columns or add missing ones; a conflicting column definition must be
+        resolved first.
       </p>
       <p>
         Templates support up to 200 tasks, 100 groups and 20 custom columns. Templates capture the latest

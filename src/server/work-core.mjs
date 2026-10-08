@@ -81,6 +81,14 @@ export async function withMember(pool, auth, headers, write, action, allowViewer
       initial.workspace_id,
     ]);
     const member = await liveMember(c, session, initial.workspace_id);
+    // Account operators lock app_user without the workspace lock. Hold the actor
+    // row through each write so a concurrent disable wins before any mutation.
+    if (write) {
+      const enabled = await c.query('SELECT id FROM app_user WHERE id=$1 AND disabled_at IS NULL FOR SHARE', [
+        member.id,
+      ]);
+      if (!enabled.rowCount) fail(401, 'Sign in required.');
+    }
     if (write && !allowViewer && !['owner', 'editor'].includes(member.role))
       fail(403, 'Only owners and editors can change workspace work.');
     const result = await action(c, member);
@@ -114,6 +122,7 @@ async function snapshot(c, member) {
     to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.position,t.revision,t.notes,t.updated_at AS "updatedAt",
     coalesce(t.archived_at,b.archived_at) AS "archivedAt",coalesce(t.archived_by,b.archived_by) AS "archivedBy",
     t.archive_batch_id AS "archiveBatchId",(b.archived_at IS NOT NULL) AS "boardArchived",
+    ARRAY(SELECT d.prerequisite_id FROM task_dependency d WHERE d.workspace_id=t.workspace_id AND d.task_id=t.id ORDER BY d.prerequisite_id) AS "dependencyIds",
     ARRAY(SELECT a.user_id FROM task_assignee a WHERE a.workspace_id=t.workspace_id AND a.task_id=t.id ORDER BY a.user_id) AS "assigneeIds",
     coalesce((SELECT jsonb_agg(jsonb_build_object('id',i.id,'label',i.label,'done',i.done,'position',i.position) ORDER BY i.position,i.id) FROM checklist_item i WHERE i.workspace_id=t.workspace_id AND i.task_id=t.id),'[]'::jsonb) AS checklist,
     coalesce((SELECT jsonb_agg(jsonb_build_object('columnId',v.column_id,'value',v.value) ORDER BY v.column_id) FROM task_field_value v WHERE v.workspace_id=t.workspace_id AND v.task_id=t.id),'[]'::jsonb) AS fields
@@ -187,6 +196,7 @@ async function taskValues(c, workspace, board, taskId, patch, current = {}) {
     'dueDate',
     'position',
     'assigneeIds',
+    'dependencyIds',
     'notes',
     'checklist',
     'fields',
@@ -241,7 +251,49 @@ async function taskValues(c, workspace, board, taskId, patch, current = {}) {
       fail(400, 'Assignees must be active workspace members.');
     value.assigneeIds = patch.assigneeIds;
   }
+  if ('dependencyIds' in patch) {
+    if (!taskId || !Array.isArray(patch.dependencyIds) || patch.dependencyIds.length > 50)
+      fail(400, 'Choose up to 50 distinct prerequisites for this saved task.');
+    const dependencies = patch.dependencyIds.map(id);
+    if (new Set(dependencies).size !== dependencies.length) fail(400, 'Choose each prerequisite only once.');
+    if (dependencies.includes(taskId)) fail(400, 'A task cannot depend on itself.');
+    const existing = (
+      await c.query('SELECT prerequisite_id FROM task_dependency WHERE workspace_id=$1 AND task_id=$2', [
+        workspace,
+        taskId,
+      ])
+    ).rows.map((entry) => entry.prerequisite_id);
+    const candidates = (
+      await c.query(
+        `SELECT t.id,coalesce(t.archived_at,b.archived_at) AS archived_at FROM task t
+       JOIN board b ON b.workspace_id=t.workspace_id AND b.id=t.board_id
+       WHERE t.workspace_id=$1 AND t.id=ANY($2::uuid[])`,
+        [workspace, dependencies],
+      )
+    ).rows;
+    if (candidates.length !== dependencies.length) fail(400, 'Prerequisites must belong to this workspace.');
+    if (candidates.some((entry) => entry.archived_at && !existing.includes(entry.id)))
+      fail(409, 'Restore an archived prerequisite before adding it.');
+    const cycle = await c.query(
+      `WITH RECURSIVE ancestors(id) AS (
+        SELECT unnest($2::uuid[])
+        UNION SELECT d.prerequisite_id FROM task_dependency d JOIN ancestors a ON d.task_id=a.id
+        WHERE d.workspace_id=$1
+      ) SELECT 1 FROM ancestors WHERE id=$3 LIMIT 1`,
+      [workspace, dependencies, taskId],
+    );
+    if (cycle.rowCount) fail(400, 'These prerequisites would create a dependency cycle.');
+    value.dependencyIds = dependencies;
+  }
   return value;
+}
+async function dependencies(c, workspace, task, values) {
+  if (!('dependencyIds' in values)) return;
+  await c.query('DELETE FROM task_dependency WHERE workspace_id=$1 AND task_id=$2', [workspace, task]);
+  await c.query(
+    'INSERT INTO task_dependency(workspace_id,task_id,prerequisite_id) SELECT $1,$2,unnest($3::uuid[])',
+    [workspace, task, values.dependencyIds],
+  );
 }
 async function assignments(c, workspace, task, values) {
   if (!('assigneeIds' in values)) return;
@@ -659,6 +711,7 @@ export function manageWork(pool, auth, headers, input) {
           value.notes,
         ],
       );
+      await dependencies(c, workspace, saved.id, value);
       await assignments(c, workspace, saved.id, value);
       await details(c, workspace, saved.board_id, saved.id, input.patch);
       await recordTaskActivity(c, member, before, await taskActivityState(c, workspace, saved.id));

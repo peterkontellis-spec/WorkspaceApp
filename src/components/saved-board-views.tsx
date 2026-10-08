@@ -1,4 +1,5 @@
 'use client';
+import { DependencySummary } from './task-dependencies';
 import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
@@ -34,6 +35,7 @@ function TaskCard({ task, compact = false, ...props }: ViewProps & { task: WorkT
         onClick={props.openTask}
       >
         <strong>{task.title}</strong>
+        <DependencySummary task={task} tasks={props.allTasks} />
         {task.parentId ? (
           <span className="saved-view-task__context">Subtask of {parent?.title ?? 'another task'}</span>
         ) : null}

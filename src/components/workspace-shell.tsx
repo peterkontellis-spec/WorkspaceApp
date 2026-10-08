@@ -322,11 +322,21 @@ export function WorkspaceShell({
                 >
                   <StellarOrb compact />
                 </Button>
-                <span className="breadcrumb-root">Workspace</span>
-                <span className="breadcrumb-divider" aria-hidden="true">
-                  /
-                </span>
-                <span className="current-page">{currentLabel}</span>
+                <nav className="breadcrumbs" aria-label="Breadcrumb">
+                  <Link className="breadcrumb-root" href="/home">
+                    Workspace
+                  </Link>
+                  <span className="breadcrumb-divider" aria-hidden="true">
+                    /
+                  </span>
+                  <Link
+                    className="current-page"
+                    href={currentLabel === 'Workspace' ? '/home' : `/${section}`}
+                    aria-current={pathname === `/${section}` ? 'page' : undefined}
+                  >
+                    {currentLabel}
+                  </Link>
+                </nav>
               </div>
               <div className="topbar__actions">
                 <Button

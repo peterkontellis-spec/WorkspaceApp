@@ -6,6 +6,12 @@ In accounts mode, Home and Boards use PostgreSQL records belonging to the signed
 
 Accounts-mode Time provides shared completed entries, own timers/manual corrections, reversible void/restore and task/board/date totals. Owners/editors edit only their own time; viewers remain read-only. See [TIME_TRACKING.md](TIME_TRACKING.md) for permissions, stored timestamp semantics, date ranges and recovery.
 
+## Task dependencies — M4.1
+
+Saved tasks can have up to 50 distinct prerequisites from active tasks anywhere in the shared workspace. Owners/editors add or remove links in the task panel, then Save task; viewers can read links and the reverse Needed by list. Search matches task or board names and shows up to 100 choices at once. Removing an existing link offers Undo until saving. Dependency changes share the task revision and transaction with other edits, preserving drafts and rejecting stale saves.
+
+Prerequisites are advisory: unresolved links show warnings in task details and Table/Kanban/Calendar, but never prevent completion or automatically reopen a dependent task. A prerequisite is resolved only when Done and unarchived. Archive preserves links; restore the prerequisite or remove its link to clear an archived warning. Existing archived links can remain during unrelated edits; adding an archived task requires restoration first. Self-links, duplicate links, cross-workspace links and circular chains are rejected on the server, including competing updates. Changes appear in task activity and use existing assignee notifications.
+
 ## Reusable templates — M3.6
 
 Templates is available in navigation/search and from Boards. A saved task exposes Save task as template when its editor has no unsaved changes. Owners/editors can save and use shared task/board templates; viewers can browse. Owners/editors archive or restore task templates; only owners archive or restore board templates. Archive preserves the immutable snapshot and does not change existing copies. Permanent template deletion and template editing are not implemented; save a new template for a revised process.
@@ -17,6 +23,7 @@ A template captures current saved source work atomically, with a revision check 
 | Board | Name chosen when applying; description, groups and column definitions retained. Archived tasks excluded. |
 | Task | Saved title, plain-text notes, priority, active subtree and checklist labels retained. |
 | Progress | Status resets to To do; checklist items reset to unchecked. |
+| Prerequisites | Links are retained only when both tasks are included in the captured snapshot, then remapped to new tasks. External links are omitted; older immutable templates do not acquire new links. |
 | Dates and people | Due dates and assignments cleared. |
 | Custom fields | Text/number values retained. Date/status/link values cleared; column settings retained. |
 | Files, time, history | Attachments, time entries and previous activity excluded. Only fresh creation activity is written. |
@@ -25,6 +32,12 @@ A template captures current saved source work atomically, with a revision check 
 Task templates capture definitions used by the subtree. On another board, identical name/type/settings reuse a matching column one-to-one; missing definitions are added. Incompatible same-name columns or exceeding 20 columns rejects the entire operation without partial work. Board templates preserve all column definitions, including duplicate names. Limits: 200 task records, 100 groups, 20 columns, 2 MiB of snapshot content.
 
 The library refreshes while visible/online using the existing polling coordinator. Draft names/destinations stay in this tab across in-app navigation. A lost response retains the same creation ID; retrying the unchanged request returns the original result without another copy. Changed-payload retries reject. After a revision conflict, Use latest saved version explicitly reloads the authorized source/template revision while keeping the entered name/destination; it does not silently replace a draft. Session loss clears protected work. Reload/closing the tab can lose unsaved input; there is no offline queue or durable draft promise.
+
+## Filtering and navigation
+
+Search stays in the board toolbar. Filters opens a popup with Status, Assignee, Priority and Due date. Apply filters submits the current search and selected filters together; Cancel, Escape, the close button or clicking outside dismisses unsubmitted filter changes. Inline Search uses the already-applied filters. URL state, selected board view/month, result summaries and Clear filters remain available.
+
+The breadcrumb trail is navigation: Workspace opens Home; the section label opens its main page, including Boards from a task board and Docs from a document route. Desktop and narrow layouts use real links with keyboard focus and touch targets; phone headers show the trail on its own row.
 
 ## Current behavior
 

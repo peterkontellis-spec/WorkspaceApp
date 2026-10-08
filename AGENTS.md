@@ -54,6 +54,8 @@ Prepare NAS deployment incrementally. Changing live infrastructure or granting e
 
 ## Required pre-publication security audit
 
+Temporary testing account gate (user instruction 2026-10-07): `test@test.com` is a local preview-only owner. Before any publication or external release, remove this login entirely from the release database, including its credentials, sessions, recovery and invitation access; disabling it alone does not satisfy the request. Preserve legitimate shared work/history through a reviewed cleanup or clean release database. Verify the account is absent and sign-in is rejected, record the evidence, and never seed or recreate this account in deployment. Keep its password out of Git. This is a required release check, not an implemented automatic cleanup.
+
 User instruction confirmed 2026-10-06: run Cloudflare's official `security-audit` skill before any publication or external release in later stages. Installed at `/Users/peterkontellis/.codex/skills/security-audit/SKILL.md`; source: https://github.com/cloudflare/security-audit-skill. This is a codebase-audit workflow, not a choice of Cloudflare hosting or permission to change infrastructure.
 
 Before first external access, and before publishing later changed releases, audit the concrete release candidate and relevant deployment configuration using the installed skill. Record the audited commit/configuration, coverage, confirmed findings, unresolved validation and fix/retest evidence. Revalidate changes made after the audit. Do not mark publication ready while release-blocking findings or necessary security validation remain unresolved; an incomplete audit is not a pass.

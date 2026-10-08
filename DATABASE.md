@@ -102,3 +102,9 @@ Additive migration `008_time_tracking.sql` introduces `time_entry` and `time_ent
 Additive migration `009_work_templates.sql` adds `work_template` (immutable versioned JSON snapshots with reversible archive metadata) and `template_operation` (actor-bound creation fingerprints/results). Saving and applying a template use the same workspace transaction lock as saved work and membership changes, plus an active-user guard against operator disable. Copies generate independent board/group/column/task/checklist IDs. Failed field mapping, limits or activity writes roll back the entire copy. Repeated unchanged requests return the recorded result; changed requests cannot reuse a committed creation ID.
 
 Copy rules and limits are in [SAVED_WORK.md](SAVED_WORK.md). Template tables and operation identities belong in the database backup; preserving them also preserves safe retries after restart/recovery. This increment adds no service, dependency or scheduled worker.
+
+## M4.1 dependency edges
+
+Additive migration `010_task_dependencies.sql` adds workspace-scoped `task_dependency` edges with composite task foreign keys, a self-link check and reverse lookup index. Work writes hold the workspace lock; bounded edge replacement, recursive cycle validation, task revisions, details and activity commit together. Writes also hold an active-user row lock against concurrent operator disable. Prerequisites are advisory and never mutate dependent completion status. Archive preserves edges.
+
+Snapshots include prerequisite IDs for active and archived tasks. Templates capture only edges whose endpoints are included, insert all copied tasks before remapping links and accept older snapshots without this field. Include `task_dependency` in database recovery procedures. This adds no background service, package or scheduled worker; M4.2 remains separate.

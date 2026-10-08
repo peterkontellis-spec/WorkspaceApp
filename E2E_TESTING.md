@@ -6,6 +6,8 @@ This harness is a local test tool, not a background watcher or a sign-off claim.
 
 Use the project's Node/pnpm runtime. First run `pnpm check` so the production build matches the source under review.
 
+Keep the host awake with its lid open and network stable for the run. A confirmed lid-close/maintenance-sleep interruption invalidated a prior full run; those failures were retained rather than treated as application passes. For a bounded diagnostic rerun, `WORKSPACE_E2E_FAIL_FAST=1 pnpm test:e2e` stops after the first failure without weakening assertions. On macOS, `WORKSPACE_E2E_FAIL_FAST=1 caffeinate -i pnpm test:e2e` prevents idle sleep only while that process runs; it cannot prevent lid-close sleep. Interrupted runs require a fresh verification run.
+
 | Command               | Result                                                                                                                                                                                                  |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pnpm test:e2e:setup` | Creates/migrates an isolated database, creates four fictional accounts, starts a copied app build, checks authenticated snapshots, then stops app/database. Does not launch a browser.                  |

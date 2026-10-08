@@ -126,10 +126,17 @@ async function capture(c, workspace, kind, sourceId, version) {
       : [];
   if (groups.length > 100 || columns.length > 20)
     fail(400, 'A template supports up to 100 groups and 20 custom columns.');
+  const edges = (
+    await c.query(
+      'SELECT task_id,prerequisite_id FROM task_dependency WHERE workspace_id=$1 AND task_id=ANY($2::uuid[]) AND prerequisite_id=ANY($2::uuid[]) ORDER BY prerequisite_id',
+      [workspace, taskIds],
+    )
+  ).rows;
   const included = new Set(taskIds);
   const tasks = rows.map((task) => ({
     ...task,
     parentId: included.has(task.parentId) ? task.parentId : null,
+    dependencyIds: edges.filter((edge) => edge.task_id === task.id).map((edge) => edge.prerequisite_id),
     checklist: checklist
       .filter((item) => item.task_id === task.id)
       .map(({ label, position }) => ({ label, position })),
@@ -276,11 +283,24 @@ async function apply(c, member, template, input) {
           'INSERT INTO task_field_value(workspace_id,board_id,task_id,column_id,value) VALUES($1,$2,$3,$4,$5::jsonb)',
           [workspace, boardId, newId, columnMap.get(field.columnId), JSON.stringify(field.value)],
         );
-      await recordTaskActivity(c, member, null, await taskActivityState(c, workspace, newId));
       inserted.add(task.id);
     }
     remaining = remaining.filter((task) => !inserted.has(task.id));
   }
+  // All fresh tasks must exist before remapping links, including links to tasks
+  // inserted later. Legacy snapshots have no dependencyIds and remain reusable.
+  for (const task of snapshot.tasks) {
+    for (const prerequisite of task.dependencyIds ?? []) {
+      if (!taskMap.has(prerequisite)) continue;
+      await c.query('INSERT INTO task_dependency(workspace_id,task_id,prerequisite_id) VALUES($1,$2,$3)', [
+        workspace,
+        taskMap.get(task.id),
+        taskMap.get(prerequisite),
+      ]);
+    }
+  }
+  for (const task of snapshot.tasks)
+    await recordTaskActivity(c, member, null, await taskActivityState(c, workspace, taskMap.get(task.id)));
   return { boardId, ...(template.kind === 'task' ? { taskId: taskMap.get(snapshot.rootId) } : {}) };
 }
 export function manageTemplates(pool, auth, headers, input) {

@@ -53,11 +53,13 @@ Acceptance:
 - Templates produce independent new tasks/boards, with defined handling of dates and assignees.
 - Notification and activity behavior is verified for the implemented actions.
 
-**M3 local implementation and four-account integration verified 2026-10-07.** See STATUS.md and PENDING_CHECKS.md for the 58-pass full browser run, template persistence/retry checks and remaining physical/browser-host acceptance. This is not unconditional full-device, NAS or publication sign-off. Work stopped before M4.
+**M3 local implementation and four-account integration verified 2026-10-07.** See STATUS.md and PENDING_CHECKS.md for the 58-pass full browser run, template persistence/retry checks and remaining physical/browser-host acceptance. This is not unconditional full-device, NAS or publication sign-off. The initial stop before M4 was superseded by the user’s continuation; M4.1 is locally verified.
 
 ## M4 — Advanced behavior and Docs
 
 Deliver dependencies, recurring tasks, constrained automation rules, and collaborative Docs linked to projects/tasks.
+
+M4.1 dependencies are locally verified (2026-10-08): advisory warnings, atomic edits, cycle rejection, roles, archive and template integration. Later M4 increments remain open; durable Docs is held until NAS configuration is settled.
 
 Acceptance:
 - Cyclic dependencies are rejected; recurrence behaves correctly across relevant timezone and daylight-saving boundaries.
@@ -76,6 +78,7 @@ Acceptance:
 - Restore the database and attachments from a real backup into a safe test location and verify usability.
 - The database and NAS administration interface are not exposed through the app deployment.
 - Before publication/external release, complete the required Cloudflare `security-audit` review for the release candidate/configuration, resolve release blockers and record fix/retest evidence. Revalidate changes before later publication; pending validation is not a pass.
+- Remove the preview-only `test@test.com` login entirely before publication/external release, including credential/session/recovery/invitation access. Verify absence and rejected sign-in; preserve legitimate shared work/history. Never deploy its seed or password.
 - Document restart/update/recovery procedures and remaining limitations. User authorizes external access before enabling it.
 
 ## Per-task record

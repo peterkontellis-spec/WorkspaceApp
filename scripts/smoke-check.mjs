@@ -152,6 +152,8 @@ if (cookie) {
   await check('work API returns only the authenticated workspace', async () => {
     const response = await request('/api/work'); assert.equal(response.status, 200);
     const data = await response.json(); assert.ok(data.actor.id); assert.ok(Array.isArray(data.boards)); assert.ok(Array.isArray(data.tasks)); assert.ok(Number.isInteger(data.unreadNotifications) && data.unreadNotifications >= 0);
+    assert.ok(Array.isArray(data.archivedTasks));
+    for (const task of [...data.tasks, ...data.archivedTasks]) assert.ok(Array.isArray(task.dependencyIds), 'Missing saved prerequisite IDs');
     assert.equal((await fetch(`${origin}/api/work`)).status, 401);
     assert.match(response.headers.get('cache-control'), /no-store/);
   });

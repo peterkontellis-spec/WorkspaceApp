@@ -1,6 +1,12 @@
 # Acceptance coverage and remaining environment checks
 
-Updated 2026-10-07 after the user asked the assistant to attempt all remaining checks. The reproducible local browser matrix is complete for the scenarios below. No failed app scenario is left open. Physical/device and browser-host limitations are explicitly separate; this is not NAS or publication acceptance.
+Updated 2026-10-08 after M4.1 dependencies and the requested filter/navigation refinements. The reproducible local browser matrix is complete for the scenarios below. No failed app scenario is left open. Physical/device and browser-host limitations are explicitly separate; this is not NAS or publication acceptance.
+
+## M4.1 and preview refinements — 2026-10-08
+
+Final full browser run: **69 passed / 1 genuine background-visibility capability skip / 0 failed**, exit 0, 7.0 minutes, `.local/e2e/run-yK5Tu9`. Includes all seven dependency cases, popup filtering/dismissal, all section breadcrumb routes, 320/390/1440px layout, and deterministic queued native-close-event regression. The real spontaneous popup-close race found during verification is fixed; interrupted sleep/network runs were not counted as passes. Typecheck/build, 49 behavior tests and 113 database cases passed. STATUS.md records preview/migration and earlier failed-run evidence.
+
+M4.1 is complete locally; M4.2 jobs/reminders is next. The physical/host/device gates below remain open and also apply to the new popup/mobile header. The preview-only `test@test.com` owner login must be removed entirely before publication; AGENTS.md and SESSION_CHECKLIST.md define verification. Durable Docs remains held for NAS configuration.
 
 ## M3.6/M3.7 final local review — 2026-10-07
 
@@ -8,7 +14,7 @@ Updated 2026-10-07 after the user asked the assistant to attempt all remaining c
 - **Templates:** board/task UI capture/application, reset rules, independent copies, custom-column mapping, roles, reversible archive/restore, lost committed response retry, offline draft retention, explicit stale-source/template reload with unchanged retry identity, keyboard focus, long content and 1400/390px light/dark layouts passed. Template snapshots and operation identities also survived an actual isolated DB restart.
 - **Integrated four-account workflow:** template project → assignment → other-account polling → recipient notification → editor time/checklist/task completion → updated dashboard → matching Table/Kanban/Calendar records → shared, own-edit-only time totals passed.
 - **Checks:** final typecheck/build/49 behavior tests, formatting, 26 preview HTTP checks; 102 full DB checks plus the extended 12-case template file passed (103 distinct DB cases). Fresh cold-recovery evidence `.local/tests/restore-0NGqI0/evidence.json` includes the new tables empty; populated template persistence is separately proven by restart, not a populated restore claim.
-- **Review and preservation:** approved visual identity retained; bounded Impeccable/interface/React review and actual screenshots/keyboard checks completed. Migration009 preserved all checked existing work/time rows; private preview updated. No remaining observed app failure. M3.6/M3.7 local boxes are complete; full-device Stage 3 acceptance is still pending below. **M4 remains unstarted.**
+- **Review and preservation:** approved visual identity retained; bounded Impeccable/interface/React review and actual screenshots/keyboard checks completed. Migration009 preserved all checked existing work/time rows; private preview updated. No remaining observed app failure. M3.6/M3.7 local boxes are complete; full-device Stage 3 acceptance is still pending below. The later user continuation starts M4; see the newer M4.1 record above.
 
 ## Latest checks closed — 2026-10-07
 
@@ -49,7 +55,7 @@ Current M3.5 checks also passed TypeScript, 49 behavior tests, production build,
 - [ ] **Physical iPhone Firefox / software keyboard:** real touch, keyboard-induced visual viewport changes, safe areas, pinch zoom and responsiveness. Emulated touch/viewport checks passed; no private HTTPS phone connection has been configured or exposed.
 - [ ] **Actual OS/device behavior:** OS reduced-motion setting propagation, physical GPU smoothness, battery impact and four-device load. Browser reduced-motion emulation and renderer/fallback behavior passed.
 
-These environment checks are retained for device acceptance/M3.7; they do not imply a known failing app behavior. M3.1–M3.7 local core journeys have evidence, while unconditional full-device/Stage 3 sign-off remains separate. Next: user review and remaining device acceptance; M4 planning/implementation requires the next continuation.
+These environment checks are retained for device acceptance/M3.7; they do not imply a known failing app behavior. M3.1–M3.7 local core journeys have evidence, while unconditional full-device/Stage 3 sign-off remains separate. Next device action: arrange the remaining physical checks. M4.1 was subsequently authorized and locally verified; M4.2 is next.
 
 ## Later release gates
 

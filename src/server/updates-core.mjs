@@ -16,6 +16,7 @@ export async function taskActivityState(c, workspace, taskId) {
     await c.query(
       `SELECT t.id,t.board_id,t.revision,t.title,t.status,t.priority,(t.archived_at IS NOT NULL) AS archived,
     to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.group_id AS "group",t.parent_id AS "parent",t.position,t.notes,
+    ARRAY(SELECT d.prerequisite_id FROM task_dependency d WHERE d.workspace_id=t.workspace_id AND d.task_id=t.id ORDER BY d.prerequisite_id) AS "dependencyIds",
     ARRAY(SELECT a.user_id FROM task_assignee a WHERE a.workspace_id=t.workspace_id AND a.task_id=t.id ORDER BY a.user_id) AS assignees,
     coalesce((SELECT jsonb_agg(jsonb_build_object('id',i.id,'label',i.label,'done',i.done,'position',i.position) ORDER BY i.id) FROM checklist_item i WHERE i.workspace_id=t.workspace_id AND i.task_id=t.id),'[]'::jsonb) AS checklist,
     coalesce((SELECT jsonb_agg(jsonb_build_object('columnId',v.column_id,'value',v.value) ORDER BY v.column_id) FROM task_field_value v WHERE v.workspace_id=t.workspace_id AND v.task_id=t.id),'[]'::jsonb) AS fields
@@ -36,6 +37,7 @@ export async function recordTaskActivity(c, member, before, after) {
     'position',
     'notes',
     'assignees',
+    'dependencyIds',
     'checklist',
     'fields',
   ];
@@ -55,6 +57,7 @@ export async function recordTaskActivity(c, member, before, after) {
       position: 'task order',
       notes: 'notes',
       assignees: 'assignees',
+      dependencyIds: 'prerequisites',
       checklist: 'checklist',
       fields: 'custom fields',
     }[key];

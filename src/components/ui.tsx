@@ -159,8 +159,10 @@ export function Dialog({
       ref={dialogRef}
       aria-labelledby={titleId}
       className={`dialog ${className}`}
-      onClose={() => {
-        if (open) onClose();
+      onClose={(event) => {
+        // Native close events are queued: an earlier dismissal may arrive after
+        // this dialog has reopened. Only synchronize an actually closed dialog.
+        if (open && !event.currentTarget.open) onClose();
       }}
       onCancel={(event) => {
         event.preventDefault();

@@ -8,6 +8,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: 0,
+  maxFailures: process.env.WORKSPACE_E2E_FAIL_FAST === '1' ? 1 : 0,
   timeout: 60_000,
   expect: { timeout: 12_000 },
   reporter: [['list'], ['html', { outputFolder: join(environment.directory, 'report'), open: 'never' }]],

@@ -12,6 +12,7 @@ import { SavedQuickFields } from './saved-quick-fields';
 import { ArchiveControl } from './archive-control';
 import { SavedColumnForm, columnFormKey, type ColumnEdit } from './saved-column-form';
 import { SavedFieldValue } from './saved-field-value';
+import { DependencySummary } from './task-dependencies';
 import { SavedTaskEditor } from './saved-task-editor';
 import { SavedWorkFilters } from './saved-work-filters';
 import { SavedCalendarView, SavedKanbanView, SavedViewAddTask } from './saved-board-views';
@@ -167,6 +168,7 @@ export function SavedWorkPage({ section, boardId }: { section: 'home' | 'boards'
                   }}
                 >
                   <strong>{task.title}</strong>
+                  <DependencySummary task={task} tasks={allTasks} />
                   {work.drafts[`task:${task.id}`] ? <span>Unsaved draft in this tab</span> : null}
                   <span>
                     {task.parentId

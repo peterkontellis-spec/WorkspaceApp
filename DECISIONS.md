@@ -1,5 +1,15 @@
 # Decisions
 
+## M4.1 advisory dependencies and preview refinements — 2026-10-08
+
+The user authorized M4, superseding the earlier stop-before-M4 boundary. M4.1 is the bounded first increment: task prerequisites warn but allow completion, as explicitly selected. Reopening or archiving a prerequisite must never automatically change a dependent task’s status. Owners/editors edit shared prerequisites; viewers read. Retain links through archive, reject self/cross-workspace/circular links, serialize competing graph edits and save dependency changes atomically with the task revision/details/activity. Templates remap internal links only when both endpoints are copied, omit external links and preserve older immutable snapshots.
+
+The user also requested board filters as a popup and clickable Workspace/section breadcrumbs. Preserve existing search, URL/view/month filtering and approved themes. Apply commits filter choices; outside click, Escape, Cancel and Close discard unsubmitted advanced choices. Workspace leads Home; each section label leads its main page. Narrow headers retain both links with usable touch targets.
+
+The user explicitly requested `test@test.com` for local general testing and subsequently upgraded it to owner. Keep credentials private. Remove this login entirely before any publication/external release, including credential/session/recovery/invitation access; verify account absence and rejected sign-in while preserving legitimate shared work/history. This standing gate is documented in AGENTS.md and the release checklists, not automated cleanup. The actual existing preview owner email is `preview@example.test`.
+
+M4.2 scheduled jobs/reminders follows verified M4.1. Durable Docs remains held until NAS configuration is settled. No publication, LAN/NAS access, spend, credit or reset authorization is added.
+
 ## M3.6 template rules and stop before M4 — 2026-10-07
 
 The user authorized completion through the end of M3, stopping before M4. Use independent immutable snapshots of saved board/task structures: copy title/instructions/priority/groups/column definitions/active subtasks/checklist labels; reset task status/checklist completion/due dates/assignees; retain text/number custom values and clear date/status/link values. Exclude attachments, time and prior activity. Plain-text notes, including embedded URLs, copy verbatim; documents are not duplicated or connected. Durable Docs remains deferred.

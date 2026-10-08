@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent } from 'react';
 import type { WorkMember } from '@/lib/work';
 import { hasWorkFilters, type WorkFilters } from '@/lib/work-filters.mjs';
-import { Button } from './ui';
+import { Button, Dialog } from './ui';
 
 export function SavedWorkFilters({
   filters,
@@ -19,6 +19,8 @@ export function SavedWorkFilters({
   apply: (filters: WorkFilters) => void;
 }) {
   const [draft, setDraft] = useState(filters);
+  const [open, setOpen] = useState(false);
+  const formId = useId();
   const advanced = [filters.status, filters.assignee, filters.priority, filters.due].filter(Boolean).length;
   const active = hasWorkFilters(filters);
   const dueLabels: Record<string, string> = {
@@ -42,7 +44,7 @@ export function SavedWorkFilters({
     .join(' · ');
   function submit(event: FormEvent) {
     event.preventDefault();
-    apply(draft);
+    apply({ ...filters, q: draft.q });
   }
   return (
     <div className="saved-filters">
@@ -62,8 +64,39 @@ export function SavedWorkFilters({
           </label>
           <Button type="submit">Search</Button>
         </div>
-        <details className="saved-filter-options">
-          <summary>Filters{advanced ? ` (${advanced})` : ''}</summary>
+        <Button
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          onClick={() => {
+            setDraft({ ...filters, q: draft.q });
+            setOpen(true);
+          }}
+        >
+          Filters{advanced ? ` (${advanced})` : ''}
+        </Button>
+      </form>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Filters"
+        className="saved-filter-dialog"
+        footer={
+          <>
+            <Button type="submit" form={formId} variant="primary">
+              Apply filters
+            </Button>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+          </>
+        }
+      >
+        <form
+          id={formId}
+          onSubmit={(event) => {
+            event.preventDefault();
+            setOpen(false);
+            apply(draft);
+          }}
+        >
           <div className="saved-filter-grid">
             <label className="auth-field">
               Status
@@ -131,9 +164,8 @@ export function SavedWorkFilters({
           <p className="auth-hint">
             Dates use your local day. Combine with Status to include or exclude completed tasks.
           </p>
-          <Button type="submit">Apply filters</Button>
-        </details>
-      </form>
+        </form>
+      </Dialog>
       <div className="saved-filter-result">
         <p id="saved-filter-result" tabIndex={-1} role="status">
           {count} of {total} tasks{summary ? <span> · {summary}</span> : null}
