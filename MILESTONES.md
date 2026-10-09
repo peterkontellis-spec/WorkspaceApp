@@ -59,7 +59,7 @@ Acceptance:
 
 Deliver dependencies, recurring tasks, constrained automation rules, and collaborative Docs linked to projects/tasks.
 
-M4.1 dependencies are locally verified (2026-10-08): advisory warnings, atomic edits, cycle rejection, roles, archive and template integration. M4.2 jobs/reminders are locally verified (2026-10-09): default and optional reminders, durable retries/deduplication, restart/crash recovery, Athens DST and current-recipient/access checks. See [JOBS.md](JOBS.md) and STATUS.md. M4.3 and later increments remain open; durable Docs is held until NAS configuration is settled.
+M4.1 dependencies are locally verified (2026-10-08): advisory warnings, atomic edits, cycle rejection, roles, archive and template integration. M4.2 jobs/reminders are locally verified (2026-10-09): default and optional reminders, durable retries/deduplication, restart/crash recovery, Athens DST and current-recipient/access checks. See [JOBS.md](JOBS.md) and STATUS.md. M4.3 recurrence is implemented with full database and focused browser/restart checks passed; full browser acceptance remains pending after host sleep interrupted the regression (see [RECURRENCE.md](RECURRENCE.md) and STATUS.md). M4.3 and later increments remain open; durable Docs is held until NAS configuration is settled.
 
 Acceptance:
 - Cyclic dependencies are rejected; recurrence behaves correctly across relevant timezone and daylight-saving boundaries.

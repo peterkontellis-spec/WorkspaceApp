@@ -1,5 +1,11 @@
 # Decisions
 
+## M4.3 recurrence rules — 2026-10-09
+
+The user confirmed both proposed modes, selectable per task: fixed calendar dates and after completion. Support daily/weekly/monthly intervals and only the latest missed fixed-calendar occurrence after downtime. Keep one future occurrence prepared so the optional day-before reminder has lead time. Defaults remain off; enabling a rule is an explicit saved task edit. Use Europe/Athens initially with a named timezone per series. Monthly calendar dates retain their original day with short-month clamping.
+
+Freeze a single-task recipe at setup, with an explicit option to refresh future copies from the current saved details. Generated tasks are independent To do records; only title, notes, priority, eligible captured assignees, reminder options, reset checklist labels and text/number fields copy. Preserve historical occurrences, revisions, roles, drafts and existing templates. Source/board archive pauses persistently; restore requires explicit resume. Calendar/date occurrence identities and completion/predecessor identities prevent accidental duplicates while permitting legitimate same-day completion chains. Completed-at captures real transitions; mutable task timestamps are not a recurrence clock. [RECURRENCE.md](RECURRENCE.md) records the detailed copy, prospective-edit, retry and pause rules. M4.4 automations and durable Docs remain separate increments.
+
 ## M4.2 reminder policy — 2026-10-09
 
 The user confirmed the proposed default: current assignees receive one in-app deadline reminder at 09:00 Europe/Athens on the due date; a missed reminder catches up after restart, and completed/archived tasks do not send. They also requested an option to opt into additional reminders. The bounded implementation offers per-task “One day before” and “One day overdue” options, both at 09:00 Athens, off by default. These shared task settings affect current assignees and are explicitly labelled that way. Owners/editors save them with the normal task revision; viewers read them. Arbitrary schedules, personal preference pages, email/push and recurrence are outside this increment.

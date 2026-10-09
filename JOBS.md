@@ -12,7 +12,7 @@ M4.2 locally verified, 9 October 2026. STATUS.md records executed checks; device
 - Existing deadlines before the feature's activation day are excluded from automatic backfill. Changing their date or enabling an extra reminder deliberately activates scheduling. Merely saving notes or another unchanged full-form field does not.
 - Template copies start with fresh dates/assignees and the extra reminders off. Existing templates retain their immutable contents.
 
-Notifications link to the task through the existing notification feed and unread bell. A system reminder is not a user edit: it does not alter task revisions or manufacture task-edit activity. There is no email, push notification, personal notification-settings page, recurring-task creation or arbitrary automation in M4.2.
+Notifications link to the task through the existing notification feed and unread bell. A system reminder is not a user edit: it does not alter task revisions or manufacture task-edit activity. There is no email, push notification, personal notification-settings page or arbitrary automation. [M4.3 recurrence](RECURRENCE.md) extends the same worker with recurring-task creation before reminder reconciliation.
 
 ## Execution and reliability
 

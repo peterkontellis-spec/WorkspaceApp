@@ -19,12 +19,19 @@ const grep = args.length === 2 && args[0] === '--grep' && args[1].length <= 500 
 if (
   !grep &&
   (args.some(
-    (arg) => !['--setup-check', '--serve', '--restart-check', '--jobs-restart-check'].includes(arg),
+    (arg) =>
+      ![
+        '--setup-check',
+        '--serve',
+        '--restart-check',
+        '--jobs-restart-check',
+        '--recurrence-restart-check',
+      ].includes(arg),
   ) ||
     args.length > 1)
 )
   throw new Error(
-    'Usage: node scripts/e2e/run.mjs [--setup-check | --serve | --restart-check | --jobs-restart-check | --grep pattern]',
+    'Usage: node scripts/e2e/run.mjs [--setup-check | --serve | --restart-check | --jobs-restart-check | --recurrence-restart-check | --grep pattern]',
   );
 await readFile(join(root, '.next/BUILD_ID'), 'utf8');
 await mkdir(join(root, '.local/e2e'), { recursive: true, mode: 0o700 });
@@ -284,6 +291,118 @@ try {
     await writeFile(join(directory, 'jobs-restart-evidence.json'), JSON.stringify(evidence, null, 2));
     console.log(
       'Reminder worker restart checks passed: automatic catch-up, real timer tick, second restart and unchanged task revision.',
+    );
+    resultCode = 0;
+  } else if (args[0] === '--recurrence-restart-check') {
+    const ownerSession = JSON.parse(await readFile(people.owner.storageState, 'utf8'));
+    const cookie = ownerSession.cookies.map((item) => `${item.name}=${item.value}`).join('; ');
+    const work = async (data) => {
+      const response = await fetch(
+        `${baseURL}/api/work`,
+        data
+          ? {
+              method: 'POST',
+              headers: { cookie, origin: baseURL, 'content-type': 'application/json' },
+              body: JSON.stringify(data),
+            }
+          : { headers: { cookie } },
+      );
+      assert.equal(response.status, 200);
+      return response.json();
+    };
+    let snapshot = await work({ action: 'createBoard', name: 'Isolated recurrence restart' });
+    const board = snapshot.boards.find((item) => item.name === 'Isolated recurrence restart');
+    const group = snapshot.groups.find((item) => item.boardId === board.id);
+    const create = async (title) => {
+      snapshot = await work({
+        action: 'createTask',
+        boardId: board.id,
+        groupId: group.id,
+        title,
+        dueDate: '2020-01-02',
+      });
+      return snapshot.tasks.find((item) => item.title === title);
+    };
+    const change = async (taskId, patch) => {
+      const current = (await work()).tasks.find((item) => item.id === taskId);
+      snapshot = await work({ action: 'updateTask', id: taskId, revision: current.revision, patch });
+      return snapshot.tasks.find((item) => item.id === taskId);
+    };
+    const configuration = (mode) => ({
+      mode,
+      unit: 'day',
+      interval: 1,
+      timeZone: 'Europe/Athens',
+      enabled: true,
+      anchorDate: '2020-01-02',
+    });
+    let calendar = await create('Calendar catches up after app restart');
+    calendar = await change(calendar.id, { recurrence: configuration('calendar') });
+    let completion = await create('Completion continues after app restart');
+    completion = await change(completion.id, { recurrence: configuration('completion') });
+    completion = await change(completion.id, { status: 'Done' });
+    const copies = (saved, task) =>
+      saved.tasks.filter((item) => item.recurrence?.sourceTaskId === task.id && !item.recurrence.isSource);
+    assert.equal(copies(await work(), calendar).length, 0);
+    assert.equal(copies(await work(), completion).length, 0);
+    const evidence = { checks: [], appRestarts: [] };
+    async function restartRecurrence() {
+      const before = server.pid;
+      const exited = once(server, 'exit');
+      server.kill('SIGKILL');
+      await exited;
+      await sleep(1250);
+      env.WORKSPACE_JOBS_ENABLED = '1';
+      serverFailure = null;
+      await startServer();
+      assert.notEqual(server.pid, before);
+      evidence.appRestarts.push({ before, after: server.pid });
+    }
+    async function waitForCopies(calendarCount, completionCount) {
+      for (let attempt = 0; attempt < 100; attempt++) {
+        snapshot = await work();
+        if (
+          copies(snapshot, calendar).length === calendarCount &&
+          copies(snapshot, completion).length === completionCount
+        )
+          return;
+        await sleep(100);
+      }
+      assert.equal(copies(snapshot, calendar).length, calendarCount);
+      assert.equal(copies(snapshot, completion).length, completionCount);
+    }
+    await restartRecurrence();
+    await waitForCopies(2, 1);
+    assert.equal(new Set(copies(snapshot, calendar).map((item) => item.dueDate)).size, 2);
+    evidence.checks.push(
+      'A real abrupt app restart catches up only the latest missed calendar date plus one future task, and generates the queued completion successor.',
+    );
+    const firstSuccessor = copies(snapshot, completion)[0];
+    await change(firstSuccessor.id, { status: 'Done' });
+    assert.equal(copies(await work(), completion).length, 1);
+    await sleep(31_000);
+    await waitForCopies(2, 2);
+    evidence.checks.push(
+      'The next real 30-second worker tick creates one successor for the newly completed task, without duplicating calendar copies.',
+    );
+    const generatedIds = [...copies(snapshot, calendar), ...copies(snapshot, completion)]
+      .map((item) => item.id)
+      .sort();
+    await change(completion.id, { status: 'To do' });
+    await change(completion.id, { status: 'Done' });
+    await restartRecurrence();
+    await waitForCopies(2, 2);
+    assert.deepEqual(
+      [...copies(snapshot, calendar), ...copies(snapshot, completion)].map((item) => item.id).sort(),
+      generatedIds,
+    );
+    assert.equal((await (await fetch(`${baseURL}/api/health`)).json()).jobs, 'ready');
+    evidence.checks.push(
+      'Reopening/recompleting an old occurrence and a second abrupt restart preserve every generated task identity without extra copies; worker health is ready.',
+    );
+    await writeFile(join(directory, 'recurrence-restart-evidence.json'), JSON.stringify(evidence, null, 2));
+    console.log(
+      'Recurrence worker restart checks passed: calendar catch-up, completion successors, real timer tick and duplicate prevention.',
     );
     resultCode = 0;
   } else if (args[0] === '--restart-check') {

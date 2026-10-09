@@ -1,6 +1,12 @@
 # Acceptance coverage and remaining environment checks
 
-Updated 2026-10-09 after M4.2 jobs/reminders. The final browser suite passed 73 with one genuine background-visibility capability skip and no failures. The physical/device/browser-host limits and NAS/publication gates below remain open.
+Updated 2026-10-09 after M4.3 recurrence implementation. Focused recurrence checks passed, but full browser acceptance remains pending after host sleep interrupted the run. Physical/device/browser-host limits and NAS/publication gates below remain open.
+
+## M4.3 recurrence — full browser acceptance pending
+
+Passed: typecheck/build, formatting, 57 behavior/runtime tests, 143 database cases, 6 focused recurrence browser cases, 26 authenticated preview HTTP checks, actual worker tick and two abrupt app restarts. Four upper-control screenshots (1440/390px, both themes) and keyboard/focus behavior were inspected. Migration012 preserved all old fields across 27 existing tables.
+
+The full run `.local/e2e/run-BRPc8Z` was invalidated by verified clamshell/maintenance sleep, prolonged test durations and expired fixture sessions, then gracefully stopped. Re-run `WORKSPACE_E2E_FAIL_FAST=1 pnpm test:e2e` with the Mac awake and lid open; inspect the lower copy-rule screenshots, resolve any actual failures, and only then close M4.3. No persistent power settings were changed. Populated recurrence-ledger backup restoration and physical-device/NAS/publication gates remain separate. See STATUS.md and [RECURRENCE.md](RECURRENCE.md).
 
 ## M4.2 reminders — 2026-10-09
 

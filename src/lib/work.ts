@@ -20,7 +20,21 @@ export type WorkColumn = {
 };
 export type WorkChecklistItem = { id: string; label: string; done: boolean; position: number };
 export type WorkFieldValue = { columnId: string; value: string | number };
+export type WorkRecurrence = {
+  id: string;
+  sourceTaskId: string;
+  mode: 'calendar' | 'completion';
+  unit: 'day' | 'week' | 'month';
+  interval: number;
+  timeZone: string;
+  enabled: boolean;
+  anchorDate: string;
+  nextDate: string | null;
+  state: 'active' | 'waiting' | 'paused' | 'failed';
+  isSource: boolean;
+};
 export type WorkTask = {
+  recurrence?: WorkRecurrence | null;
   reminderActive?: boolean;
   reminderBefore?: boolean;
   reminderAfter?: boolean;

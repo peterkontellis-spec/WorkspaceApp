@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.7 are implemented and locally verified; physical-device/browser-host acceptance remains in STATUS.md and PENDING_CHECKS.md. M4.1 dependencies and M4.2 jobs/reminders are locally verified; M4.3 recurrence is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.7 are implemented and locally verified; physical-device/browser-host acceptance remains in STATUS.md and PENDING_CHECKS.md. M4.1 dependencies and M4.2 jobs/reminders are locally verified; M4.3 recurrence is implemented with focused checks passed; full browser acceptance is pending after host sleep.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Corrective blocks before further M3 features — 2026-10-07
 
@@ -381,9 +381,12 @@ Local M4.2 checks passed (2026-10-09): 52 behavior/runtime tests, 127 database t
 
 **Deliverable:** daily/weekly/monthly task repetition with defined behavior.
 
-- [ ] Define date-based versus completion-based repetition and choose the first supported patterns.
-- [ ] Preserve the intended task fields and decide how missed occurrences are handled.
-- [ ] Check month-end dates, relevant daylight-saving transitions, timezone changes, and retries.
+- [x] Define date-based versus completion-based repetition and choose the first supported patterns.
+- [x] Preserve the intended task fields and decide how missed occurrences are handled.
+- [x] Check month-end dates, relevant daylight-saving transitions, timezone changes, and retries.
+- [ ] Finish the full browser regression and inspect lower copy-rule screenshots after the host-sleep interruption.
+
+M4.3 progress (2026-10-09): 57 behavior/runtime tests, 143 full DB tests, 6 focused browser cases, 26 authenticated HTTP checks and two actual app restarts/real worker tick passed. The full browser run was invalidated by clamshell/maintenance sleep and stopped; do not mark this increment accepted yet. See STATUS.md and [RECURRENCE.md](RECURRENCE.md).
 
 **Done when:** the supported rules produce the expected tasks without accidental duplicates.
 

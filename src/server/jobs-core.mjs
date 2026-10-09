@@ -1,3 +1,4 @@
+import { runRecurrences } from './recurrence-core.mjs';
 import { transaction } from './database.mjs';
 
 const maximumAttempts = 5;
@@ -84,16 +85,38 @@ export async function runJobs(pool, { now = new Date(), maxJobs = 100 } = {}) {
   now = new Date(now);
   if (!Number.isFinite(now.getTime()) || !Number.isInteger(maxJobs) || maxJobs < 1 || maxJobs > 1000)
     throw new Error('Invalid job run options.');
-  const result = { delivered: 0, retried: 0, failed: 0, examined: 0 };
+  const result = {
+    delivered: 0,
+    retried: 0,
+    failed: 0,
+    examined: 0,
+    recurrenceCreated: 0,
+    recurrenceRetried: 0,
+    recurrenceFailed: 0,
+    recurrenceExamined: 0,
+  };
   const workspaces = (await pool.query('SELECT id FROM workspace ORDER BY id')).rows;
   for (const workspace of workspaces) {
     if (result.examined >= maxJobs) break;
     const batch = await transaction(pool, async (c) => {
-      const counts = { delivered: 0, retried: 0, failed: 0, examined: 0 };
+      const counts = {
+        delivered: 0,
+        retried: 0,
+        failed: 0,
+        examined: 0,
+        recurrenceCreated: 0,
+        recurrenceRetried: 0,
+        recurrenceFailed: 0,
+        recurrenceExamined: 0,
+      };
       const locked = await c.query('SELECT id FROM workspace WHERE id=$1 FOR UPDATE SKIP LOCKED', [
         workspace.id,
       ]);
       if (!locked.rowCount) return counts;
+      Object.assign(
+        counts,
+        await runRecurrences(c, workspace.id, now, Math.max(0, 50 - result.recurrenceExamined)),
+      );
       await reconcile(c, workspace.id, now);
       const jobs = (
         await c.query(

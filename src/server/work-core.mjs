@@ -1,3 +1,9 @@
+import {
+  configureRecurrence,
+  recurrenceCompleted,
+  pauseArchivedRecurrence,
+  recurrenceSnapshotSQL,
+} from './recurrence-core.mjs';
 import { readActiveTimer } from './time-core.mjs';
 import { randomUUID } from 'node:crypto';
 import { transaction } from './database.mjs';
@@ -119,6 +125,7 @@ async function snapshot(c, member) {
   const tasks = (
     await c.query(
       `SELECT t.id,t.board_id AS "boardId",t.group_id AS "groupId",t.parent_id AS "parentId",t.title,t.status,t.priority,
+    ${recurrenceSnapshotSQL} AS recurrence,
     t.reminder_before AS "reminderBefore",t.reminder_after AS "reminderAfter",
     (t.reminder_eligible AND t.due_date IS NOT NULL) AS "reminderActive",
     to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.position,t.revision,t.notes,t.updated_at AS "updatedAt",
@@ -196,6 +203,7 @@ async function taskValues(c, workspace, board, taskId, patch, current = {}) {
     'status',
     'priority',
     'dueDate',
+    'recurrence',
     'reminderBefore',
     'reminderAfter',
     'position',
@@ -479,6 +487,7 @@ async function changeArchive(c, member, input) {
         saved.id,
       ]);
     }
+    await pauseArchivedRecurrence(c, workspace);
     await c.query(
       `INSERT INTO board_archive_activity(workspace_id,board_id,revision,event,actor_id,actor_name)
       VALUES($1,$2,$3,$4,$5,$6)`,
@@ -510,6 +519,7 @@ async function changeArchive(c, member, input) {
       WHERE workspace_id=$1 AND id=$2`,
       [workspace, item.id, restoring, member.id, batch],
     );
+    await pauseArchivedRecurrence(c, workspace);
     await recordTaskActivity(c, member, before, await taskActivityState(c, workspace, item.id));
   }
 }
@@ -729,6 +739,8 @@ export function manageWork(pool, auth, headers, input) {
       await dependencies(c, workspace, saved.id, value);
       await assignments(c, workspace, saved.id, value);
       await details(c, workspace, saved.board_id, saved.id, input.patch);
+      await configureRecurrence(c, member, saved.id, input.patch.recurrence);
+      await recurrenceCompleted(c, workspace, saved.id, saved.status, value.status);
       await recordTaskActivity(c, member, before, await taskActivityState(c, workspace, saved.id));
     } else fail(400, 'Choose a valid work action.');
     return snapshot(c, member);

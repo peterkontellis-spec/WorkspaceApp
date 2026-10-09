@@ -1,3 +1,4 @@
+import { recurrenceActivitySQL } from './recurrence-core.mjs';
 import { WorkError, withMember } from './work-core.mjs';
 const fail = (status, message) => {
   throw new WorkError(status, message);
@@ -15,6 +16,7 @@ export async function taskActivityState(c, workspace, taskId) {
   return (
     await c.query(
       `SELECT t.id,t.board_id,t.revision,t.title,t.status,t.priority,(t.archived_at IS NOT NULL) AS archived,
+    ${recurrenceActivitySQL} AS recurrence,
     t.reminder_before AS "reminderBefore",t.reminder_after AS "reminderAfter",
     to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.group_id AS "group",t.parent_id AS "parent",t.position,t.notes,
     ARRAY(SELECT d.prerequisite_id FROM task_dependency d WHERE d.workspace_id=t.workspace_id AND d.task_id=t.id ORDER BY d.prerequisite_id) AS "dependencyIds",
@@ -33,6 +35,7 @@ export async function recordTaskActivity(c, member, before, after) {
     'status',
     'priority',
     'dueDate',
+    'recurrence',
     'reminderBefore',
     'reminderAfter',
     'group',
@@ -54,6 +57,7 @@ export async function recordTaskActivity(c, member, before, after) {
     if (key === 'priority') return `priority from ${before.priority} to ${after.priority}`;
     if (key === 'dueDate') return `due date from ${before.dueDate ?? 'none'} to ${after.dueDate ?? 'none'}`;
     return {
+      recurrence: 'recurrence settings',
       reminderBefore: 'day-before reminder',
       reminderAfter: 'overdue reminder',
       title: 'title',

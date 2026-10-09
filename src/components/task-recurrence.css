@@ -1,0 +1,40 @@
+.task-recurrence {
+  min-width: 0;
+}
+.recurrence-summary {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.recurrence-controls {
+  display: grid;
+  gap: 16px;
+  margin-block: 12px;
+  min-width: 0;
+}
+.recurrence-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding-block: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.recurrence-choice input {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  accent-color: var(--accent);
+}
+.recurrence-choice:has(input:disabled) {
+  cursor: default;
+}
+.recurrence-source {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  color: var(--accent);
+  text-underline-offset: 3px;
+}

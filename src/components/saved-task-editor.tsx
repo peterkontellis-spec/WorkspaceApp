@@ -13,6 +13,7 @@ import { SavedFieldValue } from './saved-field-value';
 import { TaskTimeLink } from './active-time';
 import { TaskActivity } from './work-updates';
 import { TaskReminders } from './task-reminders';
+import { TaskRecurrence, recurrenceDraft, type RecurrenceDraft } from './task-recurrence';
 import { SavedTaskAttachments } from './saved-files';
 import './saved-task-editor.css';
 
@@ -20,6 +21,7 @@ type Draft = Pick<
   WorkTask,
   'title' | 'status' | 'priority' | 'groupId' | 'parentId' | 'dueDate' | 'assigneeIds'
 > & {
+  recurrence: RecurrenceDraft;
   reminderBefore: boolean;
   reminderAfter: boolean;
   dependencyIds: string[];
@@ -49,6 +51,7 @@ export type SavedTaskEditorProps = {
 
 function taskDraft(task: WorkTask, columns: WorkColumn[]): Draft {
   return {
+    recurrence: recurrenceDraft(task),
     reminderBefore: task.reminderBefore ?? false,
     reminderAfter: task.reminderAfter ?? false,
     dependencyIds: [...(task.dependencyIds ?? [])],
@@ -140,6 +143,9 @@ export function SavedTaskEditor({
   const dirty = draftKey(draft) !== draftKey(initial.draft);
   const boardGroups = groups.filter((group) => group.boardId === task.boardId);
   const boardTasks = tasks.filter((item) => item.boardId === task.boardId);
+  const recurrenceSource = [...(work.data?.tasks ?? []), ...(work.data?.archivedTasks ?? [])].find(
+    (item) => item.id === task.recurrence?.sourceTaskId,
+  );
   const childIds = new Map<string, string[]>();
   for (const item of boardTasks) {
     if (item.parentId) childIds.set(item.parentId, [...(childIds.get(item.parentId) ?? []), item.id]);
@@ -176,6 +182,9 @@ export function SavedTaskEditor({
 
   function patch(value: Partial<Draft>) {
     const next = { ...draft, ...value };
+    if ('dueDate' in value && !task.recurrence) {
+      next.recurrence = { ...next.recurrence, anchorDate: value.dueDate ?? '' };
+    }
     const nextDirty = draftKey(next) !== draftKey(initial.draft);
     setDraft(next);
     work.setDraft(cacheKey, nextDirty ? ({ initial, draft: next } satisfies CachedDraft) : null);
@@ -243,6 +252,28 @@ export function SavedTaskEditor({
       setLocalError('Enter a label for each checklist item, or remove the empty item.');
       return;
     }
+    const schedule = draft.recurrence;
+    const canManageRecurrence = !task.recurrence || task.recurrence.isSource;
+    if (canManageRecurrence && schedule.enabled) {
+      if (
+        !Number.isInteger(Number(schedule.interval)) ||
+        Number(schedule.interval) < 1 ||
+        Number(schedule.interval) > 365
+      ) {
+        setLocalError('Choose a repetition interval from 1 to 365.');
+        return;
+      }
+      if (schedule.mode === 'calendar' && ((!task.recurrence && !draft.dueDate) || !schedule.anchorDate)) {
+        setLocalError('Choose a due date and schedule anchor for fixed calendar repetition.');
+        return;
+      }
+      try {
+        new Intl.DateTimeFormat('en', { timeZone: schedule.timeZone.trim() }).format();
+      } catch {
+        setLocalError('Choose a supported time zone, such as Europe/Athens.');
+        return;
+      }
+    }
     const fields: { columnId: string; revision: number; value: string | number | null }[] = [];
     for (const column of initial.columns) {
       const raw = draft.fields[column.id] ?? '';
@@ -274,6 +305,16 @@ export function SavedTaskEditor({
         id: task.id,
         revision: initial.revision,
         patch: {
+          ...(canManageRecurrence && (schedule.enabled || task.recurrence)
+            ? {
+                recurrence: {
+                  ...schedule,
+                  interval: Number(schedule.interval),
+                  timeZone: schedule.timeZone.trim(),
+                  anchorDate: schedule.anchorDate || undefined,
+                },
+              }
+            : {}),
           title: draft.title.trim(),
           status: draft.status,
           priority: draft.priority,
@@ -385,6 +426,7 @@ export function SavedTaskEditor({
               before={draft.reminderBefore ?? false}
               after={draft.reminderAfter ?? false}
             />
+            <TaskRecurrence task={task} draft={draft.recurrence} source={recurrenceSource} retainedDraft />
             <h3>Draft notes</h3>
             <p className="saved-task-notes">{draft.notes || 'No draft notes.'}</p>
             <h3>Draft checklist</h3>
@@ -504,6 +546,7 @@ export function SavedTaskEditor({
           after={task.reminderAfter ?? false}
         />
         <TaskDependencies task={task} ids={task.dependencyIds ?? []} />
+        <TaskRecurrence task={task} source={recurrenceSource} />
         <SavedTaskAttachments taskId={task.id} canEdit={false} />
         <TaskTimeLink taskId={task.id} />
         <TaskActivity taskId={task.id} />
@@ -630,6 +673,12 @@ export function SavedTaskEditor({
             before={draft.reminderBefore ?? false}
             after={draft.reminderAfter ?? false}
             change={patch}
+          />
+          <TaskRecurrence
+            task={{ ...task, dueDate: draft.dueDate }}
+            draft={draft.recurrence}
+            source={recurrenceSource}
+            change={(recurrence) => patch({ recurrence })}
           />
           <section className="saved-task-section" aria-labelledby={`${id}-notes`}>
             <h3 id={`${id}-notes`}>Notes</h3>

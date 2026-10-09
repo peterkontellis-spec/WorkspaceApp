@@ -77,15 +77,27 @@ export async function startJobs() {
     runtime.controller = createJobsLoop({
       run: async () => {
         const result = await runJobs(pool);
-        if (result.delivered || result.retried || result.failed)
+        if (
+          result.delivered ||
+          result.retried ||
+          result.failed ||
+          result.recurrenceCreated ||
+          result.recurrenceRetried ||
+          result.recurrenceFailed
+        )
           console.info('workspace_jobs_batch', {
             delivered: result.delivered,
             retried: result.retried,
             failed: result.failed,
+            recurrenceCreated: result.recurrenceCreated,
+            recurrenceRetried: result.recurrenceRetried,
+            recurrenceFailed: result.recurrenceFailed,
           });
         // Exhausted work remains an operational failure until an operator fixes it.
-        const failed = await pool.query("SELECT 1 FROM task_reminder_job WHERE state='failed' LIMIT 1");
-        if (failed.rowCount) throw new Error('Exhausted reminder jobs.');
+        const failed = await pool.query(
+          "SELECT 1 FROM task_reminder_job WHERE state='failed' UNION ALL SELECT 1 FROM task_recurrence WHERE attempts>=5 LIMIT 1",
+        );
+        if (failed.rowCount) throw new Error('Exhausted background jobs.');
       },
       close: () => pool.end(),
     });

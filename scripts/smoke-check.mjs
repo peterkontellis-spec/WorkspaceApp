@@ -154,6 +154,13 @@ if (cookie) {
     const data = await response.json(); assert.ok(data.actor.id); assert.ok(Array.isArray(data.boards)); assert.ok(Array.isArray(data.tasks)); assert.ok(Number.isInteger(data.unreadNotifications) && data.unreadNotifications >= 0);
     assert.ok(Array.isArray(data.archivedTasks));
     for (const task of [...data.tasks, ...data.archivedTasks]) {
+      assert.ok(task.recurrence === null || typeof task.recurrence === 'object', 'Missing recurrence metadata');
+      if (task.recurrence) {
+        assert.ok(['calendar', 'completion'].includes(task.recurrence.mode));
+        assert.equal(typeof task.recurrence.isSource, 'boolean');
+        assert.equal(typeof task.recurrence.enabled, 'boolean');
+        assert.ok(['active', 'waiting', 'paused', 'failed'].includes(task.recurrence.state));
+      }
       assert.ok(Array.isArray(task.dependencyIds), 'Missing saved prerequisite IDs');
       for (const field of ['reminderBefore', 'reminderAfter', 'reminderActive'])
         assert.equal(typeof task[field], 'boolean', `Missing saved reminder field: ${field}`);

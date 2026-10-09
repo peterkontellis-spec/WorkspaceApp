@@ -481,7 +481,7 @@ test('real migration 010 to 011 preserves existing tasks and activates only toda
     const original = (
       await legacy.query('SELECT id,title,due_date,notes,revision FROM task ORDER BY due_date')
     ).rows;
-    assert.deepEqual(await migrate(legacy), ['011_task_reminders.sql']);
+    assert.deepEqual(await migrate(legacy), ['011_task_reminders.sql', '012_task_recurrence.sql']);
     assert.deepEqual(
       (await legacy.query('SELECT id,title,due_date,notes,revision FROM task ORDER BY due_date')).rows,
       original,
