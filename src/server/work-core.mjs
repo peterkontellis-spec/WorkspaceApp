@@ -119,6 +119,8 @@ async function snapshot(c, member) {
   const tasks = (
     await c.query(
       `SELECT t.id,t.board_id AS "boardId",t.group_id AS "groupId",t.parent_id AS "parentId",t.title,t.status,t.priority,
+    t.reminder_before AS "reminderBefore",t.reminder_after AS "reminderAfter",
+    (t.reminder_eligible AND t.due_date IS NOT NULL) AS "reminderActive",
     to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.position,t.revision,t.notes,t.updated_at AS "updatedAt",
     coalesce(t.archived_at,b.archived_at) AS "archivedAt",coalesce(t.archived_by,b.archived_by) AS "archivedBy",
     t.archive_batch_id AS "archiveBatchId",(b.archived_at IS NOT NULL) AS "boardArchived",
@@ -194,6 +196,8 @@ async function taskValues(c, workspace, board, taskId, patch, current = {}) {
     'status',
     'priority',
     'dueDate',
+    'reminderBefore',
+    'reminderAfter',
     'position',
     'assigneeIds',
     'dependencyIds',
@@ -211,6 +215,15 @@ async function taskValues(c, workspace, board, taskId, patch, current = {}) {
   if ('status' in patch) value.status = choice(patch.status, ['To do', 'In progress', 'Done']);
   if ('priority' in patch) value.priority = choice(patch.priority, ['Low', 'Medium', 'High']);
   if ('dueDate' in patch) value.due_date = date(patch.dueDate);
+  for (const [field, column] of [
+    ['reminderBefore', 'reminder_before'],
+    ['reminderAfter', 'reminder_after'],
+  ]) {
+    if (field in patch) {
+      if (typeof patch[field] !== 'boolean') fail(400, 'Choose a valid reminder setting.');
+      value[column] = patch[field];
+    }
+  }
   if ('position' in patch) value.position = integer(patch.position);
   if ('groupId' in patch) {
     const group = await row(c, 'board_group', workspace, patch.groupId);
@@ -695,7 +708,7 @@ export function manageWork(pool, auth, headers, input) {
       const before = await taskActivityState(c, workspace, saved.id);
       const value = await taskValues(c, workspace, saved.board_id, saved.id, input.patch, saved);
       await c.query(
-        `UPDATE task SET group_id=$3,parent_id=$4,title=$5,status=$6,priority=$7,due_date=$8,position=$9,notes=$11,revision=revision+1,updated_at=now()
+        `UPDATE task SET group_id=$3,parent_id=$4,title=$5,status=$6,priority=$7,due_date=$8,position=$9,notes=$11,reminder_before=$12,reminder_after=$13,reminder_eligible=CASE WHEN due_date IS DISTINCT FROM $8::date OR (NOT reminder_before AND $12) OR (NOT reminder_after AND $13) THEN true ELSE reminder_eligible END,revision=revision+1,updated_at=now()
         WHERE workspace_id=$1 AND id=$2 AND revision=$10`,
         [
           workspace,
@@ -709,6 +722,8 @@ export function manageWork(pool, auth, headers, input) {
           value.position,
           saved.revision,
           value.notes,
+          value.reminder_before,
+          value.reminder_after,
         ],
       );
       await dependencies(c, workspace, saved.id, value);

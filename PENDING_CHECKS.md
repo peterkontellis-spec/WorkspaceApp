@@ -1,6 +1,13 @@
 # Acceptance coverage and remaining environment checks
 
-Updated 2026-10-08 after M4.1 dependencies and the requested filter/navigation refinements. The reproducible local browser matrix is complete for the scenarios below. No failed app scenario is left open. Physical/device and browser-host limitations are explicitly separate; this is not NAS or publication acceptance.
+Updated 2026-10-09 after M4.2 jobs/reminders. The final browser suite passed 73 with one genuine background-visibility capability skip and no failures. The physical/device/browser-host limits and NAS/publication gates below remain open.
+
+## M4.2 reminders — 2026-10-09
+
+52 behavior/runtime tests, 127 full database tests, 73 full browser passes / 1 capability skip and 26 authenticated preview HTTP checks passed. Four new browser cases cover default/extra settings, private notifications, drafts/offline/conflicts, keyboard and 1440/390px themes. Actual worker catch-up, a real next 30-second tick and two abrupt app restarts passed with no duplicates; database interruption/restart, retries, competing workers and Athens DST have isolated evidence. STATUS.md and [JOBS.md](JOBS.md) record exact run paths and policy.
+
+M4.2 is complete locally; M4.3 recurrence is next. Broader operational diagnostics remain a release gate despite new fixed-message job logging/readiness. Populated reminder-ledger backup restoration still needs release recovery evidence: the current cold-recovery fixture contains the new table empty, while populated database restart/crash recovery passed. Existing device gaps also apply to the new reminder controls.
+
 
 ## M4.1 and preview refinements — 2026-10-08
 
@@ -59,4 +66,4 @@ These environment checks are retained for device acceptance/M3.7; they do not im
 
 ## Later release gates
 
-Docs remains a non-editable storage-pending placeholder in accounts mode; durable saving/recovery/collaboration await NAS configuration and M4. NAS performance, deployment, operational diagnostic logging, the deployed backup/restore procedure and the required Cloudflare pre-publication security audit remain later release work. Local cold recovery now passes; deployed backup destination/schedule/retention, offsite recovery, encryption and NAS-specific restoration are not established. Logging is limited to connection errors/readiness today; broader operational diagnostics need implementation. Publication security sign-off requires the concrete release/deployment configuration. No public access, paid CI, credit/reset use or NAS changes occurred.
+Docs remains a non-editable storage-pending placeholder in accounts mode; durable saving/recovery/collaboration await NAS configuration and M4. NAS performance, deployment, operational diagnostic logging, the deployed backup/restore procedure and the required Cloudflare pre-publication security audit remain later release work. Local cold recovery now passes; deployed backup destination/schedule/retention, offsite recovery, encryption and NAS-specific restoration are not established. Logging covers connection errors/readiness and M4.2 job status/counts; broader operational diagnostics still need implementation. Publication security sign-off requires the concrete release/deployment configuration. No public access, paid CI, credit/reset use or NAS changes occurred.

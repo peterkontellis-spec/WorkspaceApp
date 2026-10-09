@@ -100,3 +100,7 @@ Account forms use POST as their native fallback and disable submission until scr
 ## Verification
 
 See STATUS.md for this increment's executed checks and limits. PostgreSQL integration tests live in tests/database/work.test.mjs. HTTP smoke checks supplement, but do not replace, supported-browser role, form, navigation, failure and layout checks.
+
+## Deadline reminder settings
+
+Task details show the default due-date reminder at 09:00 Athens and optional “One day before” / “One day overdue” checkboxes, both off initially. Settings apply to current assignees and save with the task's existing draft/revision protection. Viewers can read the choices; owners/editors can change them. No date, no assignee, completion/archive and an old dormant deadline have explicit explanations. The notifications feed includes system reminders without treating them as task edits. [JOBS.md](JOBS.md) defines scheduling and restart behavior.

@@ -25,6 +25,8 @@ for (const file of ['database.env', 'auth.env']) {
 env.HOSTNAME = '127.0.0.1'; env.PORT = '3100';
 // Attachments must outlive build snapshots and never enter public assets.
 env.ATTACHMENT_ROOT = join(local, 'attachments');
+// The private accounts preview runs durable reminders; explicit 0 permits diagnosis.
+env.WORKSPACE_JOBS_ENABLED ??= '1';
 const pidFile = join(local, 'preview-server.pid');
 const releaseFile = join(local, 'preview-release.txt');
 const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));

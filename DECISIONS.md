@@ -1,5 +1,13 @@
 # Decisions
 
+## M4.2 reminder policy — 2026-10-09
+
+The user confirmed the proposed default: current assignees receive one in-app deadline reminder at 09:00 Europe/Athens on the due date; a missed reminder catches up after restart, and completed/archived tasks do not send. They also requested an option to opt into additional reminders. The bounded implementation offers per-task “One day before” and “One day overdue” options, both at 09:00 Athens, off by default. These shared task settings affect current assignees and are explicitly labelled that way. Owners/editors save them with the normal task revision; viewers read them. Arbitrary schedules, personal preference pages, email/push and recurrence are outside this increment.
+
+Use the existing PostgreSQL database for durable jobs, with a small sequential worker in the running app process. Store each due-date/offset occurrence once and commit its notifications atomically with delivery state. Recheck task, board, assignment and enabled-account state under the existing workspace/access locking protocol. System reminders must not invent a user edit or change the task revision. After downtime, only the latest elapsed eligible occurrence per task/deadline is delivered, rather than all missed optional reminders. Already delivered occurrences do not repeat after retries, reopen/restore, or changing away from and back to the same due date.
+
+Existing deadlines before activation day are not automatically backfilled. Actually changing the date or enabling an additional reminder intentionally activates an old task; an unchanged full-form save must not activate it accidentally. Template copies reset additional options, consistent with fresh dates/assignees. Durable Docs remains held for NAS configuration. [JOBS.md](JOBS.md) records implementation and verification boundaries; M4.2 is locally verified; STATUS.md records actual checks and remaining environment/release gates.
+
 ## M4.1 advisory dependencies and preview refinements — 2026-10-08
 
 The user authorized M4, superseding the earlier stop-before-M4 boundary. M4.1 is the bounded first increment: task prerequisites warn but allow completion, as explicitly selected. Reopening or archiving a prerequisite must never automatically change a dependent task’s status. Owners/editors edit shared prerequisites; viewers read. Retain links through archive, reject self/cross-workspace/circular links, serialize competing graph edits and save dependency changes atomically with the task revision/details/activity. Templates remap internal links only when both endpoints are copied, omit external links and preserve older immutable snapshots.

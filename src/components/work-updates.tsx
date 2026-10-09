@@ -46,12 +46,12 @@ export function NotificationsPage() {
       <div className="page-heading">
         <div>
           <h1>Notifications</h1>
-          <p>Assignments and changes to tasks you’re assigned to.</p>
+          <p>Assignments, deadline reminders and changes to tasks you’re assigned to.</p>
         </div>
       </div>
       <p className="updates-hint">
-        Your own changes don’t notify you. The bell updates automatically; refresh this list for the latest
-        changes.
+        Your own edits don’t notify you; deadline reminders still do. The bell updates automatically; refresh
+        this list for the latest changes.
       </p>
       {data ? (
         <UpdateFeed key={data.actor.id} />

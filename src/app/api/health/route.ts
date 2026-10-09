@@ -1,5 +1,6 @@
 import { getDatabase } from '@/server/db';
 import { getAuth, prototypeMode } from '@/server/auth';
+import { jobsStatus } from '@/server/jobs-runtime.mjs';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,10 @@ export async function GET() {
         'SELECT u.auth_user_id, s.id, i.token_hash FROM app_user u CROSS JOIN auth_session s CROSS JOIN workspace_invitation i WHERE false',
       );
     }
-    return Response.json({ status: 'ready' }, { headers });
+    const jobs = jobsStatus();
+    if (jobs === 'unavailable' || jobs === 'starting')
+      return Response.json({ status: 'unavailable', jobs }, { status: 503, headers });
+    return Response.json({ status: 'ready', jobs }, { headers });
   } catch {
     return Response.json({ status: 'unavailable' }, { status: 503, headers });
   }

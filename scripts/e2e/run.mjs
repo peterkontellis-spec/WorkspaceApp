@@ -4,6 +4,7 @@ import { createServer } from 'node:net';
 import { cp, mkdir, mkdtemp, open, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { once } from 'node:events';
+import assert from 'node:assert/strict';
 import { openLocalCluster, provisionLocalDatabase, grantApplicationAccess } from '../db/local.mjs';
 import { migrate } from '../db/migrate.mjs';
 import { createDatabase } from '../../src/server/database.mjs';
@@ -17,10 +18,13 @@ const args = process.argv.slice(2);
 const grep = args.length === 2 && args[0] === '--grep' && args[1].length <= 500 ? args[1] : null;
 if (
   !grep &&
-  (args.some((arg) => !['--setup-check', '--serve', '--restart-check'].includes(arg)) || args.length > 1)
+  (args.some(
+    (arg) => !['--setup-check', '--serve', '--restart-check', '--jobs-restart-check'].includes(arg),
+  ) ||
+    args.length > 1)
 )
   throw new Error(
-    'Usage: node scripts/e2e/run.mjs [--setup-check | --serve | --restart-check | --grep pattern]',
+    'Usage: node scripts/e2e/run.mjs [--setup-check | --serve | --restart-check | --jobs-restart-check | --grep pattern]',
   );
 await readFile(join(root, '.next/BUILD_ID'), 'utf8');
 await mkdir(join(root, '.local/e2e'), { recursive: true, mode: 0o700 });
@@ -118,6 +122,8 @@ try {
     AUTH_BASE_URL: baseURL,
     ATTACHMENT_ROOT: attachments,
     WORKSPACE_MODE: 'accounts',
+    // Ordinary browser fixtures control delivery directly, never racing a timer.
+    WORKSPACE_JOBS_ENABLED: '0',
   };
   log = await open(join(directory, 'server.log'), 'a', 0o600);
   async function startServer() {
@@ -189,6 +195,95 @@ try {
   if (args[0] === '--setup-check') {
     console.log(
       'Setup check passed: isolated database, migrations, four accounts, app and authenticated snapshots. No browser launched.',
+    );
+    resultCode = 0;
+  } else if (args[0] === '--jobs-restart-check') {
+    const ownerSession = JSON.parse(await readFile(people.owner.storageState, 'utf8'));
+    const cookie = ownerSession.cookies.map((item) => `${item.name}=${item.value}`).join('; ');
+    const post = async (data) => {
+      const response = await fetch(`${baseURL}/api/work`, {
+        method: 'POST',
+        headers: { cookie, origin: baseURL, 'content-type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      assert.equal(response.status, 200);
+      return response.json();
+    };
+    let snapshot = await post({ action: 'createBoard', name: 'Isolated reminder restart' });
+    const board = snapshot.boards.find((item) => item.name === 'Isolated reminder restart');
+    const group = snapshot.groups.find((item) => item.boardId === board.id);
+    snapshot = await post({
+      action: 'createTask',
+      boardId: board.id,
+      groupId: group.id,
+      title: 'Due while worker is stopped',
+      dueDate: '2020-01-02',
+      assigneeIds: [people.owner.id, people.viewer.id],
+    });
+    const task = snapshot.tasks.find((item) => item.boardId === board.id);
+    const notificationCount = async (taskId = task.id) =>
+      Number(
+        (
+          await admin.query(
+            `SELECT count(*) FROM task_notification n JOIN task_reminder_job j ON j.id=n.reminder_job_id WHERE j.task_id=$1`,
+            [taskId],
+          )
+        ).rows[0].count,
+      );
+    assert.equal(await notificationCount(), 0);
+    const evidence = { checks: [], appRestarts: [] };
+    async function restartJobs() {
+      const before = server.pid;
+      const exited = once(server, 'exit');
+      server.kill('SIGKILL');
+      await exited;
+      await sleep(1250);
+      env.WORKSPACE_JOBS_ENABLED = '1';
+      serverFailure = null;
+      await startServer();
+      assert.notEqual(server.pid, before);
+      evidence.appRestarts.push({ before, after: server.pid });
+    }
+    await restartJobs();
+    for (let attempt = 0; attempt < 100 && (await notificationCount()) !== 2; attempt++) await sleep(100);
+    assert.equal(await notificationCount(), 2);
+    evidence.checks.push(
+      'A real process restart automatically catches up one overdue occurrence for both current assignees.',
+    );
+    snapshot = await post({
+      action: 'createTask',
+      boardId: board.id,
+      groupId: group.id,
+      title: 'Created after worker startup',
+      dueDate: '2020-01-02',
+      assigneeIds: [people.owner.id],
+    });
+    const timerTask = snapshot.tasks.find((item) => item.title === 'Created after worker startup');
+    assert.equal(await notificationCount(timerTask.id), 0);
+    // Allow the actual production 30-second timer to run; no injectable app clock or endpoint.
+    await sleep(31_000);
+    assert.equal(await notificationCount(), 2);
+    assert.equal(await notificationCount(timerTask.id), 1);
+    evidence.checks.push(
+      'The next real timer tick delivers newly created work without duplicating the earlier deliveries.',
+    );
+    await restartJobs();
+    for (let attempt = 0; attempt < 100; attempt++) {
+      const health = await (await fetch(`${baseURL}/api/health`)).json();
+      if (health.jobs === 'ready') break;
+      await sleep(100);
+    }
+    assert.equal((await (await fetch(`${baseURL}/api/health`)).json()).jobs, 'ready');
+    assert.equal(await notificationCount(), 2);
+    assert.equal(await notificationCount(timerTask.id), 1);
+    const saved = (await admin.query('SELECT revision FROM task WHERE id=$1', [task.id])).rows[0];
+    assert.equal(saved.revision, task.revision);
+    evidence.checks.push(
+      'A second real process restart preserves exactly-once deliveries, ready status, and task revision.',
+    );
+    await writeFile(join(directory, 'jobs-restart-evidence.json'), JSON.stringify(evidence, null, 2));
+    console.log(
+      'Reminder worker restart checks passed: automatic catch-up, real timer tick, second restart and unchanged task revision.',
     );
     resultCode = 0;
   } else if (args[0] === '--restart-check') {

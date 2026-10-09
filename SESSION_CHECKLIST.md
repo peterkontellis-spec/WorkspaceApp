@@ -3,7 +3,7 @@
 **A reading guide and delivery checklist for each working session.**  
 Planning baseline: 25 September 2026 · Five stages · 35 small increments
 
-> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.7 are implemented and locally verified; physical-device/browser-host acceptance remains in STATUS.md and PENDING_CHECKS.md. M4.1 dependencies are locally verified; later M4 work has not started.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
+> **Start here:** Read [STATUS.md](STATUS.md). **M1.1–M1.6 / Stage 1 are accepted as a sample-data prototype; M2.1 and M2.2 are complete (2026-10-06). M2.3–M2.8 are accepted; Stage 2 is complete locally. M3.1–M3.7 are implemented and locally verified; physical-device/browser-host acceptance remains in STATUS.md and PENDING_CHECKS.md. M4.1 dependencies and M4.2 jobs/reminders are locally verified; M4.3 recurrence is next.** Use [RUNNING.md](RUNNING.md) to preview and verify. Local Git checkpoints preserve each increment and are now uploaded to GitHub with milestone tags. No completion box below should be ticked until its required checks actually pass.
 
 ## Corrective blocks before further M3 features — 2026-10-07
 
@@ -369,9 +369,11 @@ Local M4.1 checks passed: 113 database tests, seven dependency browser scenarios
 
 **Deliverable:** the scheduling foundation used by later features.
 
-- [ ] Persist jobs, define retries, and prevent duplicate effects when a job is retried.
-- [ ] Add in-app deadline reminders and rules for overdue/missed jobs after a restart.
-- [ ] Verify timezone handling, restart recovery, and duplicate-notification prevention.
+- [x] Persist jobs, define retries, and prevent duplicate effects when a job is retried.
+- [x] Add in-app deadline reminders and rules for overdue/missed jobs after a restart.
+- [x] Verify timezone handling, restart recovery, and duplicate-notification prevention.
+
+Local M4.2 checks passed (2026-10-09): 52 behavior/runtime tests, 127 database tests, 73 browser passes / 1 capability skip, 26 authenticated HTTP checks and real worker restart/timer evidence. Default due-day 09:00 Athens plus optional day-before/overdue reminders; see [JOBS.md](JOBS.md) and STATUS.md. Physical/NAS/publication gates remain separate.
 
 **Done when:** scheduled work survives service interruptions and produces the intended effect once.
 

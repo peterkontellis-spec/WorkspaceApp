@@ -15,6 +15,7 @@ export async function taskActivityState(c, workspace, taskId) {
   return (
     await c.query(
       `SELECT t.id,t.board_id,t.revision,t.title,t.status,t.priority,(t.archived_at IS NOT NULL) AS archived,
+    t.reminder_before AS "reminderBefore",t.reminder_after AS "reminderAfter",
     to_char(t.due_date,'YYYY-MM-DD') AS "dueDate",t.group_id AS "group",t.parent_id AS "parent",t.position,t.notes,
     ARRAY(SELECT d.prerequisite_id FROM task_dependency d WHERE d.workspace_id=t.workspace_id AND d.task_id=t.id ORDER BY d.prerequisite_id) AS "dependencyIds",
     ARRAY(SELECT a.user_id FROM task_assignee a WHERE a.workspace_id=t.workspace_id AND a.task_id=t.id ORDER BY a.user_id) AS assignees,
@@ -32,6 +33,8 @@ export async function recordTaskActivity(c, member, before, after) {
     'status',
     'priority',
     'dueDate',
+    'reminderBefore',
+    'reminderAfter',
     'group',
     'parent',
     'position',
@@ -51,6 +54,8 @@ export async function recordTaskActivity(c, member, before, after) {
     if (key === 'priority') return `priority from ${before.priority} to ${after.priority}`;
     if (key === 'dueDate') return `due date from ${before.dueDate ?? 'none'} to ${after.dueDate ?? 'none'}`;
     return {
+      reminderBefore: 'day-before reminder',
+      reminderAfter: 'overdue reminder',
       title: 'title',
       group: 'group',
       parent: 'parent task',
@@ -133,9 +138,10 @@ export function readUpdates(pool, auth, headers, query = {}) {
         : (
             await c.query(
               `SELECT n.id::text,t.id AS "taskId",t.board_id AS "boardId",t.title AS "taskTitle",
-        a.actor_name AS "actorName",n.summary,a.created_at AS "createdAt",n.read_at AS "readAt"
-        FROM task_notification n JOIN task_activity a ON a.workspace_id=n.workspace_id AND a.id=n.activity_id
-        JOIN task t ON t.workspace_id=a.workspace_id AND t.id=a.task_id
+        coalesce(a.actor_name,'Reminder') AS "actorName",n.summary,coalesce(a.created_at,j.delivered_at) AS "createdAt",n.read_at AS "readAt"
+        FROM task_notification n LEFT JOIN task_activity a ON a.workspace_id=n.workspace_id AND a.id=n.activity_id
+        LEFT JOIN task_reminder_job j ON j.workspace_id=n.workspace_id AND j.id=n.reminder_job_id
+        JOIN task t ON t.workspace_id=n.workspace_id AND t.id=coalesce(a.task_id,j.task_id)
         WHERE n.workspace_id=$1 AND n.recipient_id=$2 AND ($3::bigint IS NULL OR n.id<$3)
         ORDER BY n.id DESC LIMIT 26`,
               [member.workspace_id, member.id, before],

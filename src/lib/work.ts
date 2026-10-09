@@ -21,6 +21,9 @@ export type WorkColumn = {
 export type WorkChecklistItem = { id: string; label: string; done: boolean; position: number };
 export type WorkFieldValue = { columnId: string; value: string | number };
 export type WorkTask = {
+  reminderActive?: boolean;
+  reminderBefore?: boolean;
+  reminderAfter?: boolean;
   dependencyIds?: string[];
   updatedAt?: string;
   archivedAt?: string | null;

@@ -27,6 +27,12 @@ The launcher uses macOS `lsof` to verify the previous process's project director
 
 Accounts-mode boards/tasks, custom values, notes and checklists are saved; Docs is a storage-pending placeholder. A persistent preview owner account now exists. Preserve its boards and user edits; never reuse destructive/disposable-account cleanup routines on it. Keep credentials out of Git and project documents.
 
+## Deadline reminder worker
+
+M4.2 reminders run inside the app process when `WORKSPACE_JOBS_ENABLED=1`. `pnpm preview` enables them by default; `WORKSPACE_JOBS_ENABLED=0 pnpm preview` deliberately disables delivery for diagnosis. For local development use `WORKSPACE_JOBS_ENABLED=1 pnpm dev:db`. For a deliberately disabled worker, set `WORKSPACE_SMOKE_JOBS=disabled` when running the HTTP checks; otherwise they require the worker to be ready. Apply migration011 first. Prototype mode never starts the worker. No separate service, public dispatch endpoint or open browser tab is required.
+
+`/api/health` includes `jobs: disabled | starting | ready | unavailable`; failed/stale worker checks or exhausted jobs return unavailable rather than claiming readiness. A live worker checks every 30 seconds. A stopped app or sleeping Mac catches up after restart; it cannot send while stopped. [JOBS.md](JOBS.md) defines timings, optional settings, retries and old-deadline behavior. This local setup does not establish NAS uptime or publication readiness.
+
 ## Open the current preview
 
 While the local preview server is running, open:

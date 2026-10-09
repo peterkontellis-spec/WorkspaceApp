@@ -12,6 +12,7 @@ import { useWork } from './work-provider';
 import { SavedFieldValue } from './saved-field-value';
 import { TaskTimeLink } from './active-time';
 import { TaskActivity } from './work-updates';
+import { TaskReminders } from './task-reminders';
 import { SavedTaskAttachments } from './saved-files';
 import './saved-task-editor.css';
 
@@ -19,6 +20,8 @@ type Draft = Pick<
   WorkTask,
   'title' | 'status' | 'priority' | 'groupId' | 'parentId' | 'dueDate' | 'assigneeIds'
 > & {
+  reminderBefore: boolean;
+  reminderAfter: boolean;
   dependencyIds: string[];
   position: string;
   notes: string;
@@ -46,6 +49,8 @@ export type SavedTaskEditorProps = {
 
 function taskDraft(task: WorkTask, columns: WorkColumn[]): Draft {
   return {
+    reminderBefore: task.reminderBefore ?? false,
+    reminderAfter: task.reminderAfter ?? false,
     dependencyIds: [...(task.dependencyIds ?? [])],
     title: task.title,
     status: task.status,
@@ -70,6 +75,8 @@ function taskDraft(task: WorkTask, columns: WorkColumn[]): Draft {
 function draftKey(draft: Draft) {
   return JSON.stringify({
     ...draft,
+    reminderBefore: draft.reminderBefore ?? false,
+    reminderAfter: draft.reminderAfter ?? false,
     dependencyIds: [...(draft.dependencyIds ?? [])].sort(),
     assigneeIds: [...draft.assigneeIds].sort(),
   });
@@ -113,6 +120,15 @@ export function SavedTaskEditor({
   });
   const initial = opening.initial;
   const [draft, setDraft] = useState(opening.draft);
+  const reminderDraftTask = {
+    ...task,
+    ...draft,
+    reminderActive:
+      task.reminderActive !== false ||
+      draft.dueDate !== task.dueDate ||
+      Boolean(draft.reminderBefore && !task.reminderBefore) ||
+      Boolean(draft.reminderAfter && !task.reminderAfter),
+  };
   const [localError, setLocalError] = useState('');
   const [confirmReload, setConfirmReload] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -266,6 +282,8 @@ export function SavedTaskEditor({
           dueDate: draft.dueDate,
           assigneeIds: draft.assigneeIds,
           dependencyIds: draft.dependencyIds ?? [],
+          reminderBefore: draft.reminderBefore ?? false,
+          reminderAfter: draft.reminderAfter ?? false,
           position,
           notes: draft.notes,
           checklist: draft.checklist.map((item, index) => ({
@@ -362,6 +380,11 @@ export function SavedTaskEditor({
                 <dd>{draft.position}</dd>
               </div>
             </dl>
+            <TaskReminders
+              task={reminderDraftTask}
+              before={draft.reminderBefore ?? false}
+              after={draft.reminderAfter ?? false}
+            />
             <h3>Draft notes</h3>
             <p className="saved-task-notes">{draft.notes || 'No draft notes.'}</p>
             <h3>Draft checklist</h3>
@@ -475,6 +498,11 @@ export function SavedTaskEditor({
             <p className="detail-empty">No checklist items yet.</p>
           )}
         </section>
+        <TaskReminders
+          task={task}
+          before={task.reminderBefore ?? false}
+          after={task.reminderAfter ?? false}
+        />
         <TaskDependencies task={task} ids={task.dependencyIds ?? []} />
         <SavedTaskAttachments taskId={task.id} canEdit={false} />
         <TaskTimeLink taskId={task.id} />
@@ -597,6 +625,12 @@ export function SavedTaskEditor({
               />
             </div>
           </div>
+          <TaskReminders
+            task={reminderDraftTask}
+            before={draft.reminderBefore ?? false}
+            after={draft.reminderAfter ?? false}
+            change={patch}
+          />
           <section className="saved-task-section" aria-labelledby={`${id}-notes`}>
             <h3 id={`${id}-notes`}>Notes</h3>
             <label className="saved-task-label">

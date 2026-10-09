@@ -153,7 +153,11 @@ if (cookie) {
     const response = await request('/api/work'); assert.equal(response.status, 200);
     const data = await response.json(); assert.ok(data.actor.id); assert.ok(Array.isArray(data.boards)); assert.ok(Array.isArray(data.tasks)); assert.ok(Number.isInteger(data.unreadNotifications) && data.unreadNotifications >= 0);
     assert.ok(Array.isArray(data.archivedTasks));
-    for (const task of [...data.tasks, ...data.archivedTasks]) assert.ok(Array.isArray(task.dependencyIds), 'Missing saved prerequisite IDs');
+    for (const task of [...data.tasks, ...data.archivedTasks]) {
+      assert.ok(Array.isArray(task.dependencyIds), 'Missing saved prerequisite IDs');
+      for (const field of ['reminderBefore', 'reminderAfter', 'reminderActive'])
+        assert.equal(typeof task[field], 'boolean', `Missing saved reminder field: ${field}`);
+    }
     assert.equal((await fetch(`${origin}/api/work`)).status, 401);
     assert.match(response.headers.get('cache-control'), /no-store/);
   });
@@ -161,7 +165,7 @@ if (cookie) {
     assert.equal((await request('/boards/website-refresh')).status, 404);
   });
   await check('database readiness is available without exposing records', async () => {
-    const response = await fetch(`${origin}/api/health`); assert.equal(response.status, 200); assert.deepEqual(await response.json(), { status: 'ready' });
+    const response = await fetch(`${origin}/api/health`); assert.equal(response.status, 200); assert.deepEqual(await response.json(), { status: 'ready', jobs: process.env.WORKSPACE_SMOKE_JOBS === 'disabled' ? 'disabled' : 'ready' });
   });
   await check('team page is protected and available to a signed-in account', async () => {
     const response = await request('/team');
